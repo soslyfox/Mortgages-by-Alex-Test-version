@@ -10,11 +10,6 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-3">
-              <img
-                src={`${import.meta.env.BASE_URL}images/alex.png`}
-                alt="Alex"
-                className="h-10 w-10 rounded-full object-cover border-2 border-white/30"
-              />
               <span className="font-display text-xl font-bold tracking-tight text-white">
                 {t.nav.brand.split(' ').slice(0, -2).join(' ')} <span className="text-green-300">{t.nav.brand.split(' ').slice(-2).join(' ')}</span>
               </span>
