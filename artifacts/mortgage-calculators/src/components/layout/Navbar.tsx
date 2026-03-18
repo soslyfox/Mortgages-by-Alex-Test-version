@@ -70,7 +70,7 @@ export function Navbar() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10 gap-1.5 px-2">
                   <Globe className="h-4 w-4" />
-                  <span className="text-sm font-medium">{currentLang.flag} {currentLang.short}</span>
+                  <span className="text-sm font-medium">{currentLang.label}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
@@ -78,10 +78,9 @@ export function Navbar() {
                   <DropdownMenuItem
                     key={lang.code}
                     onClick={() => setLanguage(lang.code)}
-                    className={cn("cursor-pointer gap-2", language === lang.code && "font-semibold bg-primary/10 text-primary")}
+                    className={cn("cursor-pointer", language === lang.code && "font-semibold bg-primary/10 text-primary")}
                   >
-                    <span>{lang.flag}</span>
-                    <span>{lang.label}</span>
+                    {lang.label}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -99,8 +98,8 @@ export function Navbar() {
           <div className="flex md:hidden items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10 px-2">
-                  <span className="text-base">{currentLang.flag}</span>
+                <Button variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10 gap-1 px-2">
+                  <Globe className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-36">
@@ -108,10 +107,9 @@ export function Navbar() {
                   <DropdownMenuItem
                     key={lang.code}
                     onClick={() => setLanguage(lang.code)}
-                    className={cn("cursor-pointer gap-2", language === lang.code && "font-semibold bg-primary/10 text-primary")}
+                    className={cn("cursor-pointer", language === lang.code && "font-semibold bg-primary/10 text-primary")}
                   >
-                    <span>{lang.flag}</span>
-                    <span>{lang.label}</span>
+                    {lang.label}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
