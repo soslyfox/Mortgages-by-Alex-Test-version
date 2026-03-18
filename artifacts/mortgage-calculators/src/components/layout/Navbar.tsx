@@ -12,10 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const LANGUAGES: { code: Language; label: string; flag: string }[] = [
-  { code: 'uk', label: 'Українська', flag: '🇺🇦' },
-  { code: 'en', label: 'English',    flag: '🇨🇦' },
-  { code: 'ru', label: 'Русский',    flag: '🇷🇺' },
+const LANGUAGES: { code: Language; label: string; flag: string; short: string }[] = [
+  { code: 'uk', label: 'Українська', flag: '🇺🇦', short: 'УКР' },
+  { code: 'en', label: 'English',    flag: '🇨🇦', short: 'EN'  },
+  { code: 'ru', label: 'Русский',    flag: '🇷🇺', short: 'РУС' },
 ];
 
 export function Navbar() {
@@ -70,7 +70,7 @@ export function Navbar() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10 gap-1.5 px-2">
                   <Globe className="h-4 w-4" />
-                  <span className="text-sm font-medium">{currentLang.flag} {currentLang.code.toUpperCase()}</span>
+                  <span className="text-sm font-medium">{currentLang.flag} {currentLang.short}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
