@@ -14,7 +14,7 @@ import {
 
 const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: 'uk', label: 'Українська', flag: '🇺🇦' },
-  { code: 'en', label: 'English',    flag: '🇬🇧' },
+  { code: 'en', label: 'English',    flag: '🇨🇦' },
   { code: 'ru', label: 'Русский',    flag: '🇷🇺' },
 ];
 
