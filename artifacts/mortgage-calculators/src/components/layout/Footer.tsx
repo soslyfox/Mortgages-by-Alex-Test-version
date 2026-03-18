@@ -1,6 +1,9 @@
 import { Link } from "wouter";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="bg-[#003d2b] text-white mt-auto">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
@@ -13,49 +16,39 @@ export function Footer() {
                 className="h-10 w-10 rounded-full object-cover border-2 border-white/30"
               />
               <span className="font-display text-xl font-bold tracking-tight text-white">
-                Mortgages <span className="text-green-300">by Alex</span>
+                {t.nav.brand.split(' ').slice(0, -2).join(' ')} <span className="text-green-300">{t.nav.brand.split(' ').slice(-2).join(' ')}</span>
               </span>
             </Link>
-            <p className="text-white/65 text-sm max-w-md">
-              Providing powerful, accurate, and easy-to-use financial tools to help you make informed decisions about your home buying journey.
-            </p>
+            <p className="text-white/65 text-sm max-w-md">{t.footer.desc}</p>
           </div>
-          
+
           <div>
-            <h3 className="font-semibold text-white mb-4">Calculators</h3>
+            <h3 className="font-semibold text-white mb-4">{t.footer.calculators}</h3>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/mortgage-calculator" className="text-white/60 hover:text-green-300 transition-colors">Mortgage Payment</Link>
-              </li>
-              <li>
-                <Link href="/affordability-calculator" className="text-white/60 hover:text-green-300 transition-colors">Home Affordability</Link>
-              </li>
-              <li>
-                <Link href="/refinance-calculator" className="text-white/60 hover:text-green-300 transition-colors">Refinance</Link>
-              </li>
-              <li>
-                <Link href="/amortization-calculator" className="text-white/60 hover:text-green-300 transition-colors">Amortization Schedule</Link>
-              </li>
+              <li><Link href="/mortgage-calculator" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.mortgagePayment}</Link></li>
+              <li><Link href="/affordability-calculator" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.homeAffordability}</Link></li>
+              <li><Link href="/refinance-calculator" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.refinance}</Link></li>
+              <li><Link href="/amortization-calculator" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.amortization}</Link></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold text-white mb-4">Resources</h3>
+            <h3 className="font-semibold text-white mb-4">{t.footer.resources}</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="text-white/60 hover:text-green-300 transition-colors">Current Rates</a></li>
-              <li><a href="#" className="text-white/60 hover:text-green-300 transition-colors">Home Buying Guide</a></li>
-              <li><a href="#" className="text-white/60 hover:text-green-300 transition-colors">Contact Alex</a></li>
-              <li><a href="#" className="text-white/60 hover:text-green-300 transition-colors">Privacy Policy</a></li>
+              <li><a href="#" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.currentRates}</a></li>
+              <li><a href="#" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.buyingGuide}</a></li>
+              <li><a href="#" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.contactAlex}</a></li>
+              <li><a href="#" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.privacy}</a></li>
             </ul>
           </div>
         </div>
-        
+
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/50">
-            © {new Date().getFullYear()} Mortgages by Alex. All rights reserved.
+            © {new Date().getFullYear()} {t.nav.brand}. {t.footer.copyright}
           </p>
           <p className="text-xs text-white/50 text-center md:text-right max-w-lg">
-            Calculations are estimates for illustrative purposes only. Actual rates and payments may vary based on your specific situation.
+            {t.footer.disclaimer}
           </p>
         </div>
       </div>

@@ -1,19 +1,36 @@
 import { Link, useLocation } from "wouter";
-import { Menu, X, ChevronRight } from "lucide-react";
+import { Menu, X, ChevronRight, Globe } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Language } from "@/lib/translations";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const navLinks = [
-  { name: "Mortgage", path: "/mortgage-calculator" },
-  { name: "Affordability", path: "/affordability-calculator" },
-  { name: "Refinance", path: "/refinance-calculator" },
-  { name: "Amortization", path: "/amortization-calculator" },
+const LANGUAGES: { code: Language; label: string; flag: string }[] = [
+  { code: 'uk', label: 'Українська', flag: '🇺🇦' },
+  { code: 'en', label: 'English',    flag: '🇬🇧' },
+  { code: 'ru', label: 'Русский',    flag: '🇷🇺' },
 ];
 
 export function Navbar() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t, language, setLanguage } = useLanguage();
+
+  const navLinks = [
+    { name: t.nav.mortgage,      path: "/mortgage-calculator" },
+    { name: t.nav.affordability, path: "/affordability-calculator" },
+    { name: t.nav.refinance,     path: "/refinance-calculator" },
+    { name: t.nav.amortization,  path: "/amortization-calculator" },
+  ];
+
+  const currentLang = LANGUAGES.find(l => l.code === language)!;
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#003d2b] text-white shadow-lg">
@@ -27,7 +44,9 @@ export function Navbar() {
                 className="h-9 w-9 rounded-full object-cover border-2 border-white/30"
               />
               <span className="font-display text-lg font-bold tracking-tight text-white">
-                Mortgages <span className="text-green-300">by Alex</span>
+                {language === 'en' ? <>Mortgages <span className="text-green-300">by Alex</span></> :
+                 language === 'ru' ? <>Ипотека <span className="text-green-300">от Алекса</span></> :
+                 <>Іпотека <span className="text-green-300">від Алекса</span></>}
               </span>
             </Link>
           </div>
@@ -52,27 +71,63 @@ export function Navbar() {
             </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2">
+            {/* Language Switcher */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10 gap-1.5 px-2">
+                  <Globe className="h-4 w-4" />
+                  <span className="text-sm font-medium">{currentLang.flag} {currentLang.code.toUpperCase()}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                {LANGUAGES.map((lang) => (
+                  <DropdownMenuItem
+                    key={lang.code}
+                    onClick={() => setLanguage(lang.code)}
+                    className={cn("cursor-pointer gap-2", language === lang.code && "font-semibold bg-primary/10 text-primary")}
+                  >
+                    <span>{lang.flag}</span>
+                    <span>{lang.label}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Button variant="outline" className="hidden lg:flex border-white/30 text-white bg-transparent hover:bg-white/10 hover:text-white">
-              Current Rates
+              {t.nav.currentRates}
             </Button>
             <Button className="bg-white text-[#003d2b] hover:bg-green-50 font-semibold">
-              Get Pre-Approved
+              {t.nav.preApproved}
             </Button>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="flex md:hidden">
+          {/* Mobile: lang + menu */}
+          <div className="flex md:hidden items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10 px-2">
+                  <span className="text-base">{currentLang.flag}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-36">
+                {LANGUAGES.map((lang) => (
+                  <DropdownMenuItem
+                    key={lang.code}
+                    onClick={() => setLanguage(lang.code)}
+                    className={cn("cursor-pointer gap-2", language === lang.code && "font-semibold bg-primary/10 text-primary")}
+                  >
+                    <span>{lang.flag}</span>
+                    <span>{lang.label}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="inline-flex items-center justify-center rounded-md p-2 text-white/80 hover:bg-white/10 hover:text-white focus:outline-none"
             >
-              <span className="sr-only">Open main menu</span>
-              {isMobileMenuOpen ? (
-                <X className="block h-6 w-6" aria-hidden="true" />
-              ) : (
-                <Menu className="block h-6 w-6" aria-hidden="true" />
-              )}
+              {isMobileMenuOpen ? <X className="block h-6 w-6" /> : <Menu className="block h-6 w-6" />}
             </button>
           </div>
         </div>
@@ -104,10 +159,10 @@ export function Navbar() {
           ))}
           <div className="pt-4 flex flex-col gap-2">
             <Button variant="outline" className="w-full justify-center border-white/30 text-white bg-transparent hover:bg-white/10">
-              Current Rates
+              {t.nav.currentRates}
             </Button>
             <Button className="w-full justify-center bg-white text-[#003d2b] hover:bg-green-50 font-semibold">
-              Get Pre-Approved
+              {t.nav.preApproved}
             </Button>
           </div>
         </div>
