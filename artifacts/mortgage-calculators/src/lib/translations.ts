@@ -76,9 +76,8 @@ export const translations = {
       loanAmount: 'Сума кредиту:',
       totalInterestPaid: 'Загальна сума відсотків:',
       years30: '30 років (фіксована)',
+      years25: '25 років (фіксована)',
       years20: '20 років (фіксована)',
-      years15: '15 років (фіксована)',
-      years10: '10 років (фіксована)',
     },
     // Affordability Calculator
     affordCalc: {
@@ -107,7 +106,8 @@ export const translations = {
       moderate: 'Помірний (DTI 36%) — Рекомендований',
       aggressive: 'Агресивний (DTI 43%) — Максимальний',
       years30: '30 років (фіксована)',
-      years15: '15 років (фіксована)',
+      years25: '25 років (фіксована)',
+      years20: '20 років (фіксована)',
     },
     // Refinance Calculator
     refinanceCalc: {
@@ -132,9 +132,8 @@ export const translations = {
       closingCostsNote: 'Зазвичай 2–5% від суми кредиту.',
       newMonthlyPayment: 'Новий щомісячний платіж:',
       years30: '30 років (фіксована)',
+      years25: '25 років (фіксована)',
       years20: '20 років (фіксована)',
-      years15: '15 років (фіксована)',
-      years10: '10 років (фіксована)',
     },
     // Amortization Calculator
     amortCalc: {
@@ -164,9 +163,8 @@ export const translations = {
       interest: 'Відсотки',
       yearLabel: 'Рік',
       years30: '30 років (фіксована)',
+      years25: '25 років (фіксована)',
       years20: '20 років (фіксована)',
-      years15: '15 років (фіксована)',
-      years10: '10 років (фіксована)',
     },
     // Footer
     footer: {
