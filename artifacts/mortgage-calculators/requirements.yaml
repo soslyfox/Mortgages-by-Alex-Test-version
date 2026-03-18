@@ -1,0 +1,15 @@
+packages:
+  "recharts": "For creating beautiful pie charts and amortization line charts"
+  "framer-motion": "For page transitions and smooth UI element animations"
+  "lucide-react": "For financial and UI icons"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility for merging tailwind classes without style conflicts"
+
+images:
+  - path: "artifacts/mortgage-calculators/public/images/hero-modern-finance.png"
+    description: "Abstract architectural background with subtle geometric shapes, soft lighting, deep navy blues and light teal accents, giving a premium, trustworthy financial services feel"
+    aspect_ratio: "16:9"
+
+notes:
+  - Frontend-only application, all calculations performed client-side.
+  - Using Recharts for data visualization.
