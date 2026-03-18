@@ -139,7 +139,71 @@ export default function Home() {
         </div>
       </section>
 
-      {/* About Alex / CTA */}
+      {/* About Alex */}
+      <section className="py-16 md:py-24 bg-muted/30 border-y border-border/40">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Photo */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+              className="flex justify-center lg:justify-end"
+            >
+              <div className="relative">
+                <div className="w-72 h-72 md:w-80 md:h-80 rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+                  <img
+                    src={`${import.meta.env.BASE_URL}images/alex.png`}
+                    alt="Alex"
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
+                {/* Timeline badges */}
+                <div className="absolute -bottom-5 -left-5 bg-white rounded-xl shadow-lg px-4 py-3 text-sm border border-border/30">
+                  <p className="font-bold text-[#003d2b] text-base">2024</p>
+                  <p className="text-muted-foreground text-xs">{t.home.timeline2024}</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Story */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">{t.home.aboutTitle}</h2>
+              <p className="text-muted-foreground leading-relaxed">{t.home.aboutP1}</p>
+              <p className="text-muted-foreground leading-relaxed">{t.home.aboutP2}</p>
+              <p className="text-foreground font-medium leading-relaxed">{t.home.aboutP3}</p>
+
+              {/* Mini timeline */}
+              <div className="pt-4 space-y-4 border-t border-border/50">
+                {[
+                  { year: '2022', label: t.home.timeline2022, desc: t.home.timeline2022desc },
+                  { year: '2023', label: t.home.timeline2023, desc: t.home.timeline2023desc },
+                  { year: '2024', label: t.home.timeline2024, desc: t.home.timeline2024desc },
+                ].map((item) => (
+                  <div key={item.year} className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-[#003d2b] text-white flex items-center justify-center text-sm font-bold">
+                      {item.year}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-foreground">{item.label}</p>
+                      <p className="text-sm text-muted-foreground">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
       <section className="py-20 bg-[#003d2b] relative overflow-hidden">
         <div className="mx-auto max-w-5xl px-4 flex flex-col md:flex-row items-center gap-10">
           <img
