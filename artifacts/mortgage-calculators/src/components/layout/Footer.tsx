@@ -11,7 +11,7 @@ export function Footer() {
           <div className="col-span-1 md:col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-3">
               <span className="font-display text-xl font-bold tracking-tight text-white">
-                {t.nav.brand.split(' ').slice(0, -2).join(' ')} <span className="text-green-300">{t.nav.brand.split(' ').slice(-2).join(' ')}</span>
+                Mortgages <span className="text-green-300">by Alex</span>
               </span>
             </Link>
             <p className="text-white/65 text-sm max-w-md">{t.footer.desc}</p>
@@ -40,7 +40,7 @@ export function Footer() {
 
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/50">
-            © {new Date().getFullYear()} {t.nav.brand}. {t.footer.copyright}
+            © {new Date().getFullYear()} Mortgages by Alex. {t.footer.copyright}
           </p>
           <p className="text-xs text-white/50 text-center md:text-right max-w-lg">
             {t.footer.disclaimer}
