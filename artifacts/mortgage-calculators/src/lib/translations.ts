@@ -10,7 +10,7 @@ export const translations = {
       refinance: 'Рефінансування',
       amortization: 'Графік погашення',
       currentRates: 'Поточні ставки',
-      preApproved: 'Отримати попереднє схвалення',
+      preApproved: 'Записатися на консультацію',
     },
     // Home page
     home: {
@@ -192,7 +192,7 @@ export const translations = {
       refinance: 'Refinance',
       amortization: 'Amortization',
       currentRates: 'Current Rates',
-      preApproved: 'Get Pre-Approved',
+      preApproved: 'Book a Consultation',
     },
     home: {
       badge: 'Updated rates for',
@@ -370,7 +370,7 @@ export const translations = {
       refinance: 'Рефинансирование',
       amortization: 'График погашения',
       currentRates: 'Текущие ставки',
-      preApproved: 'Получить предодобрение',
+      preApproved: 'Записаться на консультацию',
     },
     home: {
       badge: 'Актуальные ставки за',

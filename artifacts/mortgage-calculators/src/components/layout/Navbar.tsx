@@ -89,9 +89,11 @@ export function Navbar() {
             <Button variant="outline" className="hidden lg:flex border-white/30 text-white bg-transparent hover:bg-white/10 hover:text-white">
               {t.nav.currentRates}
             </Button>
-            <Button className="bg-white text-[#003d2b] hover:bg-green-50 font-semibold">
-              {t.nav.preApproved}
-            </Button>
+            <a href="https://calendly.com/garinalek/60-minute-call" target="_blank" rel="noopener noreferrer">
+              <Button className="bg-white text-[#003d2b] hover:bg-green-50 font-semibold">
+                {t.nav.preApproved}
+              </Button>
+            </a>
           </div>
 
           {/* Mobile: lang + menu */}
@@ -152,9 +154,11 @@ export function Navbar() {
             <Button variant="outline" className="w-full justify-center border-white/30 text-white bg-transparent hover:bg-white/10">
               {t.nav.currentRates}
             </Button>
-            <Button className="w-full justify-center bg-white text-[#003d2b] hover:bg-green-50 font-semibold">
-              {t.nav.preApproved}
-            </Button>
+            <a href="https://calendly.com/garinalek/60-minute-call" target="_blank" rel="noopener noreferrer" className="w-full">
+              <Button className="w-full justify-center bg-white text-[#003d2b] hover:bg-green-50 font-semibold">
+                {t.nav.preApproved}
+              </Button>
+            </a>
           </div>
         </div>
       </div>

@@ -214,9 +214,11 @@ export default function Home() {
           <div className="text-center md:text-left">
             <h2 className="text-3xl font-display font-bold text-white mb-4">{t.home.ctaTitle}</h2>
             <p className="text-white/70 mb-6 max-w-xl">{t.home.ctaDesc}</p>
-            <Button size="lg" className="bg-white text-[#003d2b] hover:bg-green-50 font-semibold rounded-xl px-8 h-12 shadow-lg">
-              {t.home.ctaBtn}
-            </Button>
+            <a href="https://calendly.com/garinalek/60-minute-call" target="_blank" rel="noopener noreferrer">
+              <Button size="lg" className="bg-white text-[#003d2b] hover:bg-green-50 font-semibold rounded-xl px-8 h-12 shadow-lg">
+                {t.home.ctaBtn}
+              </Button>
+            </a>
           </div>
         </div>
       </section>
