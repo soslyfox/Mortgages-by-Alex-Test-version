@@ -14,7 +14,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 export default function AmortizationCalculator() {
   const { t, language } = useLanguage();
   const [loanAmount, setLoanAmount] = useState<number>(300000);
-  const [interestRate, setInterestRate] = useState<number>(6.5);
+  const [interestRate, setInterestRate] = useState<number>(4);
   const [loanTerm, setLoanTerm] = useState<number>(30);
   const [startDate, setStartDate] = useState<string>(new Date().toISOString().split('T')[0].substring(0, 7));
 
@@ -98,9 +98,9 @@ export default function AmortizationCalculator() {
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="30">{t.amortCalc.years30}</SelectItem>
+                    <SelectItem value="25">{t.amortCalc.years25}</SelectItem>
                     <SelectItem value="20">{t.amortCalc.years20}</SelectItem>
                     <SelectItem value="15">{t.amortCalc.years15}</SelectItem>
-                    <SelectItem value="10">{t.amortCalc.years10}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

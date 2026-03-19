@@ -14,7 +14,7 @@ export default function RefinanceCalculator() {
   const [currentBalance, setCurrentBalance] = useState<number>(300000);
   const [currentRate, setCurrentRate] = useState<number>(7.5);
   const [currentMonthlyPayment, setCurrentMonthlyPayment] = useState<number>(2200);
-  const [newRate, setNewRate] = useState<number>(5.5);
+  const [newRate, setNewRate] = useState<number>(4);
   const [newTerm, setNewTerm] = useState<number>(30);
   const [closingCosts, setClosingCosts] = useState<number>(4500);
 
@@ -140,9 +140,9 @@ export default function RefinanceCalculator() {
                   <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="30">{t.refinanceCalc.years30}</SelectItem>
+                    <SelectItem value="25">{t.refinanceCalc.years25}</SelectItem>
                     <SelectItem value="20">{t.refinanceCalc.years20}</SelectItem>
                     <SelectItem value="15">{t.refinanceCalc.years15}</SelectItem>
-                    <SelectItem value="10">{t.refinanceCalc.years10}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

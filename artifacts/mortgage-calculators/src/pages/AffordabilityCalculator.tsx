@@ -15,7 +15,7 @@ export default function AffordabilityCalculator() {
   const [annualIncome, setAnnualIncome] = useState<number>(100000);
   const [monthlyDebts, setMonthlyDebts] = useState<number>(500);
   const [downPayment, setDownPayment] = useState<number>(40000);
-  const [interestRate, setInterestRate] = useState<number>(6.5);
+  const [interestRate, setInterestRate] = useState<number>(4);
   const [loanTerm, setLoanTerm] = useState<number>(30);
   const [dtiTarget, setDtiTarget] = useState<number>(0.36);
 
@@ -147,6 +147,8 @@ export default function AffordabilityCalculator() {
                       <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="30">{t.affordCalc.years30}</SelectItem>
+                        <SelectItem value="25">{t.affordCalc.years25}</SelectItem>
+                        <SelectItem value="20">{t.affordCalc.years20}</SelectItem>
                         <SelectItem value="15">{t.affordCalc.years15}</SelectItem>
                       </SelectContent>
                     </Select>

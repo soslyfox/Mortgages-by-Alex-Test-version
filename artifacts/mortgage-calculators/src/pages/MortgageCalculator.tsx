@@ -18,10 +18,11 @@ export default function MortgageCalculator() {
   const [homePrice, setHomePrice] = useState<number>(400000);
   const [downPayment, setDownPayment] = useState<number>(80000);
   const [loanTerm, setLoanTerm] = useState<number>(30);
-  const [interestRate, setInterestRate] = useState<number>(6.5);
-  const [propertyTax, setPropertyTax] = useState<number>(4000);
-  const [homeInsurance, setHomeInsurance] = useState<number>(1200);
-  const [hoa, setHoa] = useState<number>(0);
+  const [interestRate, setInterestRate] = useState<number>(4);
+  const [propertyTax, setPropertyTax] = useState<number>(3000);
+  const [condoFee, setCondoFee] = useState<number>(0);
+  const [heat, setHeat] = useState<number>(100);
+  const [other, setOther] = useState<number>(0);
 
   const calculations = useMemo(() => {
     const loanAmount = Math.max(0, homePrice - downPayment);
@@ -36,22 +37,22 @@ export default function MortgageCalculator() {
       principalAndInterest = loanAmount / numberOfPayments;
     }
     const monthlyPropertyTax = propertyTax / 12;
-    const monthlyHomeInsurance = homeInsurance / 12;
     const downPaymentPercent = homePrice > 0 ? (downPayment / homePrice) : 0;
     let monthlyPMI = 0;
     if (downPaymentPercent < 0.2 && loanAmount > 0) {
       monthlyPMI = (loanAmount * 0.0075) / 12;
     }
-    const totalMonthlyPayment = principalAndInterest + monthlyPropertyTax + monthlyHomeInsurance + hoa + monthlyPMI;
+    const totalMonthlyPayment = principalAndInterest + monthlyPropertyTax + condoFee + heat + other + monthlyPMI;
     const chartData = [
       { name: t.mortgageCalc.principalInterest, value: principalAndInterest, color: CHART_COLORS[0] },
       { name: t.mortgageCalc.propertyTaxes,     value: monthlyPropertyTax,   color: CHART_COLORS[1] },
-      { name: t.mortgageCalc.homeIns,           value: monthlyHomeInsurance, color: CHART_COLORS[2] },
     ];
-    if (hoa > 0) chartData.push({ name: t.mortgageCalc.hoa, value: hoa, color: CHART_COLORS[3] });
+    if (condoFee > 0) chartData.push({ name: t.mortgageCalc.condoFeeChart, value: condoFee, color: CHART_COLORS[2] });
+    if (heat > 0) chartData.push({ name: t.mortgageCalc.heatChart, value: heat, color: CHART_COLORS[3] });
+    if (other > 0) chartData.push({ name: t.mortgageCalc.otherChart, value: other, color: 'hsl(var(--chart-5))' });
     if (monthlyPMI > 0) chartData.push({ name: t.mortgageCalc.pmi, value: monthlyPMI, color: 'hsl(var(--chart-5))' });
-    return { loanAmount, downPaymentPercent: downPaymentPercent * 100, principalAndInterest, monthlyPropertyTax, monthlyHomeInsurance, monthlyPMI, totalMonthlyPayment, chartData };
-  }, [homePrice, downPayment, loanTerm, interestRate, propertyTax, homeInsurance, hoa, t]);
+    return { loanAmount, downPaymentPercent: downPaymentPercent * 100, principalAndInterest, monthlyPropertyTax, monthlyPMI, totalMonthlyPayment, chartData };
+  }, [homePrice, downPayment, loanTerm, interestRate, propertyTax, condoFee, heat, other, t]);
 
   const handleHomePriceChange = (val: number) => {
     setHomePrice(val);
@@ -105,9 +106,9 @@ export default function MortgageCalculator() {
                       <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="30">{t.mortgageCalc.years30}</SelectItem>
+                        <SelectItem value="25">{t.mortgageCalc.years25}</SelectItem>
                         <SelectItem value="20">{t.mortgageCalc.years20}</SelectItem>
                         <SelectItem value="15">{t.mortgageCalc.years15}</SelectItem>
-                        <SelectItem value="10">{t.mortgageCalc.years10}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -131,12 +132,16 @@ export default function MortgageCalculator() {
                     <InputWithAddon type="number" addonLeft="$" value={propertyTax.toString()} onChange={(e) => setPropertyTax(Number(e.target.value))} />
                   </div>
                   <div className="space-y-2">
-                    <Label>{t.mortgageCalc.homeInsurance}</Label>
-                    <InputWithAddon type="number" addonLeft="$" value={homeInsurance.toString()} onChange={(e) => setHomeInsurance(Number(e.target.value))} />
+                    <Label>{t.mortgageCalc.condoFee}</Label>
+                    <InputWithAddon type="number" addonLeft="$" value={condoFee.toString()} onChange={(e) => setCondoFee(Number(e.target.value))} />
                   </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label>{t.mortgageCalc.hoaFees}</Label>
-                    <InputWithAddon type="number" addonLeft="$" value={hoa.toString()} onChange={(e) => setHoa(Number(e.target.value))} />
+                  <div className="space-y-2">
+                    <Label>{t.mortgageCalc.heat}</Label>
+                    <InputWithAddon type="number" addonLeft="$" value={heat.toString()} onChange={(e) => setHeat(Number(e.target.value))} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t.mortgageCalc.other}</Label>
+                    <InputWithAddon type="number" addonLeft="$" value={other.toString()} onChange={(e) => setOther(Number(e.target.value))} />
                   </div>
                 </div>
               </CardContent>
