@@ -30,10 +30,12 @@ export default function MortgageCalculator() {
     const downPaymentPercent = homePrice > 0 ? (downPayment / homePrice) : 0;
 
     // Canadian CMHC mortgage default insurance (added to principal, not monthly)
+    // 30-year amortization carries an extra 0.20% surcharge on each bracket
+    const cmhcSurcharge = loanTerm >= 30 ? 0.002 : 0;
     let cmhcRate = 0;
-    if (downPaymentPercent < 0.10) cmhcRate = 0.040;
-    else if (downPaymentPercent < 0.15) cmhcRate = 0.031;
-    else if (downPaymentPercent < 0.20) cmhcRate = 0.028;
+    if (downPaymentPercent < 0.10) cmhcRate = 0.040 + cmhcSurcharge;
+    else if (downPaymentPercent < 0.15) cmhcRate = 0.031 + cmhcSurcharge;
+    else if (downPaymentPercent < 0.20) cmhcRate = 0.028 + cmhcSurcharge;
     const cmhcPremium = baseLoanAmount * cmhcRate;
     const loanAmount = baseLoanAmount + cmhcPremium;
 
