@@ -66,7 +66,7 @@ export default function Home() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="flex-shrink-0 flex flex-col items-center gap-3 pt-0 lg:self-start"
+              className="w-full lg:w-auto flex-shrink-0 flex flex-col items-center gap-3 pt-0 lg:self-start"
             >
               {/* Photo with badge */}
               <div className="relative">
