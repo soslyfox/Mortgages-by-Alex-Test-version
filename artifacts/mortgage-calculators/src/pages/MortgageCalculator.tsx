@@ -212,16 +212,23 @@ export default function MortgageCalculator() {
                                 <Info className="w-3.5 h-3.5" />
                               </button>
                             </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-[220px] text-xs space-y-1.5 p-3">
-                              <p className="font-semibold">{t.mortgageCalc.pmiNote}</p>
-                              <table className="w-full mt-1 text-xs">
-                                <tbody>
-                                  <tr><td className="pr-2 text-muted-foreground">5–9.99%</td><td className="font-medium">{loanTerm >= 30 ? '4.20%' : '4.00%'}</td></tr>
-                                  <tr><td className="pr-2 text-muted-foreground">10–14.99%</td><td className="font-medium">{loanTerm >= 30 ? '3.30%' : '3.10%'}</td></tr>
-                                  <tr><td className="pr-2 text-muted-foreground">15–19.99%</td><td className="font-medium">{loanTerm >= 30 ? '3.00%' : '2.80%'}</td></tr>
+                            <TooltipContent side="top" className="w-48 p-3 space-y-2">
+                              <p className="text-xs font-semibold">{t.mortgageCalc.pmi}</p>
+                              <p className="text-xs text-muted-foreground">{t.mortgageCalc.pmiNote}</p>
+                              <table className="w-full text-xs">
+                                <thead>
+                                  <tr className="text-muted-foreground">
+                                    <th className="text-left font-normal pb-1">Down payment</th>
+                                    <th className="text-right font-normal pb-1">Premium</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-border/40">
+                                  <tr><td className="py-0.5">5 – 9.99%</td><td className="text-right font-medium">{loanTerm >= 30 ? '4.20%' : '4.00%'}</td></tr>
+                                  <tr><td className="py-0.5">10 – 14.99%</td><td className="text-right font-medium">{loanTerm >= 30 ? '3.30%' : '3.10%'}</td></tr>
+                                  <tr><td className="py-0.5">15 – 19.99%</td><td className="text-right font-medium">{loanTerm >= 30 ? '3.00%' : '2.80%'}</td></tr>
                                 </tbody>
                               </table>
-                              {loanTerm >= 30 && <p className="text-muted-foreground mt-1">+0.20% for 30-yr amortization</p>}
+                              {loanTerm >= 30 && <p className="text-xs text-muted-foreground border-t border-border/40 pt-2">+0.20% surcharge for 30-yr amortization</p>}
                             </TooltipContent>
                           </Tooltip>
                         </span>
