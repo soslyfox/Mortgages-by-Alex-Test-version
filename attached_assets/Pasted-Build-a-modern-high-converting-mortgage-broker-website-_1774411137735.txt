@@ -1,0 +1,99 @@
+Build a modern, high-converting mortgage broker website designed for lead generation in Canada (Calgary, Alberta).
+
+Goal:
+The website must function as a conversion funnel to generate mortgage consultation leads (not just an informational site).
+
+Tech requirements:
+- Frontend: React (with clean component structure)
+- Styling: Tailwind CSS (modern, minimal, mobile-first)
+- Optional backend: Node.js + Express for handling form submissions
+- Integrate a simple CRM-style lead capture (store submissions or simulate API)
+- Fully responsive (mobile-first)
+- Fast loading
+
+Pages / Sections:
+
+1. Homepage (conversion-focused)
+- Hero section with:
+  - Clear headline: “Mortgage Broker in Calgary – Get Approved Faster & Smarter”
+  - Subheadline targeting newcomers / first-time buyers
+  - Primary CTA button: “Book Free Consultation”
+  - Secondary CTA: “Check Your Budget”
+- Trust signals:
+  - Testimonials (3–5 realistic examples)
+  - “5-star rated” style section
+  - “Works with 50+ lenders” badges
+- Simple 3-step process section:
+  - Step 1: Apply
+  - Step 2: Get Approved
+  - Step 3: Buy Your Home
+- Lead capture form (name, phone, email)
+- Sticky mobile CTA (call or book)
+
+2. Mortgage Calculator Section
+- Basic affordability calculator:
+  - Income
+  - Down payment
+  - Interest rate (mock)
+  - Output: estimated home price
+- Clean UI, instant calculation
+
+3. Services Pages
+- First-Time Home Buyers
+- Newcomers to Canada (IMPORTANT – highlight this niche)
+- Mortgage Refinance
+- Mortgage Renewal
+
+Each page should include:
+- Short explanation
+- Benefits
+- CTA section (book consultation)
+
+4. About Page
+- Personal branding (friendly, trustworthy tone)
+- Focus on helping newcomers in Canada
+- Professional but human (not corporate)
+
+5. Contact / Booking
+- Calendar-style booking UI (mock or simple scheduler)
+- Contact form
+- Click-to-call button
+
+Features:
+- Sticky header with CTA button
+- Floating WhatsApp / chat-style button (mock)
+- Form validation
+- Clean animations (subtle, not heavy)
+- SEO-friendly structure (proper headings)
+
+Design style:
+- Minimal, modern, lots of white space
+- Colors: trust-based (blue/green tones)
+- Professional but approachable
+- Avoid clutter
+
+Copy tone:
+- Clear, simple English
+- Speak to:
+  - First-time buyers
+  - Immigrants/newcomers
+- Emphasize:
+  - Guidance
+  - Simplicity
+  - Saving money
+  - Fast approvals
+
+Conversion optimization:
+- CTA buttons every 1–2 sections
+- No long paragraphs
+- Clear next step everywhere
+
+Nice-to-have:
+- Language toggle (English / Ukrainian placeholder)
+- Testimonials carousel
+- FAQ section (common mortgage questions)
+
+Output:
+- Clean, well-structured code
+- Components separated logically
+- Ready to deploy
