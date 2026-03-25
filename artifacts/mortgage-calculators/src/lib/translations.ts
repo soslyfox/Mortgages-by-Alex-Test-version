@@ -110,6 +110,7 @@ export const translations = {
       years20: '20 років',
       years15: '15 років',
       minDownWarning: 'Мінімальний перший внесок для цієї ціни:',
+      minDP: 'Мін. ВВ',
     },
     // Affordability Calculator
     affordCalc: {
@@ -336,6 +337,7 @@ export const translations = {
       years20: '20 Years',
       years15: '15 Years',
       minDownWarning: 'Minimum down payment for this price:',
+      minDP: 'Min DP',
     },
     affordCalc: {
       title: 'Home Affordability',
@@ -558,6 +560,7 @@ export const translations = {
       years20: '20 лет',
       years15: '15 лет',
       minDownWarning: 'Минимальный первоначальный взнос для этой цены:',
+      minDP: 'Мин. ПВ',
     },
     affordCalc: {
       title: 'Доступность жилья',

@@ -70,9 +70,22 @@ export default function MortgageCalculator() {
     return { baseLoanAmount, loanAmount, cmhcPremium, downPaymentPercent: downPaymentPercent * 100, principalAndInterest, monthlyPropertyTax, gdsMonthly, totalMonthlyPayment, chartData };
   }, [homePrice, downPayment, loanTerm, interestRate, propertyTax, condoFee, heat, homeInsurance, other, t]);
 
+  const minDown = minDownPayment(homePrice);
+  const minDownPercent = homePrice > 0 ? (minDown / homePrice) * 100 : 5;
+  // Slider snaps to the minimum down payment if dragged within this many % points
+  const SNAP_TOLERANCE = 0.3;
+
   const handleHomePriceChange = (val: number) => {
     const pct = homePrice > 0 ? downPayment / homePrice : 0;
     setCalc({ homePrice: val, downPayment: val * pct });
+  };
+
+  const handleDownPaymentSlider = (rawPct: number) => {
+    if (Math.abs(rawPct - minDownPercent) <= SNAP_TOLERANCE) {
+      setCalc({ downPayment: minDown });
+    } else {
+      setCalc({ downPayment: homePrice * (rawPct / 100) });
+    }
   };
 
   return (
@@ -110,10 +123,29 @@ export default function MortgageCalculator() {
                       <InputWithAddon type="number" addonRight="%" value={stripTrailingZero(calculations.downPaymentPercent, 2)} onChange={(e) => setCalc({ downPayment: homePrice * (Number(e.target.value) / 100) })} step="any" />
                     </div>
                   </div>
-                  <Slider value={[calculations.downPaymentPercent]} min={0} max={100} step={0.1} onValueChange={(val) => setCalc({ downPayment: homePrice * (val[0] / 100) })} />
-                  {homePrice > 0 && downPayment < minDownPayment(homePrice) && (
+                  {/* Slider with soft-cap tick at minimum down payment */}
+                  <div className="relative pb-6">
+                    <Slider
+                      value={[calculations.downPaymentPercent]}
+                      min={0} max={100} step={0.1}
+                      onValueChange={(val) => handleDownPaymentSlider(val[0])}
+                    />
+                    {/* Tick mark at minimum down payment position */}
+                    {homePrice > 0 && (
+                      <div
+                        className="absolute top-full mt-0.5 flex flex-col items-center pointer-events-none"
+                        style={{ left: `${minDownPercent}%`, transform: 'translateX(-50%)' }}
+                      >
+                        <div className="w-px h-2 bg-amber-500" />
+                        <span className="text-[10px] font-medium text-amber-600 whitespace-nowrap mt-0.5">
+                          {t.mortgageCalc.minDP ?? "Min DP"} {formatCurrency(minDown)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  {homePrice > 0 && downPayment < minDown && (
                     <p className="text-xs text-destructive font-medium">
-                      {t.mortgageCalc.minDownWarning} {formatCurrency(minDownPayment(homePrice))}
+                      {t.mortgageCalc.minDownWarning} {formatCurrency(minDown)}
                     </p>
                   )}
                 </div>
