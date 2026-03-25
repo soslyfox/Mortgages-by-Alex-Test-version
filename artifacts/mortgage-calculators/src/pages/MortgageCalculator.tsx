@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { formatCurrency } from "@/lib/formatters";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
 import { Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -196,23 +197,34 @@ export default function MortgageCalculator() {
                       </div>
                     ))}
                   </div>
-                  {calculations.downPaymentPercent < 20 && (
-                    <div className="mt-6 p-4 bg-orange-500/10 rounded-xl flex items-start gap-3">
-                      <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
-                      <div className="text-xs text-orange-700 dark:text-orange-300 space-y-1">
-                        <p>{t.mortgageCalc.pmiNote}</p>
-                        <p className="font-medium">{t.mortgageCalc.pmi}: +{((calculations.cmhcPremium / calculations.baseLoanAmount) * 100).toFixed(2)}% = ${Math.round(calculations.cmhcPremium).toLocaleString()}</p>
-                      </div>
-                    </div>
-                  )}
                   <div className="mt-8 pt-6 border-t border-border/50 space-y-3">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t.mortgageCalc.loanAmount}</span>
                       <span className="font-semibold">{formatCurrency(calculations.baseLoanAmount)}</span>
                     </div>
                     {calculations.cmhcPremium > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">{t.mortgageCalc.pmi}</span>
+                      <div className="flex justify-between text-sm items-center">
+                        <span className="flex items-center gap-1 text-muted-foreground">
+                          {t.mortgageCalc.pmi}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button className="inline-flex text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+                                <Info className="w-3.5 h-3.5" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-[220px] text-xs space-y-1.5 p-3">
+                              <p className="font-semibold">{t.mortgageCalc.pmiNote}</p>
+                              <table className="w-full mt-1 text-xs">
+                                <tbody>
+                                  <tr><td className="pr-2 text-muted-foreground">5–9.99%</td><td className="font-medium">{loanTerm >= 30 ? '4.20%' : '4.00%'}</td></tr>
+                                  <tr><td className="pr-2 text-muted-foreground">10–14.99%</td><td className="font-medium">{loanTerm >= 30 ? '3.30%' : '3.10%'}</td></tr>
+                                  <tr><td className="pr-2 text-muted-foreground">15–19.99%</td><td className="font-medium">{loanTerm >= 30 ? '3.00%' : '2.80%'}</td></tr>
+                                </tbody>
+                              </table>
+                              {loanTerm >= 30 && <p className="text-muted-foreground mt-1">+0.20% for 30-yr amortization</p>}
+                            </TooltipContent>
+                          </Tooltip>
+                        </span>
                         <span className="font-semibold text-orange-600">+{formatCurrency(calculations.cmhcPremium)}</span>
                       </div>
                     )}
