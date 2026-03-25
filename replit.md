@@ -1,8 +1,20 @@
-# Workspace
+# Mortgages by Alex — Workspace
 
 ## Overview
 
 pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+
+## Project: Mortgages by Alex
+
+- Mortgage broker website for Alex Garin, Calgary, Canada
+- 4 calculators: Mortgage Payment, Home Affordability, Refinance, Amortization
+- 3 languages: Ukrainian (default), English, Russian
+- Forest green color scheme (#003d2b)
+- Testimonials section (4 reviews: Oksana V., Jason M., Svitlana & Igor K., Dmytro H.)
+- Lead capture form → Google Sheets (`GOOGLE_SHEET_ID` env var set, sheet auto-created)
+- Calendly booking: https://calendly.com/garinalek/60-minute-call
+- Lead API: POST /api/leads → appends to Google Sheets via googleapis v4
+- Google Sheets connection: Replit google-sheet connector
 
 ## Stack
 

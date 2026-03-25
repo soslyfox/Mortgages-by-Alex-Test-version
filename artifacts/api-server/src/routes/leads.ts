@@ -1,6 +1,32 @@
 import { Router } from "express";
+import { appendLead, createLeadsSpreadsheet } from "../lib/googleSheets";
 
 const leadsRouter = Router();
+
+// Cached sheet ID — resolved once per server process
+let resolvedSheetId: string | null = null;
+
+async function getSheetId(): Promise<string | null> {
+  if (resolvedSheetId) return resolvedSheetId;
+  const fromEnv = process.env.GOOGLE_SHEET_ID;
+  if (fromEnv) {
+    resolvedSheetId = fromEnv;
+    return resolvedSheetId;
+  }
+
+  // Auto-create a sheet on first lead if no ID is configured
+  try {
+    console.log("[LEAD] No GOOGLE_SHEET_ID set — creating a new spreadsheet...");
+    const id = await createLeadsSpreadsheet();
+    console.log(`[LEAD] Created spreadsheet: https://docs.google.com/spreadsheets/d/${id}`);
+    console.log(`[LEAD] Set GOOGLE_SHEET_ID=${id} to persist this.`);
+    resolvedSheetId = id;
+    return id;
+  } catch (err) {
+    console.error("[LEAD] Could not create spreadsheet:", err);
+    return null;
+  }
+}
 
 leadsRouter.post("/leads", async (req, res) => {
   const { name, email, phone, service, message } = req.body;
@@ -10,38 +36,27 @@ leadsRouter.post("/leads", async (req, res) => {
   }
 
   const lead = {
+    submittedAt: new Date().toISOString(),
     name: String(name).trim(),
     email: String(email).trim(),
     phone: String(phone).trim(),
     service: String(service || "").trim(),
     message: String(message || "").trim(),
-    submittedAt: new Date().toISOString(),
   };
 
   console.log("[LEAD]", JSON.stringify(lead));
 
-  try {
-    await writeToGoogleSheets(lead);
-  } catch (err) {
-    console.error("[LEAD] Google Sheets write failed:", err);
+  const sheetId = await getSheetId();
+  if (sheetId) {
+    try {
+      await appendLead(sheetId, lead);
+      console.log("[LEAD] Appended to Google Sheet:", sheetId);
+    } catch (err) {
+      console.error("[LEAD] Google Sheets append failed:", err);
+    }
   }
 
   return res.json({ success: true });
 });
-
-async function writeToGoogleSheets(lead: {
-  name: string; email: string; phone: string;
-  service: string; message: string; submittedAt: string;
-}) {
-  const sheetId = process.env.GOOGLE_SHEET_ID;
-  if (!sheetId) {
-    console.warn("[LEAD] GOOGLE_SHEET_ID not set — skipping Sheets write.");
-    return;
-  }
-
-  // Sheets client will be wired here after Google integration is connected
-  // Placeholder — populated by the Google Sheets integration step
-  console.log("[LEAD] Would write to sheet:", sheetId, lead);
-}
 
 export default leadsRouter;
