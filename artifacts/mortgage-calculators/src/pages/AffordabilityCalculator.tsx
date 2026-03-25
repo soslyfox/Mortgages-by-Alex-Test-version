@@ -38,11 +38,13 @@ export default function AffordabilityCalculator() {
   const { interestRate, loanTerm, downPayment, propertyTax, condoFee, heat } = calc;
 
   const [annualIncome, setAnnualIncome] = useState<number>(100000);
-  const [monthlyDebts, setMonthlyDebts] = useState<number>(500);
+  const [monthlyDebts, setMonthlyDebts] = useState<number>(0);
   // null = auto-follow the computed max; a number = user manually edited
   const [manualHomePrice, setManualHomePrice] = useState<number | null>(null);
   // Local string state so the user can type freely without context overriding mid-edit
-  const [downPaymentInput, setDownPaymentInput] = useState<string>(downPayment.toString());
+  const [downPaymentInput, setDownPaymentInput] = useState<string>("");
+  // Track whether we've done the one-time minimum-down initialization
+  const [initialized, setInitialized] = useState<boolean>(false);
 
   // ── BACKWARD: max affordable home price (income-driven) ──────────────────
   const backward = useMemo(() => {
@@ -79,6 +81,16 @@ export default function AffordabilityCalculator() {
       stressFactor,
     };
   }, [annualIncome, monthlyDebts, interestRate, loanTerm, downPayment, propertyTax, condoFee, heat]);
+
+  // ── One-time init: set down payment to the minimum for the computed max ──
+  useEffect(() => {
+    if (!initialized && backward.maxHomePrice > 0) {
+      const minDown = Math.ceil(backward.minDownForMax);
+      setCalc({ downPayment: minDown });
+      setDownPaymentInput(minDown.toString());
+      setInitialized(true);
+    }
+  }, [backward.maxHomePrice, initialized]);
 
   // Effective home price: follow max unless user overrode it
   const homePrice = manualHomePrice !== null ? manualHomePrice : backward.maxHomePrice;

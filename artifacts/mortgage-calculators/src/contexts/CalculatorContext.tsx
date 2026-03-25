@@ -19,8 +19,8 @@ interface CalculatorContextType {
 
 const defaults: CalculatorState = {
   homePrice: 400000,
-  downPayment: 80000,
-  loanTerm: 25,
+  downPayment: 25000,
+  loanTerm: 30,
   interestRate: 4,
   propertyTax: 3000,
   condoFee: 0,
