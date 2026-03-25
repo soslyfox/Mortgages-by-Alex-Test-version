@@ -1,28 +1,24 @@
 import { Link } from "wouter";
-import { Calculator, Home as HomeIcon, PieChart, RefreshCw, ArrowRight, Star, Shield, Clock, Quote } from "lucide-react";
+import { ArrowRight, Star, Shield, Clock, MapPin } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LeadForm } from "@/components/LeadForm";
 
 export default function Home() {
   const { t, language } = useLanguage();
 
-  const calculators = [
-    { title: t.home.calc1Title, description: t.home.calc1Desc, icon: <Calculator className="h-6 w-6" />, path: "/mortgage-calculator" },
-    { title: t.home.calc2Title, description: t.home.calc2Desc, icon: <HomeIcon className="h-6 w-6" />,  path: "/affordability-calculator" },
-    { title: t.home.calc3Title, description: t.home.calc3Desc, icon: <RefreshCw className="h-6 w-6" />, path: "/refinance-calculator" },
-    { title: t.home.calc4Title, description: t.home.calc4Desc, icon: <PieChart className="h-6 w-6" />,  path: "/amortization-calculator" },
-  ];
-
   const trustPoints = [
     { icon: <Star className="h-5 w-5" />,   label: t.home.trust1Label, desc: t.home.trust1Desc },
     { icon: <Shield className="h-5 w-5" />, label: t.home.trust2Label, desc: t.home.trust2Desc },
     { icon: <Clock className="h-5 w-5" />,  label: t.home.trust3Label, desc: t.home.trust3Desc },
   ];
+
+  const scrollToForm = () => {
+    document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <AppLayout>
@@ -49,16 +45,19 @@ export default function Home() {
                 {t.home.heroDesc}
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10">
-                <Link href="/mortgage-calculator">
+                <a href="https://calendly.com/garinalek/60-minute-call" target="_blank" rel="noopener noreferrer">
                   <Button size="lg" className="w-full sm:w-auto bg-white text-[#003d2b] hover:bg-green-50 font-semibold text-base h-12 px-8 rounded-xl shadow-lg">
-                    {t.home.ctaCalculate} <ArrowRight className="ml-2 h-4 w-4" />
+                    {t.home.ctaBtn} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                </Link>
-                <Link href="/affordability-calculator">
-                  <Button variant="outline" size="lg" className="w-full sm:w-auto border-white/30 text-white bg-transparent hover:bg-white/10 text-base h-12 px-8 rounded-xl">
-                    {t.home.ctaAffordability}
-                  </Button>
-                </Link>
+                </a>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={scrollToForm}
+                  className="w-full sm:w-auto border-white/30 text-white bg-transparent hover:bg-white/10 text-base h-12 px-8 rounded-xl"
+                >
+                  {t.home.formTitle}
+                </Button>
               </div>
               {/* Trust badges */}
               <div className="flex flex-wrap justify-center lg:justify-start gap-6">
@@ -104,38 +103,46 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Grid Section */}
-      <section className="py-16 md:py-24 bg-background">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-3xl font-display font-bold text-foreground mb-4">{t.home.sectionTitle}</h2>
-            <p className="text-muted-foreground">{t.home.sectionDesc}</p>
-          </div>
+      {/* Lead Capture Form */}
+      <section id="contact-form" className="py-16 md:py-20 bg-background">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">{t.home.formTitle}</h2>
+              <p className="text-muted-foreground mb-8 text-lg">{t.home.formSubtitle}</p>
+              <div className="space-y-5">
+                {[
+                  { icon: <Clock className="w-5 h-5" />, text: language === 'uk' ? 'Відповідь протягом 24 годин' : language === 'ru' ? 'Ответ в течение 24 часов' : 'Response within 24 hours' },
+                  { icon: <Shield className="w-5 h-5" />, text: language === 'uk' ? 'Безкоштовна консультація' : language === 'ru' ? 'Бесплатная консультация' : 'Free consultation' },
+                  { icon: <Star className="w-5 h-5" />, text: language === 'uk' ? 'Без зобовʼязань' : language === 'ru' ? 'Без обязательств' : 'No obligation' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 text-foreground">
+                    <div className="w-9 h-9 rounded-xl bg-[#003d2b]/10 text-[#003d2b] flex items-center justify-center flex-shrink-0">
+                      {item.icon}
+                    </div>
+                    <span className="font-medium">{item.text}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {calculators.map((calc, i) => (
-              <motion.div
-                key={calc.path}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Link href={calc.path}>
-                  <Card className="h-full cursor-pointer hover:shadow-xl hover:border-primary/40 transition-all duration-300 hover:-translate-y-1 bg-card group">
-                    <CardHeader>
-                      <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 bg-primary/10 text-primary")}>
-                        {calc.icon}
-                      </div>
-                      <CardTitle className="text-xl">{calc.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <CardDescription className="text-sm md:text-base">{calc.description}</CardDescription>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </motion.div>
-            ))}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              viewport={{ once: true }}
+            >
+              <Card className="shadow-lg border-border/50">
+                <CardContent className="p-6 md:p-8">
+                  <LeadForm />
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -160,7 +167,6 @@ export default function Home() {
                     className="w-full h-full object-cover object-top"
                   />
                 </div>
-                {/* Timeline badges */}
                 <div className="absolute -bottom-5 -left-5 bg-white rounded-xl shadow-lg px-4 py-3 text-sm border border-border/30">
                   <p className="font-bold text-[#003d2b] text-base">2024</p>
                   <p className="text-muted-foreground text-xs">{t.home.timeline2024}</p>
@@ -226,29 +232,25 @@ export default function Home() {
               {
                 text: "We've been working with Alex for ages, from getting ready for our English exam to snagging our first home in Calgary. I'd highly recommend him as a truly qualified specialist. He's shown us all that Canada really does offer a fair shot at success for everyone!",
                 author: "Oleksandr K.",
-                role: "First Home · Calgary",
-                time: "6 months ago",
+                city: "Calgary",
                 img: `${import.meta.env.BASE_URL}images/review-oleksandr.png`,
               },
               {
                 text: "Everyone knows that buying real estate can be stressful. We're grateful to Alex for his efforts to make the process as comfortable as possible. Our situation was unusual — we purchased our townhouse without a realtor — but everything went smoothly.",
                 author: "Anastasiia H.",
-                role: "Townhouse · Calgary",
-                time: "1 month ago",
+                city: "Calgary",
                 img: `${import.meta.env.BASE_URL}images/review-anastasiia.png`,
               },
               {
                 text: "My wife and I were buying a house for the first time. We didn't know where to start, but after the first (free) consultation, we already had a home-buying strategy in place. Working with Alex was easy, clear, and he was always in touch. Thank you, Alex.",
                 author: "Вячеслав С.",
-                role: "First Home · Calgary",
-                time: "1 month ago",
+                city: "Leduc",
                 img: `${import.meta.env.BASE_URL}images/review-viacheslav.png`,
               },
               {
                 text: "Many thanks to Alex Harin! I was amazed at how quickly he found me the best mortgage rate. He was patient answering all my questions and explained each step in detail. Alex, where many told us it was impossible, you made it possible.",
                 author: "Дмитрий М.",
-                role: "Mortgage · Calgary",
-                time: "7 months ago",
+                city: "Fort McMurray",
                 img: `${import.meta.env.BASE_URL}images/review-dmytro.png`,
               },
             ].map((review, i) => (
@@ -261,7 +263,7 @@ export default function Home() {
               >
                 <Card className="h-full border-border/40 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
                   <div className="h-28 overflow-hidden">
-                    <img src={review.img} alt={review.role} className="w-full h-full object-cover object-center" />
+                    <img src={review.img} alt={review.city} className="w-full h-full object-cover object-center" />
                   </div>
                   <CardContent className="p-4 flex flex-col gap-2">
                     <div className="flex gap-0.5">
@@ -276,57 +278,15 @@ export default function Home() {
                       </div>
                       <div className="min-w-0">
                         <p className="font-semibold text-foreground text-xs leading-none truncate">{review.author}</p>
-                        <p className="text-[10px] text-muted-foreground mt-0.5">{review.time}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-0.5">
+                          <MapPin className="w-2.5 h-2.5 shrink-0" />{review.city}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               </motion.div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Lead Capture Form */}
-      <section className="py-16 md:py-24 bg-muted/30 border-y border-border/40">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">{t.home.formTitle}</h2>
-              <p className="text-muted-foreground mb-8 text-lg">{t.home.formSubtitle}</p>
-              <div className="space-y-5">
-                {[
-                  { icon: <Clock className="w-5 h-5" />, text: language === 'uk' ? 'Відповідь протягом 24 годин' : language === 'ru' ? 'Ответ в течение 24 часов' : 'Response within 24 hours' },
-                  { icon: <Shield className="w-5 h-5" />, text: language === 'uk' ? 'Безкоштовна консультація' : language === 'ru' ? 'Бесплатная консультация' : 'Free consultation' },
-                  { icon: <Star className="w-5 h-5" />, text: language === 'uk' ? 'Без зобовʼязань' : language === 'ru' ? 'Без обязательств' : 'No obligation' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3 text-foreground">
-                    <div className="w-9 h-9 rounded-xl bg-[#003d2b]/10 text-[#003d2b] flex items-center justify-center flex-shrink-0">
-                      {item.icon}
-                    </div>
-                    <span className="font-medium">{item.text}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              viewport={{ once: true }}
-            >
-              <Card className="shadow-lg border-border/50">
-                <CardContent className="p-6 md:p-8">
-                  <LeadForm />
-                </CardContent>
-              </Card>
-            </motion.div>
           </div>
         </div>
       </section>
