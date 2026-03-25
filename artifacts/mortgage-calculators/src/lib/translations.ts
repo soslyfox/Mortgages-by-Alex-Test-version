@@ -109,6 +109,7 @@ export const translations = {
       years25: '25 років',
       years20: '20 років',
       years15: '15 років',
+      minDownWarning: 'Мінімальний перший внесок для цієї ціни:',
     },
     // Affordability Calculator
     affordCalc: {
@@ -146,6 +147,7 @@ export const translations = {
       gdsFormula: '(Платіж + Податок + Опалення + 50% кондо) ÷ Дохід',
       tdsFormula: '(GDS-витрати + Борги) ÷ Дохід',
       housingCostsNote: 'Синхронізовано з іпотечним калькулятором',
+      minDownWarning: 'Мінімальний перший внесок для цієї ціни:',
     },
     // Refinance Calculator
     refinanceCalc: {
@@ -329,6 +331,7 @@ export const translations = {
       years25: '25 Years',
       years20: '20 Years',
       years15: '15 Years',
+      minDownWarning: 'Minimum down payment for this price:',
     },
     affordCalc: {
       title: 'Home Affordability',
@@ -365,6 +368,7 @@ export const translations = {
       gdsFormula: '(Payment + Tax + Heat + 50% Condo) ÷ Income',
       tdsFormula: '(GDS costs + Debts) ÷ Income',
       housingCostsNote: 'Synced from mortgage calculator',
+      minDownWarning: 'Minimum down payment for this price:',
     },
     refinanceCalc: {
       title: 'Refinance Calculator',
@@ -545,6 +549,7 @@ export const translations = {
       years25: '25 лет',
       years20: '20 лет',
       years15: '15 лет',
+      minDownWarning: 'Минимальный первоначальный взнос для этой цены:',
     },
     affordCalc: {
       title: 'Доступность жилья',
@@ -581,6 +586,7 @@ export const translations = {
       gdsFormula: '(Платёж + Налог + Отопление + 50% кондо) ÷ Доход',
       tdsFormula: '(Расходы GDS + Долги) ÷ Доход',
       housingCostsNote: 'Синхронизировано с ипотечным калькулятором',
+      minDownWarning: 'Минимальный первоначальный взнос для этой цены:',
     },
     refinanceCalc: {
       title: 'Калькулятор рефинансирования',

@@ -3,7 +3,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { InputWithAddon } from "@/components/ui/input-addon";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { formatCurrency } from "@/lib/formatters";
+import { formatCurrency, minDownPayment } from "@/lib/formatters";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Home, CheckCircle2, XCircle } from "lucide-react";
 import { motion } from "framer-motion";
@@ -42,14 +42,19 @@ export default function AffordabilityCalculator() {
     const stressRate     = Math.max(5.25, interestRate + 2);
     const months         = loanTerm * 12;
 
+    // Canadian minimum down payment enforcement
+    const minDown        = minDownPayment(homePrice);
+    const effectiveDown  = Math.max(downPayment, minDown);
+    const downTooLow     = homePrice > 0 && downPayment < minDown;
+
     // ── Monthly housing costs toward GDS (full precision throughout) ──────────
     const monthlyTax    = propertyTax / 12;   // 100% of taxes
     const condoHalf     = condoFee * 0.5;     // 50% of condo fee
     const fixedGDSCosts = monthlyTax + heat + condoHalf;
 
     // ── FORWARD: GDS/TDS for the SPECIFIC home price ──────────────────────────
-    const baseLoan    = Math.max(0, homePrice - downPayment);
-    const downPct     = homePrice > 0 ? downPayment / homePrice : 0;
+    const baseLoan    = Math.max(0, homePrice - effectiveDown);
+    const downPct     = homePrice > 0 ? effectiveDown / homePrice : 0;
     const insuredLoan = baseLoan * (1 + cmhcRate(downPct, loanTerm));
     const stressFactor = mortgageFactor(stressRate, months);
     const forwardPI   = insuredLoan * stressFactor;  // P&I at stress test rate
@@ -67,12 +72,12 @@ export default function AffordabilityCalculator() {
     const maxPI         = Math.min(maxPI_GDS, maxPI_TDS);
     const maxInsuredLoan = stressFactor > 0 ? maxPI / stressFactor : 0;
 
-    // Back out CMHC to find true home price
-    let maxHomePrice = maxInsuredLoan + downPayment; // default: ≥20% down, no CMHC
+    // Back out CMHC to find true home price (using effectiveDown)
+    let maxHomePrice = maxInsuredLoan + effectiveDown; // default: ≥20% down, no CMHC
     for (const [lo, hi] of [[0.05, 0.10], [0.10, 0.15], [0.15, 0.20]] as [number, number][]) {
       const rate = cmhcRate(lo, loanTerm);
-      const candidate    = maxInsuredLoan / (1 + rate) + downPayment;
-      const candidatePct = downPayment / candidate;
+      const candidate    = maxInsuredLoan / (1 + rate) + effectiveDown;
+      const candidatePct = effectiveDown / candidate;
       if (candidatePct >= lo && candidatePct < hi) { maxHomePrice = candidate; break; }
     }
 
@@ -86,6 +91,7 @@ export default function AffordabilityCalculator() {
       qualifiesGDS, qualifiesTDS, qualifies,
       maxHomePrice, maxInsuredLoan,
       actualMonthlyPI,
+      minDown, effectiveDown, downTooLow,
     };
   }, [annualIncome, monthlyDebts, interestRate, loanTerm, homePrice, downPayment, propertyTax, condoFee, heat]);
 
@@ -211,7 +217,13 @@ export default function AffordabilityCalculator() {
                     type="number" addonLeft="$"
                     value={downPayment.toString()}
                     onChange={(e) => setCalc({ downPayment: Number(e.target.value) })}
+                    className={calculations.downTooLow ? "border-destructive focus-visible:ring-destructive" : ""}
                   />
+                  {calculations.downTooLow && (
+                    <p className="text-xs text-destructive font-medium">
+                      {t.affordCalc.minDownWarning} {formatCurrency(calculations.minDown)}
+                    </p>
+                  )}
                 </div>
                 {/* 3. Monthly debts */}
                 <div className="space-y-2">

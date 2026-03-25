@@ -4,7 +4,7 @@ import { InputWithAddon } from "@/components/ui/input-addon";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { formatCurrency } from "@/lib/formatters";
+import { formatCurrency, minDownPayment } from "@/lib/formatters";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
 import { Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -111,6 +111,11 @@ export default function MortgageCalculator() {
                     </div>
                   </div>
                   <Slider value={[calculations.downPaymentPercent]} min={0} max={100} step={0.1} onValueChange={(val) => setCalc({ downPayment: homePrice * (val[0] / 100) })} />
+                  {homePrice > 0 && downPayment < minDownPayment(homePrice) && (
+                    <p className="text-xs text-destructive font-medium">
+                      {t.mortgageCalc.minDownWarning} {formatCurrency(minDownPayment(homePrice))}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
