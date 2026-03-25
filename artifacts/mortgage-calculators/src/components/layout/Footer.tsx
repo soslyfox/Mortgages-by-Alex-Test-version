@@ -50,7 +50,7 @@ export function Footer() {
             <h3 className="font-semibold text-white mb-4">{t.footer.resources}</h3>
             <ul className="space-y-2 text-sm">
               <li><a href={guideUrl} target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.buyingGuide}</a></li>
-              <li><a href="#" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.contactAlex}</a></li>
+              <li><a href="/#contact-form" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.contactAlex}</a></li>
               <li><a href="#" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.privacy}</a></li>
             </ul>
           </div>
