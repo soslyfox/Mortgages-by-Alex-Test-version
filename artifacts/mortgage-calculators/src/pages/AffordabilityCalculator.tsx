@@ -41,6 +41,8 @@ export default function AffordabilityCalculator() {
   const [monthlyDebts, setMonthlyDebts] = useState<number>(500);
   // null = auto-follow the computed max; a number = user manually edited
   const [manualHomePrice, setManualHomePrice] = useState<number | null>(null);
+  // Local string state so the user can type freely without context overriding mid-edit
+  const [downPaymentInput, setDownPaymentInput] = useState<string>(downPayment.toString());
 
   // ── BACKWARD: max affordable home price (income-driven) ──────────────────
   const backward = useMemo(() => {
@@ -80,14 +82,6 @@ export default function AffordabilityCalculator() {
 
   // Effective home price: follow max unless user overrode it
   const homePrice = manualHomePrice !== null ? manualHomePrice : backward.maxHomePrice;
-
-  // ── Auto-adjust down payment to minimum for the displayed home price ──────
-  useEffect(() => {
-    const minDown = Math.ceil(minDownPayment(homePrice));
-    if (downPayment < minDown) {
-      setCalc({ downPayment: minDown });
-    }
-  }, [homePrice]); // Only re-run when homePrice changes, not on every downPayment change
 
   // ── FORWARD: stress-tested GDS/TDS for the displayed home price ───────────
   const forward = useMemo(() => {
@@ -248,8 +242,15 @@ export default function AffordabilityCalculator() {
                   <Label>{t.affordCalc.availableDown}</Label>
                   <InputWithAddon
                     type="number" addonLeft="$"
-                    value={downPayment.toString()}
-                    onChange={(e) => setCalc({ downPayment: Number(e.target.value) })}
+                    value={downPaymentInput}
+                    onChange={(e) => setDownPaymentInput(e.target.value)}
+                    onBlur={() => {
+                      const val = Number(downPaymentInput);
+                      const minDown = Math.ceil(minDownPayment(homePrice));
+                      const adjusted = Math.max(val, minDown);
+                      setCalc({ downPayment: adjusted });
+                      setDownPaymentInput(adjusted.toString());
+                    }}
                   />
                   <p className="text-xs text-muted-foreground">
                     {t.affordCalc.minDownWarning} {formatCurrency(backward.minDownForMax)}
