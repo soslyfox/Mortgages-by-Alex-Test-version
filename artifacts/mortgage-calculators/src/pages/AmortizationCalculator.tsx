@@ -21,7 +21,8 @@ export default function AmortizationCalculator() {
   const locale = language === 'uk' ? 'uk-UA' : language === 'ru' ? 'ru-RU' : 'en-US';
 
   const schedule = useMemo(() => {
-    const monthlyRate = (interestRate / 100) / 12;
+    // Canadian mortgages: semi-annual compounding (Bank Act requirement)
+    const monthlyRate = Math.pow(1 + (interestRate / 100) / 2, 1 / 6) - 1;
     const numberOfPayments = loanTerm * 12;
     let monthlyPayment = 0;
     if (monthlyRate > 0) {

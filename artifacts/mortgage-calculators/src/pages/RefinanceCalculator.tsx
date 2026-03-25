@@ -19,7 +19,8 @@ export default function RefinanceCalculator() {
   const [closingCosts, setClosingCosts] = useState<number>(4500);
 
   const calculations = useMemo(() => {
-    const monthlyInterestRate = (newRate / 100) / 12;
+    // Canadian mortgages: semi-annual compounding (Bank Act requirement)
+    const monthlyInterestRate = Math.pow(1 + (newRate / 100) / 2, 1 / 6) - 1;
     const numberOfPayments = newTerm * 12;
     let newMonthlyPayment = 0;
     if (monthlyInterestRate > 0) {

@@ -25,8 +25,19 @@ export default function MortgageCalculator() {
   const [other, setOther] = useState<number>(0);
 
   const calculations = useMemo(() => {
-    const loanAmount = Math.max(0, homePrice - downPayment);
-    const monthlyInterestRate = (interestRate / 100) / 12;
+    const baseLoanAmount = Math.max(0, homePrice - downPayment);
+    const downPaymentPercent = homePrice > 0 ? (downPayment / homePrice) : 0;
+
+    // Canadian CMHC mortgage default insurance (added to principal, not monthly)
+    let cmhcRate = 0;
+    if (downPaymentPercent < 0.10) cmhcRate = 0.040;
+    else if (downPaymentPercent < 0.15) cmhcRate = 0.031;
+    else if (downPaymentPercent < 0.20) cmhcRate = 0.028;
+    const cmhcPremium = baseLoanAmount * cmhcRate;
+    const loanAmount = baseLoanAmount + cmhcPremium;
+
+    // Canadian mortgages: semi-annual compounding (Bank Act requirement)
+    const monthlyInterestRate = Math.pow(1 + (interestRate / 100) / 2, 1 / 6) - 1;
     const numberOfPayments = loanTerm * 12;
     let principalAndInterest = 0;
     if (monthlyInterestRate > 0) {
@@ -37,12 +48,7 @@ export default function MortgageCalculator() {
       principalAndInterest = loanAmount / numberOfPayments;
     }
     const monthlyPropertyTax = propertyTax / 12;
-    const downPaymentPercent = homePrice > 0 ? (downPayment / homePrice) : 0;
-    let monthlyPMI = 0;
-    if (downPaymentPercent < 0.2 && loanAmount > 0) {
-      monthlyPMI = (loanAmount * 0.0075) / 12;
-    }
-    const totalMonthlyPayment = principalAndInterest + monthlyPropertyTax + condoFee + heat + other + monthlyPMI;
+    const totalMonthlyPayment = principalAndInterest + monthlyPropertyTax + condoFee + heat + other;
     const chartData = [
       { name: t.mortgageCalc.principalInterest, value: principalAndInterest, color: CHART_COLORS[0] },
       { name: t.mortgageCalc.propertyTaxes,     value: monthlyPropertyTax,   color: CHART_COLORS[1] },
@@ -50,8 +56,7 @@ export default function MortgageCalculator() {
     if (condoFee > 0) chartData.push({ name: t.mortgageCalc.condoFeeChart, value: condoFee, color: CHART_COLORS[2] });
     if (heat > 0) chartData.push({ name: t.mortgageCalc.heatChart, value: heat, color: CHART_COLORS[3] });
     if (other > 0) chartData.push({ name: t.mortgageCalc.otherChart, value: other, color: 'hsl(var(--chart-5))' });
-    if (monthlyPMI > 0) chartData.push({ name: t.mortgageCalc.pmi, value: monthlyPMI, color: 'hsl(var(--chart-5))' });
-    return { loanAmount, downPaymentPercent: downPaymentPercent * 100, principalAndInterest, monthlyPropertyTax, monthlyPMI, totalMonthlyPayment, chartData };
+    return { baseLoanAmount, loanAmount, cmhcPremium, downPaymentPercent: downPaymentPercent * 100, principalAndInterest, monthlyPropertyTax, totalMonthlyPayment, chartData };
   }, [homePrice, downPayment, loanTerm, interestRate, propertyTax, condoFee, heat, other, t]);
 
   const handleHomePriceChange = (val: number) => {
@@ -182,14 +187,23 @@ export default function MortgageCalculator() {
                   {calculations.downPaymentPercent < 20 && (
                     <div className="mt-6 p-4 bg-orange-500/10 rounded-xl flex items-start gap-3">
                       <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
-                      <p className="text-xs text-orange-700 dark:text-orange-300">{t.mortgageCalc.pmiNote}</p>
+                      <div className="text-xs text-orange-700 dark:text-orange-300 space-y-1">
+                        <p>{t.mortgageCalc.pmiNote}</p>
+                        <p className="font-medium">{t.mortgageCalc.pmi}: +{((calculations.cmhcPremium / calculations.baseLoanAmount) * 100).toFixed(2)}% = ${Math.round(calculations.cmhcPremium).toLocaleString()}</p>
+                      </div>
                     </div>
                   )}
                   <div className="mt-8 pt-6 border-t border-border/50 space-y-3">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t.mortgageCalc.loanAmount}</span>
-                      <span className="font-semibold">{formatCurrency(calculations.loanAmount)}</span>
+                      <span className="font-semibold">{formatCurrency(calculations.baseLoanAmount)}</span>
                     </div>
+                    {calculations.cmhcPremium > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">{t.mortgageCalc.pmi}</span>
+                        <span className="font-semibold text-orange-600">+{formatCurrency(calculations.cmhcPremium)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t.mortgageCalc.totalInterestPaid}</span>
                       <span className="font-semibold">{formatCurrency((calculations.principalAndInterest * loanTerm * 12) - calculations.loanAmount)}</span>

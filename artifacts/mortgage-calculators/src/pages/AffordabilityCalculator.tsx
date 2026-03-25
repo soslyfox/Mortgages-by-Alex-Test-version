@@ -17,13 +17,14 @@ export default function AffordabilityCalculator() {
   const [downPayment, setDownPayment] = useState<number>(40000);
   const [interestRate, setInterestRate] = useState<number>(4);
   const [loanTerm, setLoanTerm] = useState<number>(30);
-  const [dtiTarget, setDtiTarget] = useState<number>(0.36);
+  const [dtiTarget, setDtiTarget] = useState<number>(0.39);
 
   const calculations = useMemo(() => {
     const monthlyIncome = annualIncome / 12;
     const maxTotalMonthlyDebt = monthlyIncome * dtiTarget;
     const maxMonthlyHousingPayment = Math.max(0, maxTotalMonthlyDebt - monthlyDebts);
-    const monthlyInterestRate = (interestRate / 100) / 12;
+    // Canadian mortgages: semi-annual compounding (Bank Act requirement)
+    const monthlyInterestRate = Math.pow(1 + (interestRate / 100) / 2, 1 / 6) - 1;
     const numberOfPayments = loanTerm * 12;
     let mortgageFactor = 0;
     if (monthlyInterestRate > 0) {
@@ -87,11 +88,11 @@ export default function AffordabilityCalculator() {
                       <span className="text-sm font-medium">{t.affordCalc.dtiLabel}</span>
                       <span className="text-sm font-bold">{calculations.currentDti.toFixed(1)}%</span>
                     </div>
-                    <Progress value={calculations.currentDti} className="h-2 bg-muted" indicatorClassName={calculations.currentDti > 43 ? "bg-destructive" : calculations.currentDti > 36 ? "bg-orange-500" : "bg-primary"} />
+                    <Progress value={calculations.currentDti} className="h-2 bg-muted" indicatorClassName={calculations.currentDti > 44 ? "bg-destructive" : calculations.currentDti > 39 ? "bg-orange-500" : "bg-primary"} />
                     <p className="text-xs text-muted-foreground mt-2">{t.affordCalc.dtiNote}</p>
                   </div>
 
-                  {dtiTarget > 0.36 ? (
+                  {dtiTarget >= 0.44 ? (
                     <div className="p-4 bg-orange-500/10 rounded-xl flex items-start gap-3">
                       <AlertTriangle className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
                       <p className="text-xs text-orange-700 dark:text-orange-300">{t.affordCalc.dtiAggressiveWarning}</p>
@@ -158,9 +159,9 @@ export default function AffordabilityCalculator() {
                     <Select value={dtiTarget.toString()} onValueChange={(v) => setDtiTarget(Number(v))}>
                       <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="0.28">{t.affordCalc.conservative}</SelectItem>
-                        <SelectItem value="0.36">{t.affordCalc.moderate}</SelectItem>
-                        <SelectItem value="0.43">{t.affordCalc.aggressive}</SelectItem>
+                        <SelectItem value="0.40">{t.affordCalc.conservative}</SelectItem>
+                        <SelectItem value="0.39">{t.affordCalc.moderate}</SelectItem>
+                        <SelectItem value="0.44">{t.affordCalc.aggressive}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

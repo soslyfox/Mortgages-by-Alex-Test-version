@@ -53,13 +53,18 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-white/50">
-            © {new Date().getFullYear()} Mortgages by Alex. {t.footer.copyright}
+        <div className="mt-12 pt-8 border-t border-white/10 space-y-3">
+          <p className="text-xs text-white/60 font-medium">
+            Alex Harin &nbsp;|&nbsp; BRX Mortgage &nbsp;|&nbsp; Ontario Mortgage Agent License&nbsp;#M24003304
           </p>
-          <p className="text-xs text-white/50 text-center md:text-right max-w-lg">
-            {t.footer.disclaimer}
-          </p>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+            <p className="text-xs text-white/50">
+              © {new Date().getFullYear()} Mortgages by Alex. {t.footer.copyright}
+            </p>
+            <p className="text-xs text-white/50 text-left md:text-right max-w-lg">
+              {t.footer.disclaimer}
+            </p>
+          </div>
         </div>
       </div>
     </footer>
