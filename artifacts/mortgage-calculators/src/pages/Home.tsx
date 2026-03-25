@@ -205,70 +205,78 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-16 md:py-24 bg-background">
+      <section className="py-10 md:py-14 bg-muted/20 border-y border-border/30">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center max-w-2xl mx-auto mb-14"
-          >
-            <div className="flex justify-center mb-3">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-              ))}
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-xl font-display font-bold text-foreground">{t.home.testimonialsTitle}</h2>
+              <p className="text-sm text-muted-foreground mt-0.5">{t.home.testimonialsSubtitle}</p>
             </div>
-            <h2 className="text-3xl font-display font-bold text-foreground mb-3">{t.home.testimonialsTitle}</h2>
-            <p className="text-muted-foreground">{t.home.testimonialsSubtitle}</p>
-          </motion.div>
+            <div className="hidden sm:flex items-center gap-1.5 bg-white border border-border/50 rounded-full px-3 py-1.5 shadow-sm">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+              ))}
+              <span className="text-xs font-semibold text-foreground ml-1">5.0</span>
+              <span className="text-xs text-muted-foreground">· Google</span>
+            </div>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             {[
               {
-                text: "Alex helped us get our first home in Calgary as newcomers from Ukraine. He explained everything in Ukrainian, was always available for questions, and got us a rate we didn't think we'd qualify for. Stress-free from start to finish.",
-                author: "Oksana V.",
+                text: "We've been working with Alex for ages, from getting ready for our English exam to snagging our first home in Calgary. I'd highly recommend him as a truly qualified specialist. He's shown us all that Canada really does offer a fair shot at success for everyone!",
+                author: "Oleksandr K.",
                 role: "First Home · Calgary",
+                time: "6 months ago",
+                img: `${import.meta.env.BASE_URL}images/review-oleksandr.png`,
               },
               {
-                text: "I was turned down by two banks before reaching out to Alex. He understood my self-employed situation, found the right lender, and we closed in 6 weeks. Professional and genuinely cares about his clients.",
-                author: "Jason M.",
-                role: "Self-Employed · Calgary",
+                text: "Everyone knows that buying real estate can be stressful. We're grateful to Alex for his efforts to make the process as comfortable as possible. Our situation was unusual — we purchased our townhouse without a realtor — but everything went smoothly.",
+                author: "Anastasiia H.",
+                role: "Townhouse · Calgary",
+                time: "1 month ago",
+                img: `${import.meta.env.BASE_URL}images/review-anastasiia.png`,
               },
               {
-                text: "Alex saved us over $400 a month on our refinance. He was transparent about every cost, never pressured us, and kept us informed throughout. We'd recommend him to anyone.",
-                author: "Svitlana & Igor K.",
-                role: "Refinance · Calgary",
+                text: "My wife and I were buying a house for the first time. We didn't know where to start, but after the first (free) consultation, we already had a home-buying strategy in place. Working with Alex was easy, clear, and he was always in touch. Thank you, Alex.",
+                author: "Вячеслав С.",
+                role: "First Home · Calgary",
+                time: "1 month ago",
+                img: `${import.meta.env.BASE_URL}images/review-viacheslav.png`,
               },
               {
-                text: "As a newcomer, I had no idea how the Canadian mortgage system works. Alex walked me through everything step by step, got me pre-approved in 2 days, and found a great rate. Couldn't have done it without him.",
-                author: "Dmytro H.",
-                role: "Newcomer to Canada · Calgary",
+                text: "Many thanks to Alex Harin! I was amazed at how quickly he found me the best mortgage rate. He was patient answering all my questions and explained each step in detail. Alex, where many told us it was impossible, you made it possible.",
+                author: "Дмитрий М.",
+                role: "Mortgage · Calgary",
+                time: "7 months ago",
+                img: `${import.meta.env.BASE_URL}images/review-dmytro.png`,
               },
             ].map((review, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
+                transition={{ duration: 0.35, delay: i * 0.07 }}
                 viewport={{ once: true }}
               >
-                <Card className="h-full border-border/50 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <CardContent className="p-6 flex flex-col h-full">
-                    <div className="flex mb-4">
+                <Card className="h-full border-border/40 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
+                  <div className="h-28 overflow-hidden">
+                    <img src={review.img} alt={review.role} className="w-full h-full object-cover object-center" />
+                  </div>
+                  <CardContent className="p-4 flex flex-col gap-2">
+                    <div className="flex gap-0.5">
                       {[...Array(5)].map((_, j) => (
-                        <Star key={j} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                        <Star key={j} className="w-3 h-3 text-yellow-400 fill-yellow-400" />
                       ))}
                     </div>
-                    <Quote className="w-6 h-6 text-[#003d2b]/20 mb-3" />
-                    <p className="text-muted-foreground leading-relaxed flex-1 italic">"{review.text}"</p>
-                    <div className="mt-5 pt-4 border-t border-border/40 flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#003d2b]/10 text-[#003d2b] flex items-center justify-center font-bold text-sm">
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-4 italic">"{review.text}"</p>
+                    <div className="flex items-center gap-2 pt-1 border-t border-border/30 mt-auto">
+                      <div className="w-6 h-6 rounded-full bg-[#003d2b]/10 text-[#003d2b] flex items-center justify-center font-bold text-[10px] shrink-0">
                         {review.author.charAt(0)}
                       </div>
-                      <div>
-                        <p className="font-semibold text-foreground text-sm">{review.author}</p>
-                        <p className="text-xs text-muted-foreground">{review.role}</p>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-foreground text-xs leading-none truncate">{review.author}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">{review.time}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -276,11 +284,6 @@ export default function Home() {
               </motion.div>
             ))}
           </div>
-
-          <p className="text-center text-sm text-muted-foreground mt-8 flex items-center justify-center gap-2">
-            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-            5.0 · Google Reviews
-          </p>
         </div>
       </section>
 
