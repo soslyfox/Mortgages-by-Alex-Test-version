@@ -86,9 +86,6 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button variant="outline" className="hidden lg:flex border-white/30 text-white bg-transparent hover:bg-white/10 hover:text-white">
-              {t.nav.currentRates}
-            </Button>
             <a href="https://calendly.com/garinalek/60-minute-call" target="_blank" rel="noopener noreferrer">
               <Button className="bg-white text-[#003d2b] hover:bg-green-50 font-semibold">
                 {t.nav.preApproved}
@@ -151,9 +148,6 @@ export function Navbar() {
             </Link>
           ))}
           <div className="pt-4 flex flex-col gap-2">
-            <Button variant="outline" className="w-full justify-center border-white/30 text-white bg-transparent hover:bg-white/10">
-              {t.nav.currentRates}
-            </Button>
             <a href="https://calendly.com/garinalek/60-minute-call" target="_blank" rel="noopener noreferrer" className="w-full">
               <Button className="w-full justify-center bg-white text-[#003d2b] hover:bg-green-50 font-semibold">
                 {t.nav.preApproved}

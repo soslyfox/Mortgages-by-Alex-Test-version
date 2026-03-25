@@ -1,4 +1,4 @@
-import { ArrowRight, Star, Shield, Clock, MapPin, TrendingDown, Heart, Navigation, FileCheck, ShieldCheck, CalendarClock } from "lucide-react";
+import { ArrowRight, Star, Shield, Clock, MapPin, TrendingDown, Heart, Navigation, FileCheck, ShieldCheck, CalendarClock, Send } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,43 +24,22 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[#003d2b] pt-16 pb-0">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-0">
+          <div className="flex flex-col lg:flex-row items-start gap-10 lg:gap-16">
+
             {/* Left: Text */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className="flex-1 text-center lg:text-left pb-12 lg:pb-20 pt-4"
+              className="flex-1 text-center lg:text-left pb-12 lg:pb-20 pt-6"
             >
-              <div className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm font-medium text-green-200 mb-6">
-                <span className="flex h-2 w-2 rounded-full bg-green-300 mr-2"></span>
-                {t.home.badge} {new Date().toLocaleString(language === 'uk' ? 'uk-UA' : language === 'ru' ? 'ru-RU' : 'en-US', { month: 'long', year: 'numeric' })}
-              </div>
-              <h1 className="text-4xl md:text-5xl xl:text-6xl font-display font-bold tracking-tight text-white mb-4 leading-tight">
+              <h1 className="text-4xl md:text-5xl xl:text-6xl font-display font-bold tracking-tight text-white mb-5 leading-tight">
                 {t.home.heroTitle1} <br className="hidden md:block"/>
                 <span className="text-green-300">{t.home.heroTitle2}</span>
               </h1>
-              <p className="text-lg text-white/70 mb-2 max-w-xl">
+              <p className="text-lg text-white/70 mb-12 max-w-xl">
                 {t.home.heroDesc}
               </p>
-              <p className="text-base text-green-300 font-medium mb-10 max-w-xl">
-                {t.home.heroTagline}
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10">
-                <a href="https://calendly.com/garinalek/60-minute-call" target="_blank" rel="noopener noreferrer">
-                  <Button size="lg" className="w-full sm:w-auto bg-white text-[#003d2b] hover:bg-green-50 font-semibold text-base h-12 px-8 rounded-xl shadow-lg">
-                    {t.home.ctaBtn} <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </a>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={scrollToForm}
-                  className="w-full sm:w-auto border-white/30 text-white bg-transparent hover:bg-white/10 text-base h-12 px-8 rounded-xl"
-                >
-                  {t.home.formTitle}
-                </Button>
-              </div>
               {/* Trust badges */}
               <div className="flex flex-wrap justify-center lg:justify-start gap-6">
                 {trustPoints.map((tp) => (
@@ -75,25 +54,74 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* Right: Alex's photo */}
+            {/* Right: Quote + Photo + Button + Socials */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="flex-shrink-0 lg:self-end"
+              className="flex-shrink-0 flex flex-col items-center gap-3 pt-4 lg:self-start"
             >
+              {/* Quote */}
+              <div className="bg-white/10 border border-white/20 rounded-2xl px-5 py-3 max-w-xs text-center">
+                <p className="text-sm text-green-200 italic leading-relaxed">"{t.home.heroTagline}"</p>
+              </div>
+
+              {/* Photo with badge */}
               <div className="relative">
                 <img
                   src={`${import.meta.env.BASE_URL}images/alex.png`}
                   alt="Alex"
-                  className="w-64 sm:w-72 lg:w-80 xl:w-96 object-cover object-top rounded-t-2xl"
+                  className="w-64 sm:w-72 lg:w-72 xl:w-80 object-cover object-top rounded-2xl"
                 />
-                <div className="absolute -left-6 bottom-12 bg-white rounded-xl shadow-xl px-4 py-3 text-sm">
+                <div className="absolute -left-5 bottom-14 bg-white rounded-xl shadow-xl px-4 py-2.5 text-sm">
                   <p className="font-bold text-[#003d2b]">{t.home.familiesHelped}</p>
                   <p className="text-muted-foreground text-xs">{t.home.familiesRegion}</p>
                 </div>
               </div>
+
+              {/* Get in Touch button */}
+              <Button
+                size="lg"
+                onClick={scrollToForm}
+                className="w-full bg-white text-[#003d2b] hover:bg-green-50 font-semibold text-base h-11 px-8 rounded-xl shadow-lg"
+              >
+                {t.home.formTitle}
+              </Button>
+
+              {/* Socials */}
+              <div className="flex gap-3 pt-1">
+                {[
+                  { href: "https://www.facebook.com/garinalek", label: "Facebook", icon: (
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                    </svg>
+                  )},
+                  { href: "https://www.instagram.com/oleksii.harin/", label: "Instagram", icon: (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                    </svg>
+                  )},
+                  { href: "https://www.tiktok.com/@oleksii.harin", label: "TikTok", icon: (
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/>
+                    </svg>
+                  )},
+                  { href: "https://t.me/garinalek", label: "Telegram", icon: <Send className="w-4 h-4" /> },
+                ].map(({ href, label, icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="w-9 h-9 rounded-full bg-white/10 border border-white/20 text-white/70 hover:text-white hover:bg-white/20 flex items-center justify-center transition-colors duration-200"
+                  >
+                    {icon}
+                  </a>
+                ))}
+              </div>
             </motion.div>
+
           </div>
         </div>
 
@@ -302,7 +330,7 @@ export default function Home() {
             <p className="text-white/70 mb-6 max-w-xl">{t.home.ctaDesc}</p>
             <a href="https://calendly.com/garinalek/60-minute-call" target="_blank" rel="noopener noreferrer">
               <Button size="lg" className="bg-white text-[#003d2b] hover:bg-green-50 font-semibold rounded-xl px-8 h-12 shadow-lg">
-                {t.home.ctaBtn}
+                {language === 'uk' ? 'Поговоріть зі мною' : language === 'ru' ? 'Поговорите со мной' : 'Talk to me'} <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </a>
           </div>
