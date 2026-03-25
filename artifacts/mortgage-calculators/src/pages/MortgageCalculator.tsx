@@ -14,6 +14,11 @@ import { useCalculator } from "@/contexts/CalculatorContext";
 
 const CHART_COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
 
+/** Show up to `decimals` places, stripping trailing zeros so whole numbers show without a decimal point */
+function stripTrailingZero(value: number, decimals = 2): string {
+  return parseFloat(value.toFixed(decimals)).toString();
+}
+
 export default function MortgageCalculator() {
   const { t } = useLanguage();
   const { calc, setCalc } = useCalculator();
@@ -99,7 +104,7 @@ export default function MortgageCalculator() {
                     <Label className="text-base">{t.mortgageCalc.downPayment}</Label>
                     <div className="flex gap-2 w-2/3 md:w-1/2">
                       <InputWithAddon type="number" addonLeft="$" value={Math.round(downPayment).toString()} onChange={(e) => setCalc({ downPayment: Math.min(Number(e.target.value), homePrice) })} />
-                      <InputWithAddon type="number" addonRight="%" value={calculations.downPaymentPercent.toFixed(1)} onChange={(e) => setCalc({ downPayment: homePrice * (Number(e.target.value) / 100) })} />
+                      <InputWithAddon type="number" addonRight="%" value={stripTrailingZero(calculations.downPaymentPercent, 2)} onChange={(e) => setCalc({ downPayment: homePrice * (Number(e.target.value) / 100) })} step="any" />
                     </div>
                   </div>
                   <Slider value={[calculations.downPaymentPercent]} min={0} max={100} step={0.1} onValueChange={(val) => setCalc({ downPayment: homePrice * (val[0] / 100) })} />
@@ -120,7 +125,7 @@ export default function MortgageCalculator() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-base">{t.mortgageCalc.interestRate}</Label>
-                    <InputWithAddon type="number" addonRight="%" value={interestRate.toString()} onChange={(e) => setCalc({ interestRate: Number(e.target.value) })} step="0.125" />
+                    <InputWithAddon type="number" addonRight="%" value={stripTrailingZero(interestRate, 3)} onChange={(e) => setCalc({ interestRate: Number(e.target.value) })} step="any" />
                   </div>
                 </div>
               </CardContent>
