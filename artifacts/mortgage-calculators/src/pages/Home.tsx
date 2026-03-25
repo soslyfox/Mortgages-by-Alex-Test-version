@@ -1,11 +1,12 @@
 import { Link } from "wouter";
-import { Calculator, Home as HomeIcon, PieChart, RefreshCw, ArrowRight, Star, Shield, Clock } from "lucide-react";
+import { Calculator, Home as HomeIcon, PieChart, RefreshCw, ArrowRight, Star, Shield, Clock, Quote } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { LeadForm } from "@/components/LeadForm";
 
 export default function Home() {
   const { t, language } = useLanguage();
@@ -198,6 +199,130 @@ export default function Home() {
                   </div>
                 ))}
               </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-16 md:py-24 bg-background">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+            className="text-center max-w-2xl mx-auto mb-14"
+          >
+            <div className="flex justify-center mb-3">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+              ))}
+            </div>
+            <h2 className="text-3xl font-display font-bold text-foreground mb-3">{t.home.testimonialsTitle}</h2>
+            <p className="text-muted-foreground">{t.home.testimonialsSubtitle}</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                text: "Alex helped us get our first home in Calgary as newcomers from Ukraine. He explained everything in Ukrainian, was always available for questions, and got us a rate we didn't think we'd qualify for. Stress-free from start to finish.",
+                author: "Oksana V.",
+                role: "First Home · Calgary",
+              },
+              {
+                text: "I was turned down by two banks before reaching out to Alex. He understood my self-employed situation, found the right lender, and we closed in 6 weeks. Professional and genuinely cares about his clients.",
+                author: "Jason M.",
+                role: "Self-Employed · Calgary",
+              },
+              {
+                text: "Alex saved us over $400 a month on our refinance. He was transparent about every cost, never pressured us, and kept us informed throughout. We'd recommend him to anyone.",
+                author: "Svitlana & Igor K.",
+                role: "Refinance · Calgary",
+              },
+              {
+                text: "As a newcomer, I had no idea how the Canadian mortgage system works. Alex walked me through everything step by step, got me pre-approved in 2 days, and found a great rate. Couldn't have done it without him.",
+                author: "Dmytro H.",
+                role: "Newcomer to Canada · Calgary",
+              },
+            ].map((review, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: i * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <Card className="h-full border-border/50 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <CardContent className="p-6 flex flex-col h-full">
+                    <div className="flex mb-4">
+                      {[...Array(5)].map((_, j) => (
+                        <Star key={j} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                      ))}
+                    </div>
+                    <Quote className="w-6 h-6 text-[#003d2b]/20 mb-3" />
+                    <p className="text-muted-foreground leading-relaxed flex-1 italic">"{review.text}"</p>
+                    <div className="mt-5 pt-4 border-t border-border/40 flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#003d2b]/10 text-[#003d2b] flex items-center justify-center font-bold text-sm">
+                        {review.author.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground text-sm">{review.author}</p>
+                        <p className="text-xs text-muted-foreground">{review.role}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+          <p className="text-center text-sm text-muted-foreground mt-8 flex items-center justify-center gap-2">
+            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+            5.0 · Google Reviews
+          </p>
+        </div>
+      </section>
+
+      {/* Lead Capture Form */}
+      <section className="py-16 md:py-24 bg-muted/30 border-y border-border/40">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">{t.home.formTitle}</h2>
+              <p className="text-muted-foreground mb-8 text-lg">{t.home.formSubtitle}</p>
+              <div className="space-y-5">
+                {[
+                  { icon: <Clock className="w-5 h-5" />, text: language === 'uk' ? 'Відповідь протягом 24 годин' : language === 'ru' ? 'Ответ в течение 24 часов' : 'Response within 24 hours' },
+                  { icon: <Shield className="w-5 h-5" />, text: language === 'uk' ? 'Безкоштовна консультація' : language === 'ru' ? 'Бесплатная консультация' : 'Free consultation' },
+                  { icon: <Star className="w-5 h-5" />, text: language === 'uk' ? 'Без зобовʼязань' : language === 'ru' ? 'Без обязательств' : 'No obligation' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 text-foreground">
+                    <div className="w-9 h-9 rounded-xl bg-[#003d2b]/10 text-[#003d2b] flex items-center justify-center flex-shrink-0">
+                      {item.icon}
+                    </div>
+                    <span className="font-medium">{item.text}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              viewport={{ once: true }}
+            >
+              <Card className="shadow-lg border-border/50">
+                <CardContent className="p-6 md:p-8">
+                  <LeadForm />
+                </CardContent>
+              </Card>
             </motion.div>
           </div>
         </div>
