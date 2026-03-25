@@ -1,5 +1,4 @@
-import { Link } from "wouter";
-import { ArrowRight, Star, Shield, Clock, MapPin } from "lucide-react";
+import { ArrowRight, Star, Shield, Clock, MapPin, CheckCircle } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -37,12 +36,15 @@ export default function Home() {
                 <span className="flex h-2 w-2 rounded-full bg-green-300 mr-2"></span>
                 {t.home.badge} {new Date().toLocaleString(language === 'uk' ? 'uk-UA' : language === 'ru' ? 'ru-RU' : 'en-US', { month: 'long', year: 'numeric' })}
               </div>
-              <h1 className="text-4xl md:text-5xl xl:text-6xl font-display font-bold tracking-tight text-white mb-6 leading-tight">
+              <h1 className="text-4xl md:text-5xl xl:text-6xl font-display font-bold tracking-tight text-white mb-4 leading-tight">
                 {t.home.heroTitle1} <br className="hidden md:block"/>
                 <span className="text-green-300">{t.home.heroTitle2}</span>
               </h1>
-              <p className="text-lg text-white/70 mb-10 max-w-xl">
+              <p className="text-lg text-white/70 mb-2 max-w-xl">
                 {t.home.heroDesc}
+              </p>
+              <p className="text-base text-green-300 font-medium mb-10 max-w-xl">
+                {t.home.heroTagline}
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10">
                 <a href="https://calendly.com/garinalek/60-minute-call" target="_blank" rel="noopener noreferrer">
@@ -103,8 +105,42 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Lead Capture Form */}
-      <section id="contact-form" className="py-16 md:py-20 bg-background">
+      {/* Why Me */}
+      <section className="py-16 md:py-20 bg-background">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            viewport={{ once: true }}
+            className="mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-2">{t.home.whyMeTitle}</h2>
+            <p className="text-muted-foreground">{t.home.whyMeSubtitle}</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[t.home.whyMe1, t.home.whyMe2, t.home.whyMe3, t.home.whyMe4, t.home.whyMe5, t.home.whyMe6].map((reason, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.07 }}
+                viewport={{ once: true }}
+                className="flex items-start gap-4 p-5 rounded-xl border border-border/40 bg-muted/20 hover:bg-muted/40 hover:border-[#003d2b]/20 transition-all duration-200"
+              >
+                <div className="w-7 h-7 rounded-full bg-[#003d2b] flex items-center justify-center shrink-0 mt-0.5">
+                  <CheckCircle className="w-4 h-4 text-white" />
+                </div>
+                <p className="text-foreground text-sm leading-relaxed">{reason}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Get in Touch */}
+      <section id="contact-form" className="py-16 md:py-20 bg-[#003d2b]/5 border-y border-[#003d2b]/10">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             <motion.div
@@ -147,68 +183,53 @@ export default function Home() {
         </div>
       </section>
 
-      {/* About Alex */}
-      <section className="py-16 md:py-24 bg-muted/30 border-y border-border/40">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Photo */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="flex justify-center lg:justify-end"
-            >
-              <div className="relative">
-                <div className="w-72 h-72 md:w-80 md:h-80 rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
-                  <img
-                    src={`${import.meta.env.BASE_URL}images/alex.png`}
-                    alt="Alex"
-                    className="w-full h-full object-cover object-top"
-                  />
-                </div>
-                <div className="absolute -bottom-5 -left-5 bg-white rounded-xl shadow-lg px-4 py-3 text-sm border border-border/30">
-                  <p className="font-bold text-[#003d2b] text-base">2024</p>
-                  <p className="text-muted-foreground text-xs">{t.home.timeline2024}</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Story */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              viewport={{ once: true }}
-              className="space-y-6"
-            >
-              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">{t.home.aboutTitle}</h2>
-              <p className="text-muted-foreground leading-relaxed">{t.home.aboutP1}</p>
-              <p className="text-muted-foreground leading-relaxed">{t.home.aboutP2}</p>
-              <p className="text-foreground font-medium leading-relaxed">{t.home.aboutP3}</p>
-
-              {/* Mini timeline */}
-              <div className="pt-4 space-y-4 border-t border-border/50">
-                {[
-                  { year: '2022', label: t.home.timeline2022, desc: t.home.timeline2022desc },
-                  { year: '2023', label: t.home.timeline2023, desc: t.home.timeline2023desc },
-                  { year: '2024', label: t.home.timeline2024, desc: t.home.timeline2024desc },
-                ].map((item) => (
-                  <div key={item.year} className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-[#003d2b] text-white flex items-center justify-center text-sm font-bold">
-                      {item.year}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground">{item.label}</p>
-                      <p className="text-sm text-muted-foreground">{item.desc}</p>
-                    </div>
+      {/* About Alex — hidden for now, content preserved */}
+      {false && (
+        <section className="py-16 md:py-24 bg-muted/30 border-y border-border/40">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="flex justify-center lg:justify-end">
+                <div className="relative">
+                  <div className="w-72 h-72 md:w-80 md:h-80 rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+                    <img
+                      src={`${import.meta.env.BASE_URL}images/alex.png`}
+                      alt="Alex"
+                      className="w-full h-full object-cover object-top"
+                    />
                   </div>
-                ))}
+                  <div className="absolute -bottom-5 -left-5 bg-white rounded-xl shadow-lg px-4 py-3 text-sm border border-border/30">
+                    <p className="font-bold text-[#003d2b] text-base">2024</p>
+                    <p className="text-muted-foreground text-xs">{t.home.timeline2024}</p>
+                  </div>
+                </div>
               </div>
-            </motion.div>
+              <div className="space-y-6">
+                <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">{t.home.aboutTitle}</h2>
+                <p className="text-muted-foreground leading-relaxed">{t.home.aboutP1}</p>
+                <p className="text-muted-foreground leading-relaxed">{t.home.aboutP2}</p>
+                <p className="text-foreground font-medium leading-relaxed">{t.home.aboutP3}</p>
+                <div className="pt-4 space-y-4 border-t border-border/50">
+                  {[
+                    { year: '2022', label: t.home.timeline2022, desc: t.home.timeline2022desc },
+                    { year: '2023', label: t.home.timeline2023, desc: t.home.timeline2023desc },
+                    { year: '2024', label: t.home.timeline2024, desc: t.home.timeline2024desc },
+                  ].map((item) => (
+                    <div key={item.year} className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-[#003d2b] text-white flex items-center justify-center text-sm font-bold">
+                        {item.year}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">{item.label}</p>
+                        <p className="text-sm text-muted-foreground">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Testimonials */}
       <section className="py-10 md:py-14 bg-muted/20 border-y border-border/30">
