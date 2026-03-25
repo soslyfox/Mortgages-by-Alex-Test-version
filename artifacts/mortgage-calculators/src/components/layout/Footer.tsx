@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { SOCIALS } from "@/components/layout/Navbar";
 
 export function Footer() {
   const { t } = useLanguage();
@@ -15,6 +16,21 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-white/65 text-sm max-w-md">{t.footer.desc}</p>
+            {/* Social icons */}
+            <div className="flex gap-2 pt-1">
+              {SOCIALS.map(({ href, label, icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="w-8 h-8 rounded-full border border-white/20 text-white/60 hover:text-white hover:bg-white/10 flex items-center justify-center transition-colors duration-200"
+                >
+                  {icon}
+                </a>
+              ))}
+            </div>
           </div>
 
           <div>
@@ -30,7 +46,6 @@ export function Footer() {
           <div>
             <h3 className="font-semibold text-white mb-4">{t.footer.resources}</h3>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.currentRates}</a></li>
               <li><a href="#" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.buyingGuide}</a></li>
               <li><a href="#" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.contactAlex}</a></li>
               <li><a href="#" className="text-white/60 hover:text-green-300 transition-colors">{t.footer.privacy}</a></li>
