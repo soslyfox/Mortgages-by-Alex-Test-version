@@ -37,9 +37,16 @@ export default function Home() {
                 {t.home.heroTitle1} <br className="hidden md:block"/>
                 <span className="text-green-300">{t.home.heroTitle2}</span>
               </h1>
-              <p className="text-lg text-white/70 mb-12 max-w-xl">
+              <p className="text-lg text-white/70 mb-6 max-w-xl">
                 {t.home.heroDesc}
               </p>
+              <Button
+                size="lg"
+                onClick={scrollToForm}
+                className="mb-10 bg-white text-[#003d2b] hover:bg-green-50 font-semibold text-base h-11 px-8 rounded-xl shadow-lg"
+              >
+                {t.home.formTitle}
+              </Button>
               {/* Trust badges */}
               <div className="flex flex-wrap justify-center lg:justify-start gap-6">
                 {trustPoints.map((tp) => (
@@ -59,17 +66,8 @@ export default function Home() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="flex-shrink-0 flex flex-col items-center gap-3 pt-4 lg:self-start"
+              className="flex-shrink-0 flex flex-col items-center gap-3 pt-0 lg:self-start"
             >
-              {/* Get in Touch button */}
-              <Button
-                size="lg"
-                onClick={scrollToForm}
-                className="w-full bg-white text-[#003d2b] hover:bg-green-50 font-semibold text-base h-11 px-8 rounded-xl shadow-lg"
-              >
-                {t.home.formTitle}
-              </Button>
-
               {/* Photo with badge */}
               <div className="relative">
                 <img
@@ -85,7 +83,7 @@ export default function Home() {
 
               {/* Quote */}
               <div className="bg-white/10 border border-white/20 rounded-2xl px-5 py-3 max-w-xs text-center">
-                <p className="text-sm text-green-200 italic leading-relaxed">"{t.home.heroTagline}"</p>
+                <p className="text-sm text-white font-medium italic leading-relaxed">"{t.home.heroTagline}"</p>
               </div>
             </motion.div>
 
