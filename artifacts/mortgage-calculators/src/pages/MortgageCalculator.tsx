@@ -258,8 +258,8 @@ export default function MortgageCalculator() {
                       </div>
                     )}
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">{t.mortgageCalc.totalInterestPaid}</span>
-                      <span className="font-semibold">{formatCurrency((calculations.principalAndInterest * loanTerm * 12) - calculations.loanAmount)}</span>
+                      <span className="text-muted-foreground">{t.mortgageCalc.totalLoanAmount}</span>
+                      <span className="font-semibold">{formatCurrency(calculations.loanAmount)}</span>
                     </div>
                   </div>
                 </CardContent>
