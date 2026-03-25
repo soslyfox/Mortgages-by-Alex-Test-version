@@ -31,28 +31,38 @@ export default function AffordabilityCalculator() {
     const monthlyIncome = annualIncome / 12;
     const { gds, tds } = GDS_TDS[profile];
 
+    // Canadian stress test: qualify at the higher of 5.25% or contract rate + 2%
+    const stressTestRate = Math.max(5.25, interestRate + 2);
+
     // Fixed housing costs that count toward GDS
     const monthlyTax    = propertyTax / 12;
     const condoGDS      = condoFee * 0.5;
     const fixedGDSCosts = monthlyTax + heat + condoGDS;
 
-    // Canadian mortgages: semi-annual compounding
-    const monthlyRate      = Math.pow(1 + (interestRate / 100) / 2, 1 / 6) - 1;
-    const numberOfPayments = loanTerm * 12;
-    const mortgageFactor   = monthlyRate > 0
-      ? (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1)
+    // Qualifying uses stress test rate (semi-annual compounding, Bank Act)
+    const numberOfPayments    = loanTerm * 12;
+    const stressMonthlyRate   = Math.pow(1 + (stressTestRate / 100) / 2, 1 / 6) - 1;
+    const stressMortgageFactor = stressMonthlyRate > 0
+      ? (stressMonthlyRate * Math.pow(1 + stressMonthlyRate, numberOfPayments)) / (Math.pow(1 + stressMonthlyRate, numberOfPayments) - 1)
       : 1 / numberOfPayments;
 
     // Max P&I from GDS limit
     const maxPI_GDS = Math.max(0, monthlyIncome * gds - fixedGDSCosts);
     // Max P&I from TDS limit (subtracts external debts)
     const maxPI_TDS = Math.max(0, monthlyIncome * tds - fixedGDSCosts - monthlyDebts);
-    // Binding constraint
+    // Binding constraint (at stress test rate — this is what lenders use)
     const maxPI = Math.min(maxPI_GDS, maxPI_TDS);
 
-    // Solve for max loan: maxPI = loan × mortgageFactor → loan = maxPI / mortgageFactor
-    const maxLoanAmount = mortgageFactor > 0 ? maxPI / mortgageFactor : 0;
+    // Loan amount at stress test rate; actual monthly payment at contract rate
+    const maxLoanAmount = stressMortgageFactor > 0 ? maxPI / stressMortgageFactor : 0;
     const maxHomePrice  = maxLoanAmount + downPayment;
+
+    // Actual monthly P&I at contract rate (what the borrower actually pays)
+    const contractMonthlyRate   = Math.pow(1 + (interestRate / 100) / 2, 1 / 6) - 1;
+    const contractMortgageFactor = contractMonthlyRate > 0
+      ? (contractMonthlyRate * Math.pow(1 + contractMonthlyRate, numberOfPayments)) / (Math.pow(1 + contractMonthlyRate, numberOfPayments) - 1)
+      : 1 / numberOfPayments;
+    const actualMonthlyPI = maxLoanAmount * contractMortgageFactor;
 
     // Actual ratios at the computed max home price
     const actualGDS = monthlyIncome > 0 ? ((maxPI + fixedGDSCosts) / monthlyIncome) * 100 : 0;
@@ -64,7 +74,9 @@ export default function AffordabilityCalculator() {
       maxHomePrice,
       maxLoanAmount,
       maxPI,
+      actualMonthlyPI,
       monthlyIncome,
+      stressTestRate,
       actualGDS,
       actualTDS,
       bindingLimit,
@@ -100,12 +112,17 @@ export default function AffordabilityCalculator() {
                   <div className="text-5xl md:text-6xl font-display font-bold text-primary">
                     {formatCurrency(calculations.maxHomePrice)}
                   </div>
+                  <div className="mt-3 inline-flex items-center gap-1.5 bg-primary/20 text-primary text-xs font-medium px-3 py-1 rounded-full">
+                    <span>Stress test: {calculations.stressTestRate.toFixed(2)}%</span>
+                    <span className="text-primary/60">·</span>
+                    <span className="text-primary/70">contract {interestRate}%</span>
+                  </div>
                 </div>
                 <CardContent className="p-6 space-y-6">
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t.affordCalc.estMonthlyPayment}</span>
-                      <span className="font-bold">{formatCurrency(calculations.maxPI)}</span>
+                      <span className="font-bold">{formatCurrency(calculations.actualMonthlyPI)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t.affordCalc.loanAmount}</span>
