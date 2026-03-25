@@ -8,14 +8,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RefreshCw, TrendingDown, Clock, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCalculator } from "@/contexts/CalculatorContext";
 
 export default function RefinanceCalculator() {
   const { t } = useLanguage();
+  const { calc } = useCalculator();
+
   const [currentBalance, setCurrentBalance] = useState<number>(300000);
   const [currentRate, setCurrentRate] = useState<number>(7.5);
   const [currentMonthlyPayment, setCurrentMonthlyPayment] = useState<number>(2200);
-  const [newRate, setNewRate] = useState<number>(4);
-  const [newTerm, setNewTerm] = useState<number>(30);
+  const [newRate, setNewRate] = useState<number>(() => calc.interestRate);
+  const [newTerm, setNewTerm] = useState<number>(() => calc.loanTerm);
   const [closingCosts, setClosingCosts] = useState<number>(4500);
 
   const calculations = useMemo(() => {

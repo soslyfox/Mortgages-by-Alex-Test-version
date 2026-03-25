@@ -9,38 +9,71 @@ import { Home, ShieldCheck, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCalculator } from "@/contexts/CalculatorContext";
+
+const GDS_TDS: Record<string, { gds: number; tds: number }> = {
+  conservative: { gds: 0.32, tds: 0.40 },
+  standard:     { gds: 0.39, tds: 0.44 },
+  maximum:      { gds: 0.39, tds: 0.44 },
+};
 
 export default function AffordabilityCalculator() {
   const { t } = useLanguage();
+  const { calc, setCalc } = useCalculator();
+
+  const { interestRate, loanTerm, downPayment, propertyTax, condoFee, heat } = calc;
+
   const [annualIncome, setAnnualIncome] = useState<number>(100000);
   const [monthlyDebts, setMonthlyDebts] = useState<number>(500);
-  const [downPayment, setDownPayment] = useState<number>(40000);
-  const [interestRate, setInterestRate] = useState<number>(4);
-  const [loanTerm, setLoanTerm] = useState<number>(30);
-  const [dtiTarget, setDtiTarget] = useState<number>(0.39);
+  const [profile, setProfile] = useState<string>('standard');
 
   const calculations = useMemo(() => {
     const monthlyIncome = annualIncome / 12;
-    const maxTotalMonthlyDebt = monthlyIncome * dtiTarget;
-    const maxMonthlyHousingPayment = Math.max(0, maxTotalMonthlyDebt - monthlyDebts);
-    // Canadian mortgages: semi-annual compounding (Bank Act requirement)
-    const monthlyInterestRate = Math.pow(1 + (interestRate / 100) / 2, 1 / 6) - 1;
+    const { gds, tds } = GDS_TDS[profile];
+
+    // Fixed housing costs that count toward GDS
+    const monthlyTax    = propertyTax / 12;
+    const condoGDS      = condoFee * 0.5;
+    const fixedGDSCosts = monthlyTax + heat + condoGDS;
+
+    // Canadian mortgages: semi-annual compounding
+    const monthlyRate      = Math.pow(1 + (interestRate / 100) / 2, 1 / 6) - 1;
     const numberOfPayments = loanTerm * 12;
-    let mortgageFactor = 0;
-    if (monthlyInterestRate > 0) {
-      mortgageFactor = (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numberOfPayments)) / (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1);
-    } else {
-      mortgageFactor = 1 / numberOfPayments;
-    }
-    const taxInsFactor = 0.017 / 12;
-    let maxHomePrice = 0;
-    if (mortgageFactor + taxInsFactor > 0) {
-      maxHomePrice = (maxMonthlyHousingPayment + (downPayment * mortgageFactor)) / (mortgageFactor + taxInsFactor);
-    }
-    const loanAmount = Math.max(0, maxHomePrice - downPayment);
-    const currentDti = ((monthlyDebts + maxMonthlyHousingPayment) / monthlyIncome) * 100;
-    return { maxHomePrice, loanAmount, maxMonthlyHousingPayment, currentDti, monthlyIncome };
-  }, [annualIncome, monthlyDebts, downPayment, interestRate, loanTerm, dtiTarget]);
+    const mortgageFactor   = monthlyRate > 0
+      ? (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1)
+      : 1 / numberOfPayments;
+
+    // Max P&I from GDS limit
+    const maxPI_GDS = Math.max(0, monthlyIncome * gds - fixedGDSCosts);
+    // Max P&I from TDS limit (subtracts external debts)
+    const maxPI_TDS = Math.max(0, monthlyIncome * tds - fixedGDSCosts - monthlyDebts);
+    // Binding constraint
+    const maxPI = Math.min(maxPI_GDS, maxPI_TDS);
+
+    // Solve for max loan: maxPI = loan × mortgageFactor → loan = maxPI / mortgageFactor
+    const maxLoanAmount = mortgageFactor > 0 ? maxPI / mortgageFactor : 0;
+    const maxHomePrice  = maxLoanAmount + downPayment;
+
+    // Actual ratios at the computed max home price
+    const actualGDS = monthlyIncome > 0 ? ((maxPI + fixedGDSCosts) / monthlyIncome) * 100 : 0;
+    const actualTDS = monthlyIncome > 0 ? ((maxPI + fixedGDSCosts + monthlyDebts) / monthlyIncome) * 100 : 0;
+
+    const bindingLimit = maxPI_TDS < maxPI_GDS ? 'tds' : 'gds';
+
+    return {
+      maxHomePrice,
+      maxLoanAmount,
+      maxPI,
+      monthlyIncome,
+      actualGDS,
+      actualTDS,
+      bindingLimit,
+      gdsLimit: gds * 100,
+      tdsLimit: tds * 100,
+    };
+  }, [annualIncome, monthlyDebts, interestRate, loanTerm, downPayment, propertyTax, condoFee, heat, profile]);
+
+  const isAtMax = profile === 'maximum';
 
   return (
     <AppLayout>
@@ -58,6 +91,7 @@ export default function AffordabilityCalculator() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Results panel */}
           <div className="lg:col-span-5 order-first lg:order-last">
             <motion.div className="sticky top-24" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Card className="shadow-xl border-primary/20 bg-card overflow-hidden">
@@ -71,11 +105,11 @@ export default function AffordabilityCalculator() {
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t.affordCalc.estMonthlyPayment}</span>
-                      <span className="font-bold">{formatCurrency(calculations.maxMonthlyHousingPayment)}</span>
+                      <span className="font-bold">{formatCurrency(calculations.maxPI)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t.affordCalc.loanAmount}</span>
-                      <span className="font-bold">{formatCurrency(calculations.loanAmount)}</span>
+                      <span className="font-bold">{formatCurrency(calculations.maxLoanAmount)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t.affordCalc.downPayment}</span>
@@ -83,16 +117,35 @@ export default function AffordabilityCalculator() {
                     </div>
                   </div>
 
-                  <div className="pt-6 border-t border-border/50">
-                    <div className="flex justify-between items-end mb-2">
-                      <span className="text-sm font-medium">{t.affordCalc.dtiLabel}</span>
-                      <span className="text-sm font-bold">{calculations.currentDti.toFixed(1)}%</span>
+                  {/* GDS */}
+                  <div className="pt-4 border-t border-border/50 space-y-3">
+                    <div className="flex justify-between items-end mb-1">
+                      <span className="text-sm font-medium">GDS</span>
+                      <span className={`text-sm font-bold ${calculations.actualGDS > calculations.gdsLimit ? 'text-destructive' : 'text-primary'}`}>
+                        {calculations.actualGDS.toFixed(1)}% / {calculations.gdsLimit.toFixed(0)}%
+                      </span>
                     </div>
-                    <Progress value={calculations.currentDti} className="h-2 bg-muted" indicatorClassName={calculations.currentDti > 44 ? "bg-destructive" : calculations.currentDti > 39 ? "bg-orange-500" : "bg-primary"} />
-                    <p className="text-xs text-muted-foreground mt-2">{t.affordCalc.dtiNote}</p>
+                    <Progress
+                      value={Math.min(calculations.actualGDS, 100)}
+                      className="h-2 bg-muted"
+                      indicatorClassName={calculations.actualGDS > calculations.gdsLimit ? "bg-destructive" : "bg-primary"}
+                    />
+                    {/* TDS */}
+                    <div className="flex justify-between items-end mb-1 mt-2">
+                      <span className="text-sm font-medium">TDS</span>
+                      <span className={`text-sm font-bold ${calculations.actualTDS > calculations.tdsLimit ? 'text-destructive' : 'text-primary'}`}>
+                        {calculations.actualTDS.toFixed(1)}% / {calculations.tdsLimit.toFixed(0)}%
+                      </span>
+                    </div>
+                    <Progress
+                      value={Math.min(calculations.actualTDS, 100)}
+                      className="h-2 bg-muted"
+                      indicatorClassName={calculations.actualTDS > calculations.tdsLimit ? "bg-destructive" : calculations.actualTDS > 39 ? "bg-orange-500" : "bg-primary"}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">{t.affordCalc.dtiNote}</p>
                   </div>
 
-                  {dtiTarget >= 0.44 ? (
+                  {isAtMax ? (
                     <div className="p-4 bg-orange-500/10 rounded-xl flex items-start gap-3">
                       <AlertTriangle className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
                       <p className="text-xs text-orange-700 dark:text-orange-300">{t.affordCalc.dtiAggressiveWarning}</p>
@@ -108,6 +161,7 @@ export default function AffordabilityCalculator() {
             </motion.div>
           </div>
 
+          {/* Inputs */}
           <div className="lg:col-span-7 space-y-6">
             <Card>
               <CardHeader>
@@ -127,7 +181,7 @@ export default function AffordabilityCalculator() {
                 </div>
                 <div className="space-y-2 pt-2">
                   <Label>{t.affordCalc.availableDown}</Label>
-                  <InputWithAddon type="number" addonLeft="$" value={downPayment.toString()} onChange={(e) => setDownPayment(Number(e.target.value))} />
+                  <InputWithAddon type="number" addonLeft="$" value={downPayment.toString()} onChange={(e) => setCalc({ downPayment: Number(e.target.value) })} />
                 </div>
               </CardContent>
             </Card>
@@ -140,11 +194,11 @@ export default function AffordabilityCalculator() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label>{t.affordCalc.interestRate}</Label>
-                    <InputWithAddon type="number" addonRight="%" value={interestRate.toString()} onChange={(e) => setInterestRate(Number(e.target.value))} step="0.125" />
+                    <InputWithAddon type="number" addonRight="%" value={interestRate.toString()} onChange={(e) => setCalc({ interestRate: Number(e.target.value) })} step="0.125" />
                   </div>
                   <div className="space-y-2">
                     <Label>{t.affordCalc.loanTerm}</Label>
-                    <Select value={loanTerm.toString()} onValueChange={(v) => setLoanTerm(Number(v))}>
+                    <Select value={loanTerm.toString()} onValueChange={(v) => setCalc({ loanTerm: Number(v) })}>
                       <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="30">{t.affordCalc.years30}</SelectItem>
@@ -156,14 +210,32 @@ export default function AffordabilityCalculator() {
                   </div>
                   <div className="space-y-2 md:col-span-2">
                     <Label>{t.affordCalc.dtiTarget}</Label>
-                    <Select value={dtiTarget.toString()} onValueChange={(v) => setDtiTarget(Number(v))}>
+                    <Select value={profile} onValueChange={setProfile}>
                       <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="0.40">{t.affordCalc.conservative}</SelectItem>
-                        <SelectItem value="0.39">{t.affordCalc.moderate}</SelectItem>
-                        <SelectItem value="0.44">{t.affordCalc.aggressive}</SelectItem>
+                        <SelectItem value="conservative">{t.affordCalc.conservative}</SelectItem>
+                        <SelectItem value="standard">{t.affordCalc.moderate}</SelectItem>
+                        <SelectItem value="maximum">{t.affordCalc.aggressive}</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+                </div>
+                {/* Shared housing costs (from Mortgage Calculator) */}
+                <div className="pt-2 border-t border-border/50">
+                  <p className="text-xs text-muted-foreground mb-4">{t.affordCalc.dtiNote}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-xs">{t.mortgageCalc.propertyTax}</Label>
+                      <InputWithAddon type="number" addonLeft="$" value={propertyTax.toString()} onChange={(e) => setCalc({ propertyTax: Number(e.target.value) })} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs">{t.mortgageCalc.heat}</Label>
+                      <InputWithAddon type="number" addonLeft="$" value={heat.toString()} onChange={(e) => setCalc({ heat: Number(e.target.value) })} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs">{t.mortgageCalc.condoFee}</Label>
+                      <InputWithAddon type="number" addonLeft="$" value={condoFee.toString()} onChange={(e) => setCalc({ condoFee: Number(e.target.value) })} />
+                    </div>
                   </div>
                 </div>
               </CardContent>

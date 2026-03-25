@@ -10,12 +10,15 @@ import { PieChart as PieChartIcon } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCalculator } from "@/contexts/CalculatorContext";
 
 export default function AmortizationCalculator() {
   const { t, language } = useLanguage();
-  const [loanAmount, setLoanAmount] = useState<number>(300000);
-  const [interestRate, setInterestRate] = useState<number>(4);
-  const [loanTerm, setLoanTerm] = useState<number>(30);
+  const { calc } = useCalculator();
+
+  const [loanAmount, setLoanAmount] = useState<number>(() => Math.max(0, calc.homePrice - calc.downPayment));
+  const [interestRate, setInterestRate] = useState<number>(() => calc.interestRate);
+  const [loanTerm, setLoanTerm] = useState<number>(() => calc.loanTerm);
   const [startDate, setStartDate] = useState<string>(new Date().toISOString().split('T')[0].substring(0, 7));
 
   const locale = language === 'uk' ? 'uk-UA' : language === 'ru' ? 'ru-RU' : 'en-US';
