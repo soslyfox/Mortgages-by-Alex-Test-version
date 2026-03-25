@@ -64,31 +64,31 @@ export default function AffordabilityCalculator() {
       if (candidatePct >= lo && candidatePct < hi) { maxHomePrice = candidate; break; }
     }
 
-    // GDS/TDS AT the max affordable price (these are the real qualifying ratios)
-    const backwardGDS = monthlyIncome > 0 ? (maxPI + fixedGDSCosts) / monthlyIncome * 100 : 0;
-    const backwardTDS = monthlyIncome > 0 ? (maxPI + fixedGDSCosts + monthlyDebts) / monthlyIncome * 100 : 0;
-
     // ── Qualification: does the entered home price fit within max? ────────────
     const qualifies = homePrice > 0 && homePrice <= maxHomePrice;
 
     // ── Min down payment validation ──────────────────────────────────────────
-    // Check against BOTH the entered home price and the computed max
     const minDownForEntered = minDownPayment(homePrice);
     const minDownForMax     = minDownPayment(maxHomePrice);
     const downTooLowForEntered = homePrice > 0 && downPayment < minDownForEntered;
     const downTooLowForMax     = maxHomePrice > 0 && downPayment < minDownForMax;
 
-    // ── Actual monthly payment at CONTRACT rate (for the entered home price) ──
+    // ── FORWARD: real stress-tested GDS/TDS for the entered home price ────────
     const effectiveDown   = Math.max(downPayment, minDownForEntered);
     const baseLoan        = Math.max(0, homePrice - effectiveDown);
     const downPct         = homePrice > 0 ? effectiveDown / homePrice : 0;
     const insuredLoan     = baseLoan * (1 + cmhcRate(downPct, loanTerm));
+    const forwardPI       = insuredLoan * stressFactor;
+    const forwardGDS      = monthlyIncome > 0 ? (forwardPI + fixedGDSCosts) / monthlyIncome * 100 : 0;
+    const forwardTDS      = monthlyIncome > 0 ? (forwardPI + fixedGDSCosts + monthlyDebts) / monthlyIncome * 100 : 0;
+
+    // ── Actual monthly payment at CONTRACT rate ───────────────────────────────
     const contractFactor  = mortgageFactor(interestRate, months);
     const actualMonthlyPI = insuredLoan * contractFactor;
 
     return {
       monthlyIncome, stressRate,
-      backwardGDS, backwardTDS,
+      forwardGDS, forwardTDS,
       qualifies,
       maxHomePrice, maxInsuredLoan,
       actualMonthlyPI,
@@ -136,21 +136,21 @@ export default function AffordabilityCalculator() {
                 </div>
               </Card>
 
-              {/* GDS / TDS card — ratios AT the max affordable price */}
+              {/* GDS / TDS card — stress-tested ratios for the entered home price */}
               <Card className="shadow-xl border-primary/20 bg-card overflow-hidden">
                 <CardContent className="p-6 space-y-4">
                   {/* GDS */}
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-end">
                       <span className="text-sm font-medium">GDS</span>
-                      <span className="text-sm font-bold text-primary">
-                        {calculations.backwardGDS.toFixed(1)}% / {(GDS_LIMIT * 100).toFixed(0)}%
+                      <span className={`text-sm font-bold ${calculations.forwardGDS > GDS_LIMIT * 100 ? 'text-destructive' : 'text-primary'}`}>
+                        {calculations.forwardGDS.toFixed(1)}% / {(GDS_LIMIT * 100).toFixed(0)}%
                       </span>
                     </div>
                     <Progress
-                      value={Math.min(calculations.backwardGDS / (GDS_LIMIT * 100) * 100, 100)}
+                      value={Math.min(calculations.forwardGDS / (GDS_LIMIT * 100) * 100, 110)}
                       className="h-2 bg-muted"
-                      indicatorClassName="bg-primary"
+                      indicatorClassName={calculations.forwardGDS > GDS_LIMIT * 100 ? "bg-destructive" : "bg-primary"}
                     />
                     <p className="text-xs text-muted-foreground">{t.affordCalc.gdsFormula}</p>
                   </div>
@@ -158,14 +158,14 @@ export default function AffordabilityCalculator() {
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-end">
                       <span className="text-sm font-medium">TDS</span>
-                      <span className="text-sm font-bold text-primary">
-                        {calculations.backwardTDS.toFixed(1)}% / {(TDS_LIMIT * 100).toFixed(0)}%
+                      <span className={`text-sm font-bold ${calculations.forwardTDS > TDS_LIMIT * 100 ? 'text-destructive' : calculations.forwardTDS > 39 ? 'text-orange-500' : 'text-primary'}`}>
+                        {calculations.forwardTDS.toFixed(1)}% / {(TDS_LIMIT * 100).toFixed(0)}%
                       </span>
                     </div>
                     <Progress
-                      value={Math.min(calculations.backwardTDS / (TDS_LIMIT * 100) * 100, 100)}
+                      value={Math.min(calculations.forwardTDS / (TDS_LIMIT * 100) * 100, 110)}
                       className="h-2 bg-muted"
-                      indicatorClassName={calculations.backwardTDS > 39 ? "bg-orange-500" : "bg-primary"}
+                      indicatorClassName={calculations.forwardTDS > TDS_LIMIT * 100 ? "bg-destructive" : calculations.forwardTDS > 39 ? "bg-orange-500" : "bg-primary"}
                     />
                     <p className="text-xs text-muted-foreground">{t.affordCalc.tdsFormula}</p>
                   </div>
