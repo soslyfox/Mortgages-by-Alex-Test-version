@@ -462,7 +462,7 @@ export const translations = {
       mortgage: 'Ипотека',
       affordability: 'Доступность',
       refinance: 'Рефинансирование',
-      amortization: 'График погашения',
+      amortization: 'Амортизация',
       currentRates: 'Текущие ставки',
       preApproved: 'Записаться на консультацию',
     },

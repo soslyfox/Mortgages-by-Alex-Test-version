@@ -54,7 +54,7 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-90">
-              <span className="font-display text-lg font-bold tracking-tight text-white">
+              <span className="font-display text-lg font-bold tracking-tight text-white whitespace-nowrap">
                 Mortgages <span className="text-green-300">by Alex</span>
               </span>
             </Link>
