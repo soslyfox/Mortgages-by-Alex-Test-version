@@ -148,6 +148,7 @@ export const translations = {
       tdsFormula: '(GDS-витрати + Борги) ÷ Дохід',
       housingCostsNote: 'Синхронізовано з іпотечним калькулятором',
       minDownWarning: 'Мінімальний перший внесок для цієї ціни:',
+      minDownForMaxWarning: 'Мінімальний перший внесок для максимальної ціни:',
     },
     // Refinance Calculator
     refinanceCalc: {
@@ -369,6 +370,7 @@ export const translations = {
       tdsFormula: '(GDS costs + Debts) ÷ Income',
       housingCostsNote: 'Synced from mortgage calculator',
       minDownWarning: 'Minimum down payment for this price:',
+      minDownForMaxWarning: 'Minimum down payment for the max affordable price:',
     },
     refinanceCalc: {
       title: 'Refinance Calculator',
@@ -587,6 +589,7 @@ export const translations = {
       tdsFormula: '(Расходы GDS + Долги) ÷ Доход',
       housingCostsNote: 'Синхронизировано с ипотечным калькулятором',
       minDownWarning: 'Минимальный первоначальный взнос для этой цены:',
+      minDownForMaxWarning: 'Минимальный первоначальный взнос для максимальной цены:',
     },
     refinanceCalc: {
       title: 'Калькулятор рефинансирования',

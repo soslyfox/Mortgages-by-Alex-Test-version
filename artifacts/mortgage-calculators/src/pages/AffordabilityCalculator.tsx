@@ -38,60 +38,62 @@ export default function AffordabilityCalculator() {
   const [monthlyDebts, setMonthlyDebts] = useState<number>(500);
 
   const calculations = useMemo(() => {
-    const monthlyIncome  = annualIncome / 12;
-    const stressRate     = Math.max(5.25, interestRate + 2);
-    const months         = loanTerm * 12;
+    const monthlyIncome = annualIncome / 12;
+    const stressRate    = Math.max(5.25, interestRate + 2);
+    const months        = loanTerm * 12;
+    const stressFactor  = mortgageFactor(stressRate, months);
 
-    // Canadian minimum down payment enforcement
-    const minDown        = minDownPayment(homePrice);
-    const effectiveDown  = Math.max(downPayment, minDown);
-    const downTooLow     = homePrice > 0 && downPayment < minDown;
-
-    // ── Monthly housing costs toward GDS (full precision throughout) ──────────
+    // ── Monthly housing costs toward GDS ──────────────────────────────────────
     const monthlyTax    = propertyTax / 12;   // 100% of taxes
     const condoHalf     = condoFee * 0.5;     // 50% of condo fee
     const fixedGDSCosts = monthlyTax + heat + condoHalf;
 
-    // ── FORWARD: GDS/TDS for the SPECIFIC home price ──────────────────────────
-    const baseLoan    = Math.max(0, homePrice - effectiveDown);
-    const downPct     = homePrice > 0 ? effectiveDown / homePrice : 0;
-    const insuredLoan = baseLoan * (1 + cmhcRate(downPct, loanTerm));
-    const stressFactor = mortgageFactor(stressRate, months);
-    const forwardPI   = insuredLoan * stressFactor;  // P&I at stress test rate
-
-    // Full-precision ratios used for comparison; display rounds to 1 decimal
-    const forwardGDS  = monthlyIncome > 0 ? (forwardPI + fixedGDSCosts) / monthlyIncome * 100 : 0;
-    const forwardTDS  = monthlyIncome > 0 ? (forwardPI + fixedGDSCosts + monthlyDebts) / monthlyIncome * 100 : 0;
-    const qualifiesGDS = forwardGDS <= GDS_LIMIT * 100;
-    const qualifiesTDS = forwardTDS <= TDS_LIMIT * 100;
-    const qualifies    = qualifiesGDS && qualifiesTDS;
-
-    // ── BACKWARD: Maximum affordable home price ───────────────────────────────
-    const maxPI_GDS     = Math.max(0, monthlyIncome * GDS_LIMIT - fixedGDSCosts);
-    const maxPI_TDS     = Math.max(0, monthlyIncome * TDS_LIMIT - fixedGDSCosts - monthlyDebts);
-    const maxPI         = Math.min(maxPI_GDS, maxPI_TDS);
+    // ── BACKWARD: Max affordable home price (primary output) ─────────────────
+    // Use the entered downPayment directly; min-down validation is done separately
+    const maxPI_GDS      = Math.max(0, monthlyIncome * GDS_LIMIT - fixedGDSCosts);
+    const maxPI_TDS      = Math.max(0, monthlyIncome * TDS_LIMIT - fixedGDSCosts - monthlyDebts);
+    const maxPI          = Math.min(maxPI_GDS, maxPI_TDS);
     const maxInsuredLoan = stressFactor > 0 ? maxPI / stressFactor : 0;
 
-    // Back out CMHC to find true home price (using effectiveDown)
-    let maxHomePrice = maxInsuredLoan + effectiveDown; // default: ≥20% down, no CMHC
+    // Back out CMHC from maxInsuredLoan → true home price
+    let maxHomePrice = maxInsuredLoan + downPayment; // default: ≥20% down, no CMHC
     for (const [lo, hi] of [[0.05, 0.10], [0.10, 0.15], [0.15, 0.20]] as [number, number][]) {
-      const rate = cmhcRate(lo, loanTerm);
-      const candidate    = maxInsuredLoan / (1 + rate) + effectiveDown;
-      const candidatePct = effectiveDown / candidate;
+      const rate         = cmhcRate(lo, loanTerm);
+      const candidate    = maxInsuredLoan / (1 + rate) + downPayment;
+      const candidatePct = downPayment / candidate;
       if (candidatePct >= lo && candidatePct < hi) { maxHomePrice = candidate; break; }
     }
 
-    // Actual monthly payment at CONTRACT rate
+    // GDS/TDS AT the max affordable price (these are the real qualifying ratios)
+    const backwardGDS = monthlyIncome > 0 ? (maxPI + fixedGDSCosts) / monthlyIncome * 100 : 0;
+    const backwardTDS = monthlyIncome > 0 ? (maxPI + fixedGDSCosts + monthlyDebts) / monthlyIncome * 100 : 0;
+
+    // ── Qualification: does the entered home price fit within max? ────────────
+    const qualifies = homePrice > 0 && homePrice <= maxHomePrice;
+
+    // ── Min down payment validation ──────────────────────────────────────────
+    // Check against BOTH the entered home price and the computed max
+    const minDownForEntered = minDownPayment(homePrice);
+    const minDownForMax     = minDownPayment(maxHomePrice);
+    const downTooLowForEntered = homePrice > 0 && downPayment < minDownForEntered;
+    const downTooLowForMax     = maxHomePrice > 0 && downPayment < minDownForMax;
+
+    // ── Actual monthly payment at CONTRACT rate (for the entered home price) ──
+    const effectiveDown   = Math.max(downPayment, minDownForEntered);
+    const baseLoan        = Math.max(0, homePrice - effectiveDown);
+    const downPct         = homePrice > 0 ? effectiveDown / homePrice : 0;
+    const insuredLoan     = baseLoan * (1 + cmhcRate(downPct, loanTerm));
     const contractFactor  = mortgageFactor(interestRate, months);
     const actualMonthlyPI = insuredLoan * contractFactor;
 
     return {
       monthlyIncome, stressRate,
-      forwardGDS, forwardTDS,
-      qualifiesGDS, qualifiesTDS, qualifies,
+      backwardGDS, backwardTDS,
+      qualifies,
       maxHomePrice, maxInsuredLoan,
       actualMonthlyPI,
-      minDown, effectiveDown, downTooLow,
+      minDownForEntered, minDownForMax,
+      downTooLowForEntered, downTooLowForMax,
     };
   }, [annualIncome, monthlyDebts, interestRate, loanTerm, homePrice, downPayment, propertyTax, condoFee, heat]);
 
@@ -116,35 +118,39 @@ export default function AffordabilityCalculator() {
           <div className="lg:col-span-5 order-first lg:order-last">
             <motion.div className="sticky top-24 space-y-4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
 
-              {/* GDS / TDS card (forward, for the specific home price) */}
-              <Card className="shadow-xl border-primary/20 bg-card overflow-hidden">
-                <div className={`p-6 border-b border-border/50 flex items-center justify-between ${calculations.qualifies ? 'bg-primary/10' : 'bg-destructive/10'}`}>
+              {/* Qualification badge for the entered home price */}
+              <Card className={`shadow-xl border-primary/20 overflow-hidden ${calculations.qualifies ? 'bg-primary/5' : 'bg-destructive/5'}`}>
+                <div className="p-5 flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground mb-0.5">
+                    <p className="text-sm text-muted-foreground mb-0.5">
                       {formatCurrency(homePrice)} @ {calculations.stressRate.toFixed(2)}% stress
                     </p>
-                    <p className="text-lg font-semibold">
+                    <p className="font-semibold">
                       {calculations.qualifies ? t.affordCalc.qualifies : t.affordCalc.doesNotQualify}
                     </p>
                   </div>
                   {calculations.qualifies
-                    ? <CheckCircle2 className="w-8 h-8 text-primary shrink-0" />
-                    : <XCircle className="w-8 h-8 text-destructive shrink-0" />
+                    ? <CheckCircle2 className="w-7 h-7 text-primary shrink-0" />
+                    : <XCircle className="w-7 h-7 text-destructive shrink-0" />
                   }
                 </div>
+              </Card>
+
+              {/* GDS / TDS card — ratios AT the max affordable price */}
+              <Card className="shadow-xl border-primary/20 bg-card overflow-hidden">
                 <CardContent className="p-6 space-y-4">
                   {/* GDS */}
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-end">
                       <span className="text-sm font-medium">GDS</span>
-                      <span className={`text-sm font-bold ${!calculations.qualifiesGDS ? 'text-destructive' : 'text-primary'}`}>
-                        {calculations.forwardGDS.toFixed(1)}% / {(GDS_LIMIT * 100).toFixed(0)}%
+                      <span className="text-sm font-bold text-primary">
+                        {calculations.backwardGDS.toFixed(1)}% / {(GDS_LIMIT * 100).toFixed(0)}%
                       </span>
                     </div>
                     <Progress
-                      value={Math.min(calculations.forwardGDS / (GDS_LIMIT * 100) * 100, 110)}
+                      value={Math.min(calculations.backwardGDS / (GDS_LIMIT * 100) * 100, 100)}
                       className="h-2 bg-muted"
-                      indicatorClassName={!calculations.qualifiesGDS ? "bg-destructive" : "bg-primary"}
+                      indicatorClassName="bg-primary"
                     />
                     <p className="text-xs text-muted-foreground">{t.affordCalc.gdsFormula}</p>
                   </div>
@@ -152,14 +158,14 @@ export default function AffordabilityCalculator() {
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-end">
                       <span className="text-sm font-medium">TDS</span>
-                      <span className={`text-sm font-bold ${!calculations.qualifiesTDS ? 'text-destructive' : 'text-primary'}`}>
-                        {calculations.forwardTDS.toFixed(1)}% / {(TDS_LIMIT * 100).toFixed(0)}%
+                      <span className="text-sm font-bold text-primary">
+                        {calculations.backwardTDS.toFixed(1)}% / {(TDS_LIMIT * 100).toFixed(0)}%
                       </span>
                     </div>
                     <Progress
-                      value={Math.min(calculations.forwardTDS / (TDS_LIMIT * 100) * 100, 110)}
+                      value={Math.min(calculations.backwardTDS / (TDS_LIMIT * 100) * 100, 100)}
                       className="h-2 bg-muted"
-                      indicatorClassName={!calculations.qualifiesTDS ? "bg-destructive" : calculations.forwardTDS > 39 ? "bg-orange-500" : "bg-primary"}
+                      indicatorClassName={calculations.backwardTDS > 39 ? "bg-orange-500" : "bg-primary"}
                     />
                     <p className="text-xs text-muted-foreground">{t.affordCalc.tdsFormula}</p>
                   </div>
@@ -217,11 +223,16 @@ export default function AffordabilityCalculator() {
                     type="number" addonLeft="$"
                     value={downPayment.toString()}
                     onChange={(e) => setCalc({ downPayment: Number(e.target.value) })}
-                    className={calculations.downTooLow ? "border-destructive focus-visible:ring-destructive" : ""}
+                    className={calculations.downTooLowForEntered || calculations.downTooLowForMax ? "border-destructive focus-visible:ring-destructive" : ""}
                   />
-                  {calculations.downTooLow && (
+                  {calculations.downTooLowForEntered && (
                     <p className="text-xs text-destructive font-medium">
-                      {t.affordCalc.minDownWarning} {formatCurrency(calculations.minDown)}
+                      {t.affordCalc.minDownWarning} {formatCurrency(calculations.minDownForEntered)}
+                    </p>
+                  )}
+                  {!calculations.downTooLowForEntered && calculations.downTooLowForMax && (
+                    <p className="text-xs text-destructive font-medium">
+                      {t.affordCalc.minDownForMaxWarning} {formatCurrency(calculations.minDownForMax)}
                     </p>
                   )}
                 </div>
