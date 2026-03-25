@@ -53,9 +53,31 @@ export default function AffordabilityCalculator() {
     // Binding constraint (at stress test rate — this is what lenders use)
     const maxPI = Math.min(maxPI_GDS, maxPI_TDS);
 
-    // Loan amount at stress test rate; actual monthly payment at contract rate
+    // maxLoanAmount is the TOTAL qualifying loan (base + CMHC if applicable)
+    // Back out CMHC to find the true home price
     const maxLoanAmount = stressMortgageFactor > 0 ? maxPI / stressMortgageFactor : 0;
-    const maxHomePrice  = maxLoanAmount + downPayment;
+
+    // Determine which CMHC bracket applies (same surcharge logic as Mortgage Calculator)
+    const cmhcSurcharge = loanTerm >= 30 ? 0.002 : 0;
+    function cmhcRateForPct(pct: number) {
+      if (pct < 0.10) return 0.040 + cmhcSurcharge;
+      if (pct < 0.15) return 0.031 + cmhcSurcharge;
+      if (pct < 0.20) return 0.028 + cmhcSurcharge;
+      return 0;
+    }
+
+    // Solve: maxLoanAmount = baseLoan × (1 + cmhcRate), baseLoan = homePrice − downPayment
+    // Check each bracket for consistency (downPct = downPayment / homePrice)
+    let maxHomePrice = maxLoanAmount + downPayment; // default: no CMHC (≥20% down)
+    for (const [lo, hi] of [[0.05, 0.10], [0.10, 0.15], [0.15, 0.20]] as [number, number][]) {
+      const rate = cmhcRateForPct(lo); // use lower bound of bracket to get rate
+      const candidatePrice = maxLoanAmount / (1 + rate) + downPayment;
+      const candidatePct   = downPayment / candidatePrice;
+      if (candidatePct >= lo && candidatePct < hi) {
+        maxHomePrice = candidatePrice;
+        break;
+      }
+    }
 
     // Actual monthly P&I at contract rate (what the borrower actually pays)
     const contractMonthlyRate   = Math.pow(1 + (interestRate / 100) / 2, 1 / 6) - 1;
@@ -112,11 +134,6 @@ export default function AffordabilityCalculator() {
                   <div className="text-5xl md:text-6xl font-display font-bold text-primary">
                     {formatCurrency(calculations.maxHomePrice)}
                   </div>
-                  <div className="mt-3 inline-flex items-center gap-1.5 bg-primary/20 text-primary text-xs font-medium px-3 py-1 rounded-full">
-                    <span>Stress test: {calculations.stressTestRate.toFixed(2)}%</span>
-                    <span className="text-primary/60">·</span>
-                    <span className="text-primary/70">contract {interestRate}%</span>
-                  </div>
                 </div>
                 <CardContent className="p-6 space-y-6">
                   <div className="space-y-2">
@@ -159,7 +176,6 @@ export default function AffordabilityCalculator() {
                       className="h-2 bg-muted"
                       indicatorClassName={calculations.actualTDS > calculations.tdsLimit ? "bg-destructive" : calculations.actualTDS > 39 ? "bg-orange-500" : "bg-primary"}
                     />
-                    <p className="text-xs text-muted-foreground mt-1">{t.affordCalc.dtiNote}</p>
                   </div>
 
                   {isAtMax ? (
