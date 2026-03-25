@@ -140,6 +140,12 @@ export const translations = {
       years25: '25 років',
       years20: '20 років',
       years15: '15 років',
+      homePrice: 'Ціна нерухомості',
+      qualifies: 'Відповідає вимогам кваліфікації',
+      doesNotQualify: 'Не відповідає вимогам кваліфікації',
+      gdsFormula: '(Платіж + Податок + Опалення + 50% кондо) ÷ Дохід',
+      tdsFormula: '(GDS-витрати + Борги) ÷ Дохід',
+      housingCostsNote: 'Синхронізовано з іпотечним калькулятором',
     },
     // Refinance Calculator
     refinanceCalc: {
@@ -353,6 +359,12 @@ export const translations = {
       years25: '25 Years',
       years20: '20 Years',
       years15: '15 Years',
+      homePrice: 'Home Price',
+      qualifies: 'Qualifies for this property',
+      doesNotQualify: 'Does not qualify for this property',
+      gdsFormula: '(Payment + Tax + Heat + 50% Condo) ÷ Income',
+      tdsFormula: '(GDS costs + Debts) ÷ Income',
+      housingCostsNote: 'Synced from mortgage calculator',
     },
     refinanceCalc: {
       title: 'Refinance Calculator',
@@ -563,6 +575,12 @@ export const translations = {
       years25: '25 лет',
       years20: '20 лет',
       years15: '15 лет',
+      homePrice: 'Стоимость жилья',
+      qualifies: 'Соответствует требованиям для данной недвижимости',
+      doesNotQualify: 'Не соответствует требованиям для данной недвижимости',
+      gdsFormula: '(Платёж + Налог + Отопление + 50% кондо) ÷ Доход',
+      tdsFormula: '(Расходы GDS + Долги) ÷ Доход',
+      housingCostsNote: 'Синхронизировано с ипотечным калькулятором',
     },
     refinanceCalc: {
       title: 'Калькулятор рефинансирования',
