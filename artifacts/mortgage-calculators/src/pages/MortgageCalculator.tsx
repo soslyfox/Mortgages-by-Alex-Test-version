@@ -123,26 +123,11 @@ export default function MortgageCalculator() {
                       <InputWithAddon type="number" addonRight="%" value={stripTrailingZero(calculations.downPaymentPercent, 2)} onChange={(e) => setCalc({ downPayment: homePrice * (Number(e.target.value) / 100) })} step="any" />
                     </div>
                   </div>
-                  {/* Slider with soft-cap tick at minimum down payment */}
-                  <div className="relative pb-6">
-                    <Slider
-                      value={[calculations.downPaymentPercent]}
-                      min={0} max={100} step={0.1}
-                      onValueChange={(val) => handleDownPaymentSlider(val[0])}
-                    />
-                    {/* Tick mark at minimum down payment position */}
-                    {homePrice > 0 && (
-                      <div
-                        className="absolute top-full mt-0.5 flex flex-col items-center pointer-events-none"
-                        style={{ left: `${minDownPercent}%`, transform: 'translateX(-50%)' }}
-                      >
-                        <div className="w-px h-2 bg-amber-500" />
-                        <span className="text-[10px] font-medium text-amber-600 whitespace-nowrap mt-0.5">
-                          {t.mortgageCalc.minDP ?? "Min DP"} {formatCurrency(minDown)}
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                  <Slider
+                    value={[calculations.downPaymentPercent]}
+                    min={0} max={100} step={0.1}
+                    onValueChange={(val) => handleDownPaymentSlider(val[0])}
+                  />
                   {homePrice > 0 && downPayment < minDown && (
                     <p className="text-xs text-destructive font-medium">
                       {t.mortgageCalc.minDownWarning} {formatCurrency(minDown)}
