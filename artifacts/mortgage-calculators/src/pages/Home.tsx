@@ -24,7 +24,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[#003d2b] pt-16 pb-0">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-start gap-10 lg:gap-16">
+          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-10 lg:gap-16">
 
             {/* Left: Text */}
             <motion.div
@@ -66,7 +66,7 @@ export default function Home() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="w-full lg:w-auto flex-shrink-0 flex flex-col items-center gap-3 pt-0 lg:self-start"
+              className="w-full lg:w-auto flex-shrink-0 flex flex-col items-center gap-3 pt-0 pb-8 lg:pb-0 lg:self-start"
             >
               {/* Photo with badge */}
               <div className="relative">
