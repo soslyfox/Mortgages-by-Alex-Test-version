@@ -40,8 +40,8 @@ export function Navbar() {
   const { t, language, setLanguage } = useLanguage();
 
   const navLinks = [
-    { name: t.nav.mortgage,      path: "/mortgage-calculator" },
     { name: t.nav.affordability, path: "/affordability-calculator" },
+    { name: t.nav.mortgage,      path: "/mortgage-calculator" },
     { name: t.nav.refinance,     path: "/refinance-calculator" },
     { name: t.nav.amortization,  path: "/amortization-calculator" },
   ];

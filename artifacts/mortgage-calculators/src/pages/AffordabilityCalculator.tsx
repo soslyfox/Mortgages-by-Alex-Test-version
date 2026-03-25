@@ -1,11 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useLocation } from "wouter";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { InputWithAddon } from "@/components/ui/input-addon";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { formatCurrency, minDownPayment } from "@/lib/formatters";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Home, CheckCircle2, XCircle } from "lucide-react";
+import { Home, CheckCircle2, XCircle, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -31,71 +33,85 @@ function mortgageFactor(annualRate: number, months: number): number {
 export default function AffordabilityCalculator() {
   const { t } = useLanguage();
   const { calc, setCalc } = useCalculator();
+  const [, navigate] = useLocation();
 
-  const { homePrice, interestRate, loanTerm, downPayment, propertyTax, condoFee, heat } = calc;
+  const { interestRate, loanTerm, downPayment, propertyTax, condoFee, heat } = calc;
 
   const [annualIncome, setAnnualIncome] = useState<number>(100000);
   const [monthlyDebts, setMonthlyDebts] = useState<number>(500);
+  // null = auto-follow the computed max; a number = user manually edited
+  const [manualHomePrice, setManualHomePrice] = useState<number | null>(null);
 
-  const calculations = useMemo(() => {
+  // ── BACKWARD: max affordable home price (income-driven) ──────────────────
+  const backward = useMemo(() => {
     const monthlyIncome = annualIncome / 12;
     const stressRate    = Math.max(5.25, interestRate + 2);
     const months        = loanTerm * 12;
     const stressFactor  = mortgageFactor(stressRate, months);
 
-    // ── Monthly housing costs toward GDS ──────────────────────────────────────
-    const monthlyTax    = propertyTax / 12;   // 100% of taxes
-    const condoHalf     = condoFee * 0.5;     // 50% of condo fee
+    const monthlyTax    = propertyTax / 12;
+    const condoHalf     = condoFee * 0.5;
     const fixedGDSCosts = monthlyTax + heat + condoHalf;
 
-    // ── BACKWARD: Max affordable home price (primary output) ─────────────────
-    // Use the entered downPayment directly; min-down validation is done separately
     const maxPI_GDS      = Math.max(0, monthlyIncome * GDS_LIMIT - fixedGDSCosts);
     const maxPI_TDS      = Math.max(0, monthlyIncome * TDS_LIMIT - fixedGDSCosts - monthlyDebts);
     const maxPI          = Math.min(maxPI_GDS, maxPI_TDS);
     const maxInsuredLoan = stressFactor > 0 ? maxPI / stressFactor : 0;
 
-    // Back out CMHC from maxInsuredLoan → true home price
-    let maxHomePrice = maxInsuredLoan + downPayment; // default: ≥20% down, no CMHC
+    // Back out CMHC to find true home price
+    let rawMax = maxInsuredLoan + downPayment; // default: ≥20%, no CMHC
     for (const [lo, hi] of [[0.05, 0.10], [0.10, 0.15], [0.15, 0.20]] as [number, number][]) {
-      const rate         = cmhcRate(lo, loanTerm);
-      const candidate    = maxInsuredLoan / (1 + rate) + downPayment;
-      const candidatePct = downPayment / candidate;
-      if (candidatePct >= lo && candidatePct < hi) { maxHomePrice = candidate; break; }
+      const rate      = cmhcRate(lo, loanTerm);
+      const candidate = maxInsuredLoan / (1 + rate) + downPayment;
+      const pct       = downPayment / candidate;
+      if (pct >= lo && pct < hi) { rawMax = candidate; break; }
     }
 
-    // ── Qualification: does the entered home price fit within max? ────────────
-    const qualifies = homePrice > 0 && homePrice <= maxHomePrice;
-
-    // ── Min down payment validation ──────────────────────────────────────────
-    const minDownForEntered = minDownPayment(homePrice);
-    const minDownForMax     = minDownPayment(maxHomePrice);
-    const downTooLowForEntered = homePrice > 0 && downPayment < minDownForEntered;
-    const downTooLowForMax     = maxHomePrice > 0 && downPayment < minDownForMax;
-
-    // ── FORWARD: real stress-tested GDS/TDS for the entered home price ────────
-    const effectiveDown   = Math.max(downPayment, minDownForEntered);
-    const baseLoan        = Math.max(0, homePrice - effectiveDown);
-    const downPct         = homePrice > 0 ? effectiveDown / homePrice : 0;
-    const insuredLoan     = baseLoan * (1 + cmhcRate(downPct, loanTerm));
-    const forwardPI       = insuredLoan * stressFactor;
-    const forwardGDS      = monthlyIncome > 0 ? (forwardPI + fixedGDSCosts) / monthlyIncome * 100 : 0;
-    const forwardTDS      = monthlyIncome > 0 ? (forwardPI + fixedGDSCosts + monthlyDebts) / monthlyIncome * 100 : 0;
-
-    // ── Actual monthly payment at CONTRACT rate ───────────────────────────────
-    const contractFactor  = mortgageFactor(interestRate, months);
-    const actualMonthlyPI = insuredLoan * contractFactor;
+    const maxHomePrice = Math.floor(rawMax); // integer so display = calculation
+    const minDownForMax = minDownPayment(maxHomePrice);
 
     return {
-      monthlyIncome, stressRate,
-      forwardGDS, forwardTDS,
-      qualifies,
-      maxHomePrice, maxInsuredLoan,
-      actualMonthlyPI,
-      minDownForEntered, minDownForMax,
-      downTooLowForEntered, downTooLowForMax,
+      monthlyIncome, stressRate, fixedGDSCosts,
+      maxHomePrice, maxInsuredLoan, maxPI,
+      minDownForMax,
+      stressFactor,
     };
-  }, [annualIncome, monthlyDebts, interestRate, loanTerm, homePrice, downPayment, propertyTax, condoFee, heat]);
+  }, [annualIncome, monthlyDebts, interestRate, loanTerm, downPayment, propertyTax, condoFee, heat]);
+
+  // Effective home price: follow max unless user overrode it
+  const homePrice = manualHomePrice !== null ? manualHomePrice : backward.maxHomePrice;
+
+  // ── Auto-adjust down payment to minimum for the displayed home price ──────
+  useEffect(() => {
+    const minDown = Math.ceil(minDownPayment(homePrice));
+    if (downPayment < minDown) {
+      setCalc({ downPayment: minDown });
+    }
+  }, [homePrice]); // Only re-run when homePrice changes, not on every downPayment change
+
+  // ── FORWARD: stress-tested GDS/TDS for the displayed home price ───────────
+  const forward = useMemo(() => {
+    const { stressFactor, fixedGDSCosts, monthlyIncome } = backward;
+    const minDown     = minDownPayment(homePrice);
+    const effDown     = Math.max(downPayment, minDown);
+    const baseLoan    = Math.max(0, homePrice - effDown);
+    const downPct     = homePrice > 0 ? effDown / homePrice : 0;
+    const insuredLoan = baseLoan * (1 + cmhcRate(downPct, loanTerm));
+    const forwardPI   = insuredLoan * stressFactor;
+    const forwardGDS  = monthlyIncome > 0 ? (forwardPI + fixedGDSCosts) / monthlyIncome * 100 : 0;
+    const forwardTDS  = monthlyIncome > 0 ? (forwardPI + fixedGDSCosts + monthlyDebts) / monthlyIncome * 100 : 0;
+
+    const contractFactor  = mortgageFactor(interestRate, loanTerm * 12);
+    const actualMonthlyPI = insuredLoan * contractFactor;
+    const qualifies       = homePrice > 0 && homePrice <= backward.maxHomePrice;
+
+    return { forwardGDS, forwardTDS, qualifies, actualMonthlyPI, effDown, insuredLoan };
+  }, [backward, homePrice, downPayment, interestRate, loanTerm, monthlyDebts]);
+
+  function handleGoToMortgage() {
+    setCalc({ homePrice, downPayment });
+    navigate("/mortgage-calculator");
+  }
 
   return (
     <AppLayout>
@@ -118,81 +134,92 @@ export default function AffordabilityCalculator() {
           <div className="lg:col-span-5 order-first lg:order-last">
             <motion.div className="sticky top-24 space-y-4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
 
+              {/* Max affordable */}
+              <Card className="shadow-xl border-primary/20 bg-primary/5 overflow-hidden">
+                <CardContent className="p-6 space-y-3">
+                  <p className="text-sm font-medium text-muted-foreground">{t.affordCalc.canAfford}</p>
+                  <p className="text-4xl font-display font-bold text-foreground">{formatCurrency(backward.maxHomePrice)}</p>
+                  <div className="flex justify-between text-sm pt-2 border-t border-border/50">
+                    <span className="text-muted-foreground">{t.affordCalc.loanAmount}</span>
+                    <span className="font-semibold">{formatCurrency(backward.maxInsuredLoan)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">{t.affordCalc.downPayment}</span>
+                    <span className="font-semibold">{formatCurrency(downPayment)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">{t.affordCalc.minDownPayment ?? 'Min. down payment'}</span>
+                    <span className="font-semibold">{formatCurrency(backward.minDownForMax)}</span>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Qualification badge for the entered home price */}
-              <Card className={`shadow-xl border-primary/20 overflow-hidden ${calculations.qualifies ? 'bg-primary/5' : 'bg-destructive/5'}`}>
+              <Card className={`shadow-xl border-primary/20 overflow-hidden ${forward.qualifies ? 'bg-primary/5' : 'bg-destructive/5'}`}>
                 <div className="p-5 flex items-center justify-between gap-3">
                   <div>
                     <p className="text-sm text-muted-foreground mb-0.5">
-                      {formatCurrency(homePrice)} @ {calculations.stressRate.toFixed(2)}% stress
+                      {formatCurrency(homePrice)} @ {backward.stressRate.toFixed(2)}% stress
                     </p>
                     <p className="font-semibold">
-                      {calculations.qualifies ? t.affordCalc.qualifies : t.affordCalc.doesNotQualify}
+                      {forward.qualifies ? t.affordCalc.qualifies : t.affordCalc.doesNotQualify}
                     </p>
                   </div>
-                  {calculations.qualifies
+                  {forward.qualifies
                     ? <CheckCircle2 className="w-7 h-7 text-primary shrink-0" />
                     : <XCircle className="w-7 h-7 text-destructive shrink-0" />
                   }
                 </div>
               </Card>
 
-              {/* GDS / TDS card — stress-tested ratios for the entered home price */}
+              {/* GDS / TDS card */}
               <Card className="shadow-xl border-primary/20 bg-card overflow-hidden">
                 <CardContent className="p-6 space-y-4">
-                  {/* GDS */}
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-end">
                       <span className="text-sm font-medium">GDS</span>
-                      <span className={`text-sm font-bold ${calculations.forwardGDS > GDS_LIMIT * 100 ? 'text-destructive' : 'text-primary'}`}>
-                        {calculations.forwardGDS.toFixed(1)}% / {(GDS_LIMIT * 100).toFixed(0)}%
+                      <span className={`text-sm font-bold ${forward.forwardGDS > GDS_LIMIT * 100 ? 'text-destructive' : 'text-primary'}`}>
+                        {forward.forwardGDS.toFixed(1)}% / {(GDS_LIMIT * 100).toFixed(0)}%
                       </span>
                     </div>
                     <Progress
-                      value={Math.min(calculations.forwardGDS / (GDS_LIMIT * 100) * 100, 110)}
+                      value={Math.min(forward.forwardGDS / (GDS_LIMIT * 100) * 100, 110)}
                       className="h-2 bg-muted"
-                      indicatorClassName={calculations.forwardGDS > GDS_LIMIT * 100 ? "bg-destructive" : "bg-primary"}
+                      indicatorClassName={forward.forwardGDS > GDS_LIMIT * 100 ? "bg-destructive" : "bg-primary"}
                     />
                     <p className="text-xs text-muted-foreground">{t.affordCalc.gdsFormula}</p>
                   </div>
-                  {/* TDS */}
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-end">
                       <span className="text-sm font-medium">TDS</span>
-                      <span className={`text-sm font-bold ${calculations.forwardTDS > TDS_LIMIT * 100 ? 'text-destructive' : calculations.forwardTDS > 39 ? 'text-orange-500' : 'text-primary'}`}>
-                        {calculations.forwardTDS.toFixed(1)}% / {(TDS_LIMIT * 100).toFixed(0)}%
+                      <span className={`text-sm font-bold ${forward.forwardTDS > TDS_LIMIT * 100 ? 'text-destructive' : forward.forwardTDS > 39 ? 'text-orange-500' : 'text-primary'}`}>
+                        {forward.forwardTDS.toFixed(1)}% / {(TDS_LIMIT * 100).toFixed(0)}%
                       </span>
                     </div>
                     <Progress
-                      value={Math.min(calculations.forwardTDS / (TDS_LIMIT * 100) * 100, 110)}
+                      value={Math.min(forward.forwardTDS / (TDS_LIMIT * 100) * 100, 110)}
                       className="h-2 bg-muted"
-                      indicatorClassName={calculations.forwardTDS > TDS_LIMIT * 100 ? "bg-destructive" : calculations.forwardTDS > 39 ? "bg-orange-500" : "bg-primary"}
+                      indicatorClassName={forward.forwardTDS > TDS_LIMIT * 100 ? "bg-destructive" : forward.forwardTDS > 39 ? "bg-orange-500" : "bg-primary"}
                     />
                     <p className="text-xs text-muted-foreground">{t.affordCalc.tdsFormula}</p>
                   </div>
                   <div className="pt-2 border-t border-border/50">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t.affordCalc.estMonthlyPayment}</span>
-                      <span className="font-bold">{formatCurrency(calculations.actualMonthlyPI)}</span>
+                      <span className="font-bold">{formatCurrency(forward.actualMonthlyPI)}</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Max affordable (backward) */}
-              <Card className="shadow-md border-border/50">
-                <CardContent className="p-5 space-y-3">
-                  <p className="text-sm font-medium text-muted-foreground">{t.affordCalc.canAfford}</p>
-                  <p className="text-3xl font-display font-bold text-foreground">{formatCurrency(calculations.maxHomePrice)}</p>
-                  <div className="flex justify-between text-sm pt-1 border-t border-border/50">
-                    <span className="text-muted-foreground">{t.affordCalc.loanAmount}</span>
-                    <span className="font-semibold">{formatCurrency(calculations.maxInsuredLoan)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">{t.affordCalc.downPayment}</span>
-                    <span className="font-semibold">{formatCurrency(downPayment)}</span>
-                  </div>
-                </CardContent>
-              </Card>
+              {/* CTA: open in Mortgage Calculator */}
+              <Button
+                className="w-full h-12 text-base font-semibold"
+                onClick={handleGoToMortgage}
+              >
+                {t.affordCalc.viewInMortgage ?? 'Calculate Monthly Payment'}
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
 
             </motion.div>
           </div>
@@ -214,7 +241,7 @@ export default function AffordabilityCalculator() {
                     onChange={(e) => setAnnualIncome(Number(e.target.value))}
                     className="font-semibold text-lg"
                   />
-                  <p className="text-xs text-muted-foreground">{t.affordCalc.monthly} {formatCurrency(calculations.monthlyIncome)}</p>
+                  <p className="text-xs text-muted-foreground">{t.affordCalc.monthly} {formatCurrency(backward.monthlyIncome)}</p>
                 </div>
                 {/* 2. Down payment */}
                 <div className="space-y-2">
@@ -223,18 +250,10 @@ export default function AffordabilityCalculator() {
                     type="number" addonLeft="$"
                     value={downPayment.toString()}
                     onChange={(e) => setCalc({ downPayment: Number(e.target.value) })}
-                    className={calculations.downTooLowForEntered || calculations.downTooLowForMax ? "border-destructive focus-visible:ring-destructive" : ""}
                   />
-                  {calculations.downTooLowForEntered && (
-                    <p className="text-xs text-destructive font-medium">
-                      {t.affordCalc.minDownWarning} {formatCurrency(calculations.minDownForEntered)}
-                    </p>
-                  )}
-                  {!calculations.downTooLowForEntered && calculations.downTooLowForMax && (
-                    <p className="text-xs text-destructive font-medium">
-                      {t.affordCalc.minDownForMaxWarning} {formatCurrency(calculations.minDownForMax)}
-                    </p>
-                  )}
+                  <p className="text-xs text-muted-foreground">
+                    {t.affordCalc.minDownWarning} {formatCurrency(backward.minDownForMax)}
+                  </p>
                 </div>
                 {/* 3. Monthly debts */}
                 <div className="space-y-2">
@@ -255,9 +274,22 @@ export default function AffordabilityCalculator() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Home price — defaults to max, user can override */}
                   <div className="space-y-2">
                     <Label>{t.affordCalc.homePrice}</Label>
-                    <InputWithAddon type="number" addonLeft="$" value={homePrice.toString()} onChange={(e) => setCalc({ homePrice: Number(e.target.value) })} />
+                    <InputWithAddon
+                      type="number" addonLeft="$"
+                      value={homePrice.toString()}
+                      onChange={(e) => setManualHomePrice(Number(e.target.value))}
+                    />
+                    {manualHomePrice !== null && (
+                      <button
+                        className="text-xs text-primary underline"
+                        onClick={() => setManualHomePrice(null)}
+                      >
+                        {t.affordCalc.resetToMax ?? 'Reset to maximum'}
+                      </button>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label>{t.affordCalc.interestRate}</Label>
@@ -277,7 +309,6 @@ export default function AffordabilityCalculator() {
                   </div>
                 </div>
 
-                {/* Shared housing costs */}
                 <div className="pt-2 border-t border-border/50">
                   <p className="text-xs text-muted-foreground mb-4">{t.affordCalc.housingCostsNote}</p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
