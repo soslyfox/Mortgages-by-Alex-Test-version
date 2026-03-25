@@ -1,4 +1,4 @@
-import { ArrowRight, Star, Shield, Clock, MapPin, CheckCircle } from "lucide-react";
+import { ArrowRight, Star, Shield, Clock, MapPin, TrendingDown, Heart, Navigation, FileCheck, ShieldCheck, CalendarClock } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -105,80 +105,57 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Why Me */}
-      <section className="py-16 md:py-20 bg-background">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
-            viewport={{ once: true }}
-            className="mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-2">{t.home.whyMeTitle}</h2>
-            <p className="text-muted-foreground">{t.home.whyMeSubtitle}</p>
-          </motion.div>
+      {/* Why Me + Get in Touch — combined block */}
+      <section id="contact-form" className="py-16 md:py-24 bg-background border-b border-border/30">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[t.home.whyMe1, t.home.whyMe2, t.home.whyMe3, t.home.whyMe4, t.home.whyMe5, t.home.whyMe6].map((reason, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: i * 0.07 }}
-                viewport={{ once: true }}
-                className="flex items-start gap-4 p-5 rounded-xl border border-border/40 bg-muted/20 hover:bg-muted/40 hover:border-[#003d2b]/20 transition-all duration-200"
-              >
-                <div className="w-7 h-7 rounded-full bg-[#003d2b] flex items-center justify-center shrink-0 mt-0.5">
-                  <CheckCircle className="w-4 h-4 text-white" />
-                </div>
-                <p className="text-foreground text-sm leading-relaxed">{reason}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Get in Touch */}
-      <section id="contact-form" className="py-16 md:py-20 bg-[#003d2b]/5 border-y border-[#003d2b]/10">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Left: Why Me? */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">{t.home.formTitle}</h2>
-              <p className="text-muted-foreground mb-8 text-lg">{t.home.formSubtitle}</p>
-              <div className="space-y-5">
+              <h2 className="text-4xl font-display font-bold text-foreground mb-10">{t.home.whyMeTitle}</h2>
+              <div className="space-y-8">
                 {[
-                  { icon: <Clock className="w-5 h-5" />, text: language === 'uk' ? 'Відповідь протягом 24 годин' : language === 'ru' ? 'Ответ в течение 24 часов' : 'Response within 24 hours' },
-                  { icon: <Shield className="w-5 h-5" />, text: language === 'uk' ? 'Безкоштовна консультація' : language === 'ru' ? 'Бесплатная консультация' : 'Free consultation' },
-                  { icon: <Star className="w-5 h-5" />, text: language === 'uk' ? 'Без зобовʼязань' : language === 'ru' ? 'Без обязательств' : 'No obligation' },
+                  { icon: <TrendingDown className="w-5 h-5" />, text: t.home.whyMe1 },
+                  { icon: <Heart className="w-5 h-5" />,        text: t.home.whyMe2 },
+                  { icon: <Navigation className="w-5 h-5" />,   text: t.home.whyMe3 },
+                  { icon: <FileCheck className="w-5 h-5" />,    text: t.home.whyMe4 },
+                  { icon: <ShieldCheck className="w-5 h-5" />,  text: t.home.whyMe5 },
+                  { icon: <CalendarClock className="w-5 h-5" />, text: t.home.whyMe6 },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3 text-foreground">
-                    <div className="w-9 h-9 rounded-xl bg-[#003d2b]/10 text-[#003d2b] flex items-center justify-center flex-shrink-0">
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: i * 0.07 }}
+                    viewport={{ once: true }}
+                    className="flex items-start gap-4"
+                  >
+                    <div className="w-11 h-11 rounded-full border border-border/60 bg-muted/30 flex items-center justify-center shrink-0 text-[#003d2b]">
                       {item.icon}
                     </div>
-                    <span className="font-medium">{item.text}</span>
-                  </div>
+                    <p className="text-muted-foreground leading-relaxed pt-2">{item.text}</p>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>
 
+            {/* Right: Get in Touch */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
               viewport={{ once: true }}
             >
-              <Card className="shadow-lg border-border/50">
-                <CardContent className="p-6 md:p-8">
-                  <LeadForm />
-                </CardContent>
-              </Card>
+              <h2 className="text-4xl font-display font-bold text-foreground mb-3">{t.home.formTitle}</h2>
+              <p className="text-muted-foreground mb-8">{t.home.formSubtitle}</p>
+              <LeadForm />
             </motion.div>
+
           </div>
         </div>
       </section>
