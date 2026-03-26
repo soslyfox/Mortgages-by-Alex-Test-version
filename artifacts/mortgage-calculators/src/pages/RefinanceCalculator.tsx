@@ -241,16 +241,8 @@ export default function RefinanceCalculator() {
             </div>
           </div>
 
-          {/* ── Column headers ── */}
-          <div className="grid grid-cols-2 gap-5 px-6 pt-5 pb-3 border-b border-dashed border-border/40">
-            <p className="text-sm font-semibold text-muted-foreground">{rc.currentSection}</p>
-            <p className="text-sm font-semibold text-primary">{rc.newSection}</p>
-          </div>
-
-          {/* ── Comparison rows — single CSS grid keeps left/right aligned ── */}
-          <div className="grid grid-cols-2 gap-x-5 gap-y-5 px-6 pt-5 pb-6">
-
-            {/* Rate */}
+          {/* ── Rate rows at top (before section headers) ── */}
+          <div className="grid grid-cols-2 gap-x-5 gap-y-5 px-6 pt-5 pb-3">
             <div className="space-y-2">
               <Label>{rc.currentRate}</Label>
               <InputWithAddon type="number" addonRight="%" step="0.01" value={currentRate.toString()} onChange={(e) => setCurrentRate(Number(e.target.value))} />
@@ -259,6 +251,16 @@ export default function RefinanceCalculator() {
               <Label>{rc.newRate}</Label>
               <InputWithAddon type="number" addonRight="%" step="0.01" value={newRate.toString()} onChange={(e) => setNewRate(Number(e.target.value))} className="font-bold text-primary" />
             </div>
+          </div>
+
+          {/* ── Column headers ── */}
+          <div className="grid grid-cols-2 gap-5 px-6 pt-5 pb-3 border-b border-dashed border-border/40">
+            <p className="text-sm font-semibold text-muted-foreground">{rc.currentSection}</p>
+            <p className="text-sm font-semibold text-primary">{rc.newSection}</p>
+          </div>
+
+          {/* ── Comparison rows — single CSS grid keeps left/right aligned ── */}
+          <div className="grid grid-cols-2 gap-x-5 gap-y-5 px-6 pt-5 pb-6">
 
             {/* Amortization */}
             <AmortInput
