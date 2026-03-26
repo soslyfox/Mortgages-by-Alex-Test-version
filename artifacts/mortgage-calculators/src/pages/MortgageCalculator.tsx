@@ -6,7 +6,7 @@ import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { formatCurrency, minDownPayment } from "@/lib/formatters";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
-import { Info } from "lucide-react";
+import { Info, Calculator } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
@@ -90,9 +90,14 @@ export default function MortgageCalculator() {
 
   return (
     <AppLayout>
-      <div className="bg-muted/30 py-8 md:py-12 border-b border-border/50">
+      <div className="bg-primary/5 py-8 md:py-12 border-b border-primary/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-4">{t.mortgageCalc.title}</h1>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-primary/20 text-primary rounded-lg">
+              <Calculator className="w-6 h-6" />
+            </div>
+            <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground">{t.mortgageCalc.title}</h1>
+          </div>
           <p className="text-muted-foreground max-w-2xl text-lg">{t.mortgageCalc.desc}</p>
         </div>
       </div>
