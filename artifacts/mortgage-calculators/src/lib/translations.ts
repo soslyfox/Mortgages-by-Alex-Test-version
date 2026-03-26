@@ -187,6 +187,8 @@ export const translations = {
       yr: 'р.',
       unitYears: 'роки',
       unitMonths: 'місяці',
+      cashOut: 'Вивід капіталу (equity take-out)',
+      cashOutNote: 'Макс. доступно',
     },
     // Amortization Calculator
     amortCalc: {
@@ -419,6 +421,8 @@ export const translations = {
       yr: 'yr.',
       unitYears: 'Years',
       unitMonths: 'Months',
+      cashOut: 'Equity Take-out (cash out)',
+      cashOutNote: 'Max available',
     },
     amortCalc: {
       title: 'Amortization Schedule',
@@ -649,6 +653,8 @@ export const translations = {
       yr: 'л.',
       unitYears: 'Годы',
       unitMonths: 'Месяцы',
+      cashOut: 'Вывод капитала (equity take-out)',
+      cashOutNote: 'Макс. доступно',
     },
     amortCalc: {
       title: 'График погашения',

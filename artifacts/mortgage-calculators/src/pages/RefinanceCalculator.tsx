@@ -29,7 +29,7 @@ function monthsToPayOff(balance: number, annualRate: number, payment: number): n
   return Math.ceil(Math.log(payment / (payment - r * balance)) / Math.log(1 + r));
 }
 
-const TERM_OPTIONS = [5, 4, 3, 2, 1]; // descending
+const TERM_OPTIONS = [5, 4, 3, 2, 1];
 
 type AmortUnit = "years" | "months";
 
@@ -52,10 +52,6 @@ function AmortInput({ label, valueMonths, onChange, unit, onUnitChange, labelYea
     onChange(unit === "years" ? Math.round(n * 12) : n);
   }
 
-  function handleUnitSwitch(next: AmortUnit) {
-    onUnitChange(next);
-  }
-
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -63,7 +59,7 @@ function AmortInput({ label, valueMonths, onChange, unit, onUnitChange, labelYea
         <div className="flex rounded-md overflow-hidden border border-border/60 text-xs font-medium">
           <button
             type="button"
-            onClick={() => handleUnitSwitch("years")}
+            onClick={() => onUnitChange("years")}
             className={`px-2.5 py-1 transition-colors ${
               unit === "years"
                 ? "bg-primary text-primary-foreground"
@@ -74,7 +70,7 @@ function AmortInput({ label, valueMonths, onChange, unit, onUnitChange, labelYea
           </button>
           <button
             type="button"
-            onClick={() => handleUnitSwitch("months")}
+            onClick={() => onUnitChange("months")}
             className={`px-2.5 py-1 transition-colors border-l border-border/60 ${
               unit === "months"
                 ? "bg-primary text-primary-foreground"
@@ -90,7 +86,7 @@ function AmortInput({ label, valueMonths, onChange, unit, onUnitChange, labelYea
         addonRight={unit === "years" ? labelYears.toLowerCase() : labelMonths.toLowerCase()}
         value={displayed.toString()}
         onChange={(e) => handleChange(e.target.value)}
-        min={unit === "years" ? 1 : 1}
+        min={1}
         step={1}
       />
     </div>
@@ -101,28 +97,32 @@ export default function RefinanceCalculator() {
   const { t } = useLanguage();
   const rc = t.refinanceCalc;
 
-  // --- Current mortgage state ---
+  // --- Current mortgage ---
   const [propertyValue, setPropertyValue] = useState(600000);
   const [currentMortgage, setCurrentMortgage] = useState(420000);
   const [currentRate, setCurrentRate] = useState(5.89);
-  const [amortLeftMonths, setAmortLeftMonths] = useState(300); // 25 years
+  const [amortLeftMonths, setAmortLeftMonths] = useState(300);
   const [amortLeftUnit, setAmortLeftUnit] = useState<AmortUnit>("years");
   const [termLeft, setTermLeft] = useState(3);
-  const [penaltyFees, setPenaltyFees] = useState(6000);
 
-  // --- New mortgage state ---
+  // --- New mortgage ---
   const [newRate, setNewRate] = useState(4.39);
-  const [newAmortMonths, setNewAmortMonths] = useState(300); // 25 years
+  const [newAmortMonths, setNewAmortMonths] = useState(300);
   const [newAmortUnit, setNewAmortUnit] = useState<AmortUnit>("years");
   const [newTerm, setNewTerm] = useState(5);
+  const [penaltyFees, setPenaltyFees] = useState(6000);
+  const [cashOut, setCashOut] = useState(0);
 
   const calc = useMemo(() => {
     const maxMortgage = propertyValue * 0.8;
     const canRefinance = currentMortgage <= maxMortgage;
     const availableEquity = Math.max(0, maxMortgage - currentMortgage);
 
+    // Clamp cashOut to available equity
+    const clampedCashOut = Math.min(cashOut, availableEquity);
+    const newBalance = currentMortgage + penaltyFees + clampedCashOut;
+
     const curPayment = monthlyPayment(currentMortgage, currentRate, amortLeftMonths);
-    const newBalance = currentMortgage + penaltyFees;
     const newPayment = monthlyPayment(newBalance, newRate, newAmortMonths);
 
     const savings = curPayment - newPayment;
@@ -134,8 +134,8 @@ export default function RefinanceCalculator() {
       monthsSaved = fasterMonths === Infinity ? 0 : Math.max(0, newAmortMonths - fasterMonths);
     }
 
-    return { maxMortgage, canRefinance, availableEquity, curPayment, newBalance, newPayment, savings, termSavings, monthsSaved };
-  }, [propertyValue, currentMortgage, currentRate, amortLeftMonths, termLeft, penaltyFees, newRate, newAmortMonths, newTerm]);
+    return { maxMortgage, canRefinance, availableEquity, clampedCashOut, curPayment, newBalance, newPayment, savings, termSavings, monthsSaved };
+  }, [propertyValue, currentMortgage, currentRate, amortLeftMonths, termLeft, penaltyFees, newRate, newAmortMonths, newTerm, cashOut]);
 
   const savingsPositive = calc.savings > 0 && calc.canRefinance;
 
@@ -205,7 +205,8 @@ export default function RefinanceCalculator() {
 
         {/* Input Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Current Mortgage */}
+
+          {/* Left — Current Mortgage */}
           <Card>
             <CardHeader className="bg-muted/30 border-b border-border/50">
               <CardTitle className="text-base">{rc.currentSection}</CardTitle>
@@ -223,8 +224,6 @@ export default function RefinanceCalculator() {
                 <Label>{rc.currentRate}</Label>
                 <InputWithAddon type="number" addonRight="%" step="0.01" value={currentRate.toString()} onChange={(e) => setCurrentRate(Number(e.target.value))} />
               </div>
-
-              {/* Amortization left — years/months toggle */}
               <AmortInput
                 label={rc.amortLeft}
                 valueMonths={amortLeftMonths}
@@ -234,8 +233,6 @@ export default function RefinanceCalculator() {
                 labelYears={rc.unitYears}
                 labelMonths={rc.unitMonths}
               />
-
-              {/* Term left — descending dropdown */}
               <div className="space-y-2">
                 <Label>{rc.termLeft}</Label>
                 <Select value={termLeft.toString()} onValueChange={(v) => setTermLeft(Number(v))}>
@@ -247,16 +244,10 @@ export default function RefinanceCalculator() {
                   </SelectContent>
                 </Select>
               </div>
-
-              <div className="space-y-2">
-                <Label>{rc.penaltyFees}</Label>
-                <InputWithAddon type="number" addonLeft="$" value={penaltyFees.toString()} onChange={(e) => setPenaltyFees(Number(e.target.value))} />
-                <p className="text-xs text-muted-foreground">{rc.penaltyFeesNote}</p>
-              </div>
             </CardContent>
           </Card>
 
-          {/* New Mortgage */}
+          {/* Right — New Mortgage */}
           <Card className="border-primary/30 shadow-lg">
             <CardHeader className="bg-primary/5 border-b border-primary/10">
               <CardTitle className="text-primary text-base">{rc.newSection}</CardTitle>
@@ -266,8 +257,6 @@ export default function RefinanceCalculator() {
                 <Label>{rc.newRate}</Label>
                 <InputWithAddon type="number" addonRight="%" step="0.01" value={newRate.toString()} onChange={(e) => setNewRate(Number(e.target.value))} className="font-bold text-primary" />
               </div>
-
-              {/* New amortization — years/months toggle */}
               <AmortInput
                 label={rc.newAmort}
                 valueMonths={newAmortMonths}
@@ -277,8 +266,6 @@ export default function RefinanceCalculator() {
                 labelYears={rc.unitYears}
                 labelMonths={rc.unitMonths}
               />
-
-              {/* New term — descending dropdown */}
               <div className="space-y-2">
                 <Label>{rc.newTerm}</Label>
                 <Select value={newTerm.toString()} onValueChange={(v) => setNewTerm(Number(v))}>
@@ -291,18 +278,54 @@ export default function RefinanceCalculator() {
                 </Select>
               </div>
 
-              {/* New mortgage summary */}
-              <div className="mt-4 pt-5 border-t border-border/50 space-y-3">
+              {/* Penalty & Fees */}
+              <div className="space-y-2">
+                <Label>{rc.penaltyFees}</Label>
+                <InputWithAddon type="number" addonLeft="$" value={penaltyFees.toString()} onChange={(e) => setPenaltyFees(Number(e.target.value))} />
+                <p className="text-xs text-muted-foreground">{rc.penaltyFeesNote}</p>
+              </div>
+
+              {/* Equity Take-out */}
+              <div className="space-y-2">
+                <Label>{rc.cashOut}</Label>
+                <InputWithAddon
+                  type="number"
+                  addonLeft="$"
+                  value={cashOut.toString()}
+                  onChange={(e) => {
+                    const v = Math.max(0, Math.min(Number(e.target.value), calc.availableEquity));
+                    setCashOut(v);
+                  }}
+                  disabled={!calc.canRefinance || calc.availableEquity <= 0}
+                />
+                <p className={`text-xs ${calc.availableEquity > 0 && calc.canRefinance ? "text-muted-foreground" : "text-destructive"}`}>
+                  {rc.cashOutNote}: <strong>{formatCurrency(calc.availableEquity)}</strong>
+                  {cashOut > 0 && calc.clampedCashOut < cashOut && (
+                    <span className="text-destructive"> (capped)</span>
+                  )}
+                </p>
+              </div>
+
+              {/* Summary breakdown */}
+              <div className="mt-2 pt-5 border-t border-border/50 space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">{rc.currentMortgage}</span>
                   <span className="font-medium">{formatCurrency(currentMortgage)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">+ {rc.penaltyFees}</span>
-                  <span className="font-medium">{formatCurrency(penaltyFees)}</span>
-                </div>
-                <div className="flex justify-between text-sm font-semibold border-t border-border/50 pt-3">
-                  <span>{rc.newSection} ({rc.newPaymentLabel})</span>
+                {penaltyFees > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">+ {rc.penaltyFees}</span>
+                    <span className="font-medium">{formatCurrency(penaltyFees)}</span>
+                  </div>
+                )}
+                {calc.clampedCashOut > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">+ {rc.cashOut}</span>
+                    <span className="font-medium text-primary">{formatCurrency(calc.clampedCashOut)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between items-baseline font-semibold border-t border-border/50 pt-3">
+                  <span className="text-sm">{rc.newSection} ({rc.newPaymentLabel})</span>
                   <span className="text-xl font-display text-foreground">{formatCurrency(calc.newPayment)}</span>
                 </div>
               </div>
