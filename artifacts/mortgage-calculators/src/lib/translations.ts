@@ -185,6 +185,8 @@ export const translations = {
       available: 'Рефінансування можливе',
       availableEquityDesc: 'Ви можете вивести капітал до',
       yr: 'р.',
+      unitYears: 'роки',
+      unitMonths: 'місяці',
     },
     // Amortization Calculator
     amortCalc: {
@@ -415,6 +417,8 @@ export const translations = {
       available: 'Refinance Available',
       availableEquityDesc: 'You can access equity up to',
       yr: 'yr.',
+      unitYears: 'Years',
+      unitMonths: 'Months',
     },
     amortCalc: {
       title: 'Amortization Schedule',
@@ -643,6 +647,8 @@ export const translations = {
       available: 'Рефинансирование доступно',
       availableEquityDesc: 'Вы можете вывести капитал до',
       yr: 'л.',
+      unitYears: 'Годы',
+      unitMonths: 'Месяцы',
     },
     amortCalc: {
       title: 'График погашения',

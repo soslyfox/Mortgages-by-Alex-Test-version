@@ -14,14 +14,14 @@ function canadianMonthlyRate(annualRate: number): number {
   return Math.pow(1 + annualRate / 200, 1 / 6) - 1;
 }
 
-function monthlyPayment(balance: number, annualRate: number, amortYears: number): number {
+function monthlyPayment(balance: number, annualRate: number, amortMonths: number): number {
   const r = canadianMonthlyRate(annualRate);
-  const n = amortYears * 12;
+  const n = amortMonths;
+  if (n <= 0 || balance <= 0) return 0;
   if (r === 0) return balance / n;
   return balance * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
 }
 
-// Months to pay off a balance with a given payment and annual rate
 function monthsToPayOff(balance: number, annualRate: number, payment: number): number {
   const r = canadianMonthlyRate(annualRate);
   if (r === 0) return Math.ceil(balance / payment);
@@ -29,22 +29,91 @@ function monthsToPayOff(balance: number, annualRate: number, payment: number): n
   return Math.ceil(Math.log(payment / (payment - r * balance)) / Math.log(1 + r));
 }
 
-const AMORT_OPTIONS = [5, 10, 15, 20, 25, 30];
-const TERM_OPTIONS = [1, 2, 3, 4, 5];
+const TERM_OPTIONS = [5, 4, 3, 2, 1]; // descending
+
+type AmortUnit = "years" | "months";
+
+interface AmortInputProps {
+  label: string;
+  valueMonths: number;
+  onChange: (months: number) => void;
+  unit: AmortUnit;
+  onUnitChange: (u: AmortUnit) => void;
+  labelYears: string;
+  labelMonths: string;
+}
+
+function AmortInput({ label, valueMonths, onChange, unit, onUnitChange, labelYears, labelMonths }: AmortInputProps) {
+  const displayed = unit === "years" ? Math.round(valueMonths / 12) : valueMonths;
+
+  function handleChange(raw: string) {
+    const n = Number(raw);
+    if (!isFinite(n) || n < 0) return;
+    onChange(unit === "years" ? Math.round(n * 12) : n);
+  }
+
+  function handleUnitSwitch(next: AmortUnit) {
+    onUnitChange(next);
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <Label>{label}</Label>
+        <div className="flex rounded-md overflow-hidden border border-border/60 text-xs font-medium">
+          <button
+            type="button"
+            onClick={() => handleUnitSwitch("years")}
+            className={`px-2.5 py-1 transition-colors ${
+              unit === "years"
+                ? "bg-primary text-primary-foreground"
+                : "bg-background text-muted-foreground hover:bg-muted"
+            }`}
+          >
+            {labelYears}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleUnitSwitch("months")}
+            className={`px-2.5 py-1 transition-colors border-l border-border/60 ${
+              unit === "months"
+                ? "bg-primary text-primary-foreground"
+                : "bg-background text-muted-foreground hover:bg-muted"
+            }`}
+          >
+            {labelMonths}
+          </button>
+        </div>
+      </div>
+      <InputWithAddon
+        type="number"
+        addonRight={unit === "years" ? labelYears.toLowerCase() : labelMonths.toLowerCase()}
+        value={displayed.toString()}
+        onChange={(e) => handleChange(e.target.value)}
+        min={unit === "years" ? 1 : 1}
+        step={1}
+      />
+    </div>
+  );
+}
 
 export default function RefinanceCalculator() {
   const { t } = useLanguage();
   const rc = t.refinanceCalc;
 
-  // --- Inputs ---
+  // --- Current mortgage state ---
   const [propertyValue, setPropertyValue] = useState(600000);
   const [currentMortgage, setCurrentMortgage] = useState(420000);
   const [currentRate, setCurrentRate] = useState(5.89);
-  const [amortLeft, setAmortLeft] = useState(25);
+  const [amortLeftMonths, setAmortLeftMonths] = useState(300); // 25 years
+  const [amortLeftUnit, setAmortLeftUnit] = useState<AmortUnit>("years");
   const [termLeft, setTermLeft] = useState(3);
   const [penaltyFees, setPenaltyFees] = useState(6000);
+
+  // --- New mortgage state ---
   const [newRate, setNewRate] = useState(4.39);
-  const [newAmort, setNewAmort] = useState(25);
+  const [newAmortMonths, setNewAmortMonths] = useState(300); // 25 years
+  const [newAmortUnit, setNewAmortUnit] = useState<AmortUnit>("years");
   const [newTerm, setNewTerm] = useState(5);
 
   const calc = useMemo(() => {
@@ -52,37 +121,21 @@ export default function RefinanceCalculator() {
     const canRefinance = currentMortgage <= maxMortgage;
     const availableEquity = Math.max(0, maxMortgage - currentMortgage);
 
-    // Current monthly payment (calculated from inputs, not entered)
-    const curPayment = monthlyPayment(currentMortgage, currentRate, amortLeft);
-
-    // New mortgage balance = current balance + penalty/fees rolled in
+    const curPayment = monthlyPayment(currentMortgage, currentRate, amortLeftMonths);
     const newBalance = currentMortgage + penaltyFees;
-    const newPayment = monthlyPayment(newBalance, newRate, newAmort);
+    const newPayment = monthlyPayment(newBalance, newRate, newAmortMonths);
 
     const savings = curPayment - newPayment;
     const termSavings = savings * termLeft * 12;
 
-    // If savings > 0, how many months shorter is the new mortgage if you pay an
-    // extra `savings` per month?
     let monthsSaved = 0;
     if (savings > 0 && canRefinance) {
-      const standardMonths = newAmort * 12;
       const fasterMonths = monthsToPayOff(newBalance, newRate, newPayment + savings);
-      monthsSaved = fasterMonths === Infinity ? 0 : Math.max(0, standardMonths - fasterMonths);
+      monthsSaved = fasterMonths === Infinity ? 0 : Math.max(0, newAmortMonths - fasterMonths);
     }
 
-    return {
-      maxMortgage,
-      canRefinance,
-      availableEquity,
-      curPayment,
-      newBalance,
-      newPayment,
-      savings,
-      termSavings,
-      monthsSaved,
-    };
-  }, [propertyValue, currentMortgage, currentRate, amortLeft, termLeft, penaltyFees, newRate, newAmort, newTerm]);
+    return { maxMortgage, canRefinance, availableEquity, curPayment, newBalance, newPayment, savings, termSavings, monthsSaved };
+  }, [propertyValue, currentMortgage, currentRate, amortLeftMonths, termLeft, penaltyFees, newRate, newAmortMonths, newTerm]);
 
   const savingsPositive = calc.savings > 0 && calc.canRefinance;
 
@@ -130,56 +183,18 @@ export default function RefinanceCalculator() {
         {/* Result Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           {[
-            {
-              icon: <DollarSign className="w-5 h-5" />,
-              label: rc.currentPaymentLabel,
-              value: formatCurrency(calc.curPayment),
-              highlight: false,
-            },
-            {
-              icon: <DollarSign className="w-5 h-5" />,
-              label: rc.newPaymentLabel,
-              value: formatCurrency(calc.newPayment),
-              highlight: false,
-            },
-            {
-              icon: <TrendingDown className="w-5 h-5" />,
-              label: rc.monthlySavings,
-              value: savingsPositive ? formatCurrency(calc.savings) : "—",
-              highlight: savingsPositive,
-              negative: calc.savings < 0 && calc.canRefinance,
-            },
-            {
-              icon: <PiggyBank className="w-5 h-5" />,
-              label: rc.termSavings,
-              value: savingsPositive ? formatCurrency(calc.termSavings) : "—",
-              highlight: savingsPositive,
-            },
-            {
-              icon: <Calendar className="w-5 h-5" />,
-              label: rc.monthsSaved,
-              value: savingsPositive && calc.monthsSaved > 0 ? `${calc.monthsSaved} ${rc.months}` : "—",
-              highlight: savingsPositive && calc.monthsSaved > 0,
-            },
+            { icon: <DollarSign className="w-5 h-5" />, label: rc.currentPaymentLabel, value: formatCurrency(calc.curPayment), highlight: false },
+            { icon: <DollarSign className="w-5 h-5" />, label: rc.newPaymentLabel, value: formatCurrency(calc.newPayment), highlight: false },
+            { icon: <TrendingDown className="w-5 h-5" />, label: rc.monthlySavings, value: savingsPositive ? formatCurrency(calc.savings) : "—", highlight: savingsPositive, negative: calc.savings < 0 && calc.canRefinance },
+            { icon: <PiggyBank className="w-5 h-5" />, label: rc.termSavings, value: savingsPositive ? formatCurrency(calc.termSavings) : "—", highlight: savingsPositive },
+            { icon: <Calendar className="w-5 h-5" />, label: rc.monthsSaved, value: savingsPositive && calc.monthsSaved > 0 ? `${calc.monthsSaved} ${rc.months}` : "—", highlight: savingsPositive && calc.monthsSaved > 0 },
           ].map((card, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 * i }}
-              className={i < 2 ? "col-span-1" : "col-span-1"}
-            >
+            <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 * i }}>
               <Card className={`h-full ${card.highlight ? "border-primary/50 bg-primary/5" : "border-border/50"}`}>
                 <CardContent className="p-4 flex flex-col items-center text-center justify-center h-full gap-1.5 pt-4">
-                  <div className={`${card.highlight ? "text-primary" : "text-muted-foreground"}`}>
-                    {card.icon}
-                  </div>
+                  <div className={card.highlight ? "text-primary" : "text-muted-foreground"}>{card.icon}</div>
                   <p className="text-xs text-muted-foreground font-medium leading-tight">{card.label}</p>
-                  <p className={`text-xl font-display font-bold leading-none ${
-                    card.highlight ? "text-primary" :
-                    card.negative ? "text-destructive" :
-                    "text-foreground"
-                  }`}>
+                  <p className={`text-xl font-display font-bold leading-none ${card.highlight ? "text-primary" : card.negative ? "text-destructive" : "text-foreground"}`}>
                     {card.value}
                   </p>
                 </CardContent>
@@ -198,64 +213,44 @@ export default function RefinanceCalculator() {
             <CardContent className="space-y-5 pt-6">
               <div className="space-y-2">
                 <Label>{rc.propertyValue}</Label>
-                <InputWithAddon
-                  type="number"
-                  addonLeft="$"
-                  value={propertyValue.toString()}
-                  onChange={(e) => setPropertyValue(Number(e.target.value))}
-                />
+                <InputWithAddon type="number" addonLeft="$" value={propertyValue.toString()} onChange={(e) => setPropertyValue(Number(e.target.value))} />
               </div>
               <div className="space-y-2">
                 <Label>{rc.currentMortgage}</Label>
-                <InputWithAddon
-                  type="number"
-                  addonLeft="$"
-                  value={currentMortgage.toString()}
-                  onChange={(e) => setCurrentMortgage(Number(e.target.value))}
-                />
+                <InputWithAddon type="number" addonLeft="$" value={currentMortgage.toString()} onChange={(e) => setCurrentMortgage(Number(e.target.value))} />
               </div>
               <div className="space-y-2">
                 <Label>{rc.currentRate}</Label>
-                <InputWithAddon
-                  type="number"
-                  addonRight="%"
-                  step="0.01"
-                  value={currentRate.toString()}
-                  onChange={(e) => setCurrentRate(Number(e.target.value))}
-                />
+                <InputWithAddon type="number" addonRight="%" step="0.01" value={currentRate.toString()} onChange={(e) => setCurrentRate(Number(e.target.value))} />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>{rc.amortLeft}</Label>
-                  <Select value={amortLeft.toString()} onValueChange={(v) => setAmortLeft(Number(v))}>
-                    <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {AMORT_OPTIONS.map((y) => (
-                        <SelectItem key={y} value={y.toString()}>{y} {rc.yr}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>{rc.termLeft}</Label>
-                  <Select value={termLeft.toString()} onValueChange={(v) => setTermLeft(Number(v))}>
-                    <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {TERM_OPTIONS.map((y) => (
-                        <SelectItem key={y} value={y.toString()}>{y} {rc.yr}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+
+              {/* Amortization left — years/months toggle */}
+              <AmortInput
+                label={rc.amortLeft}
+                valueMonths={amortLeftMonths}
+                onChange={setAmortLeftMonths}
+                unit={amortLeftUnit}
+                onUnitChange={setAmortLeftUnit}
+                labelYears={rc.unitYears}
+                labelMonths={rc.unitMonths}
+              />
+
+              {/* Term left — descending dropdown */}
+              <div className="space-y-2">
+                <Label>{rc.termLeft}</Label>
+                <Select value={termLeft.toString()} onValueChange={(v) => setTermLeft(Number(v))}>
+                  <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {TERM_OPTIONS.map((y) => (
+                      <SelectItem key={y} value={y.toString()}>{y} {rc.yr}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
+
               <div className="space-y-2">
                 <Label>{rc.penaltyFees}</Label>
-                <InputWithAddon
-                  type="number"
-                  addonLeft="$"
-                  value={penaltyFees.toString()}
-                  onChange={(e) => setPenaltyFees(Number(e.target.value))}
-                />
+                <InputWithAddon type="number" addonLeft="$" value={penaltyFees.toString()} onChange={(e) => setPenaltyFees(Number(e.target.value))} />
                 <p className="text-xs text-muted-foreground">{rc.penaltyFeesNote}</p>
               </div>
             </CardContent>
@@ -269,38 +264,31 @@ export default function RefinanceCalculator() {
             <CardContent className="space-y-5 pt-6">
               <div className="space-y-2">
                 <Label>{rc.newRate}</Label>
-                <InputWithAddon
-                  type="number"
-                  addonRight="%"
-                  step="0.01"
-                  value={newRate.toString()}
-                  onChange={(e) => setNewRate(Number(e.target.value))}
-                  className="font-bold text-primary"
-                />
+                <InputWithAddon type="number" addonRight="%" step="0.01" value={newRate.toString()} onChange={(e) => setNewRate(Number(e.target.value))} className="font-bold text-primary" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>{rc.newAmort}</Label>
-                  <Select value={newAmort.toString()} onValueChange={(v) => setNewAmort(Number(v))}>
-                    <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {AMORT_OPTIONS.map((y) => (
-                        <SelectItem key={y} value={y.toString()}>{y} {rc.yr}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>{rc.newTerm}</Label>
-                  <Select value={newTerm.toString()} onValueChange={(v) => setNewTerm(Number(v))}>
-                    <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {TERM_OPTIONS.map((y) => (
-                        <SelectItem key={y} value={y.toString()}>{y} {rc.yr}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+
+              {/* New amortization — years/months toggle */}
+              <AmortInput
+                label={rc.newAmort}
+                valueMonths={newAmortMonths}
+                onChange={setNewAmortMonths}
+                unit={newAmortUnit}
+                onUnitChange={setNewAmortUnit}
+                labelYears={rc.unitYears}
+                labelMonths={rc.unitMonths}
+              />
+
+              {/* New term — descending dropdown */}
+              <div className="space-y-2">
+                <Label>{rc.newTerm}</Label>
+                <Select value={newTerm.toString()} onValueChange={(v) => setNewTerm(Number(v))}>
+                  <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {TERM_OPTIONS.map((y) => (
+                      <SelectItem key={y} value={y.toString()}>{y} {rc.yr}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* New mortgage summary */}
