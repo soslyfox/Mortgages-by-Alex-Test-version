@@ -206,15 +206,38 @@ export default function RefinanceCalculator() {
         {/* Unified Input Card */}
         <Card className="overflow-hidden">
 
-          {/* ── Property info row (full-width top band) ── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 px-6 pt-6 pb-6 bg-muted/20 border-b border-border/50">
+          {/* ── Top band: 2×2 grid ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-5 px-6 pt-6 pb-6 bg-muted/20 border-b border-border/50">
+            {/* Row 1 */}
             <div className="space-y-2">
               <Label>{rc.propertyValue}</Label>
               <InputWithAddon type="number" addonLeft="$" value={propertyValue.toString()} onChange={(e) => setPropertyValue(Number(e.target.value))} />
             </div>
             <div className="space-y-2">
+              <Label>{rc.penaltyFees}</Label>
+              <InputWithAddon type="number" addonLeft="$" value={penaltyFees.toString()} onChange={(e) => setPenaltyFees(Number(e.target.value))} />
+              <p className="text-xs text-muted-foreground">{rc.penaltyFeesNote}</p>
+            </div>
+            {/* Row 2 */}
+            <div className="space-y-2">
               <Label>{rc.currentMortgage}</Label>
               <InputWithAddon type="number" addonLeft="$" value={currentMortgage.toString()} onChange={(e) => setCurrentMortgage(Number(e.target.value))} />
+            </div>
+            <div className="space-y-2">
+              <Label>{rc.cashOut}</Label>
+              <InputWithAddon
+                type="number"
+                addonLeft="$"
+                value={cashOut.toString()}
+                onChange={(e) => {
+                  const v = Math.max(0, Math.min(Number(e.target.value), calc.availableEquity));
+                  setCashOut(v);
+                }}
+                disabled={!calc.canRefinance || calc.availableEquity <= 0}
+              />
+              <p className={`text-xs ${calc.availableEquity > 0 && calc.canRefinance ? "text-muted-foreground" : "text-destructive"}`}>
+                {rc.cashOutNote}: <strong>{formatCurrency(calc.availableEquity)}</strong>
+              </p>
             </div>
           </div>
 
@@ -281,31 +304,6 @@ export default function RefinanceCalculator() {
               </Select>
             </div>
 
-            {/* Penalty & Equity — right column only, left cell is empty spacer */}
-            <div />
-            <div className="space-y-2">
-              <Label>{rc.penaltyFees}</Label>
-              <InputWithAddon type="number" addonLeft="$" value={penaltyFees.toString()} onChange={(e) => setPenaltyFees(Number(e.target.value))} />
-              <p className="text-xs text-muted-foreground">{rc.penaltyFeesNote}</p>
-            </div>
-
-            <div />
-            <div className="space-y-2">
-              <Label>{rc.cashOut}</Label>
-              <InputWithAddon
-                type="number"
-                addonLeft="$"
-                value={cashOut.toString()}
-                onChange={(e) => {
-                  const v = Math.max(0, Math.min(Number(e.target.value), calc.availableEquity));
-                  setCashOut(v);
-                }}
-                disabled={!calc.canRefinance || calc.availableEquity <= 0}
-              />
-              <p className={`text-xs ${calc.availableEquity > 0 && calc.canRefinance ? "text-muted-foreground" : "text-destructive"}`}>
-                {rc.cashOutNote}: <strong>{formatCurrency(calc.availableEquity)}</strong>
-              </p>
-            </div>
           </div>
 
           {/* ── Summary breakdown ── */}
