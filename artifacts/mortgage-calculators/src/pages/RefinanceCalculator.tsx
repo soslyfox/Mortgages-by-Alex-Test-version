@@ -203,135 +203,135 @@ export default function RefinanceCalculator() {
           ))}
         </div>
 
-        {/* Input Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Unified Input Card */}
+        <Card className="overflow-hidden">
 
-          {/* Left — Current Mortgage */}
-          <Card>
-            <CardHeader className="bg-muted/30 border-b border-border/50">
-              <CardTitle className="text-base">{rc.currentSection}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-5 pt-6">
-              <div className="space-y-2">
-                <Label>{rc.propertyValue}</Label>
-                <InputWithAddon type="number" addonLeft="$" value={propertyValue.toString()} onChange={(e) => setPropertyValue(Number(e.target.value))} />
-              </div>
-              <div className="space-y-2">
-                <Label>{rc.currentMortgage}</Label>
-                <InputWithAddon type="number" addonLeft="$" value={currentMortgage.toString()} onChange={(e) => setCurrentMortgage(Number(e.target.value))} />
-              </div>
-              <div className="space-y-2">
-                <Label>{rc.currentRate}</Label>
-                <InputWithAddon type="number" addonRight="%" step="0.01" value={currentRate.toString()} onChange={(e) => setCurrentRate(Number(e.target.value))} />
-              </div>
-              <AmortInput
-                label={rc.amortLeft}
-                valueMonths={amortLeftMonths}
-                onChange={setAmortLeftMonths}
-                unit={amortLeftUnit}
-                onUnitChange={setAmortLeftUnit}
-                labelYears={rc.unitYears}
-                labelMonths={rc.unitMonths}
+          {/* ── Property info row (full-width top band) ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 px-6 pt-6 pb-6 bg-muted/20 border-b border-border/50">
+            <div className="space-y-2">
+              <Label>{rc.propertyValue}</Label>
+              <InputWithAddon type="number" addonLeft="$" value={propertyValue.toString()} onChange={(e) => setPropertyValue(Number(e.target.value))} />
+            </div>
+            <div className="space-y-2">
+              <Label>{rc.currentMortgage}</Label>
+              <InputWithAddon type="number" addonLeft="$" value={currentMortgage.toString()} onChange={(e) => setCurrentMortgage(Number(e.target.value))} />
+            </div>
+          </div>
+
+          {/* ── Column headers ── */}
+          <div className="grid grid-cols-2 gap-5 px-6 pt-5 pb-3 border-b border-dashed border-border/40">
+            <p className="text-sm font-semibold text-muted-foreground">{rc.currentSection}</p>
+            <p className="text-sm font-semibold text-primary">{rc.newSection}</p>
+          </div>
+
+          {/* ── Comparison rows — single CSS grid keeps left/right aligned ── */}
+          <div className="grid grid-cols-2 gap-x-5 gap-y-5 px-6 pt-5 pb-6">
+
+            {/* Rate */}
+            <div className="space-y-2">
+              <Label>{rc.currentRate}</Label>
+              <InputWithAddon type="number" addonRight="%" step="0.01" value={currentRate.toString()} onChange={(e) => setCurrentRate(Number(e.target.value))} />
+            </div>
+            <div className="space-y-2">
+              <Label>{rc.newRate}</Label>
+              <InputWithAddon type="number" addonRight="%" step="0.01" value={newRate.toString()} onChange={(e) => setNewRate(Number(e.target.value))} className="font-bold text-primary" />
+            </div>
+
+            {/* Amortization */}
+            <AmortInput
+              label={rc.amortLeft}
+              valueMonths={amortLeftMonths}
+              onChange={setAmortLeftMonths}
+              unit={amortLeftUnit}
+              onUnitChange={setAmortLeftUnit}
+              labelYears={rc.unitYears}
+              labelMonths={rc.unitMonths}
+            />
+            <AmortInput
+              label={rc.newAmort}
+              valueMonths={newAmortMonths}
+              onChange={setNewAmortMonths}
+              unit={newAmortUnit}
+              onUnitChange={setNewAmortUnit}
+              labelYears={rc.unitYears}
+              labelMonths={rc.unitMonths}
+            />
+
+            {/* Term */}
+            <div className="space-y-2">
+              <Label>{rc.termLeft}</Label>
+              <Select value={termLeft.toString()} onValueChange={(v) => setTermLeft(Number(v))}>
+                <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {TERM_OPTIONS.map((y) => (
+                    <SelectItem key={y} value={y.toString()}>{y} {rc.yr}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>{rc.newTerm}</Label>
+              <Select value={newTerm.toString()} onValueChange={(v) => setNewTerm(Number(v))}>
+                <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {TERM_OPTIONS.map((y) => (
+                    <SelectItem key={y} value={y.toString()}>{y} {rc.yr}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Penalty & Equity — right column only, left cell is empty spacer */}
+            <div />
+            <div className="space-y-2">
+              <Label>{rc.penaltyFees}</Label>
+              <InputWithAddon type="number" addonLeft="$" value={penaltyFees.toString()} onChange={(e) => setPenaltyFees(Number(e.target.value))} />
+              <p className="text-xs text-muted-foreground">{rc.penaltyFeesNote}</p>
+            </div>
+
+            <div />
+            <div className="space-y-2">
+              <Label>{rc.cashOut}</Label>
+              <InputWithAddon
+                type="number"
+                addonLeft="$"
+                value={cashOut.toString()}
+                onChange={(e) => {
+                  const v = Math.max(0, Math.min(Number(e.target.value), calc.availableEquity));
+                  setCashOut(v);
+                }}
+                disabled={!calc.canRefinance || calc.availableEquity <= 0}
               />
-              <div className="space-y-2">
-                <Label>{rc.termLeft}</Label>
-                <Select value={termLeft.toString()} onValueChange={(v) => setTermLeft(Number(v))}>
-                  <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {TERM_OPTIONS.map((y) => (
-                      <SelectItem key={y} value={y.toString()}>{y} {rc.yr}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
+              <p className={`text-xs ${calc.availableEquity > 0 && calc.canRefinance ? "text-muted-foreground" : "text-destructive"}`}>
+                {rc.cashOutNote}: <strong>{formatCurrency(calc.availableEquity)}</strong>
+              </p>
+            </div>
+          </div>
 
-          {/* Right — New Mortgage */}
-          <Card className="border-primary/30 shadow-lg">
-            <CardHeader className="bg-primary/5 border-b border-primary/10">
-              <CardTitle className="text-primary text-base">{rc.newSection}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-5 pt-6">
-              <div className="space-y-2">
-                <Label>{rc.newRate}</Label>
-                <InputWithAddon type="number" addonRight="%" step="0.01" value={newRate.toString()} onChange={(e) => setNewRate(Number(e.target.value))} className="font-bold text-primary" />
+          {/* ── Summary breakdown ── */}
+          <div className="border-t border-border/50 bg-muted/10 px-6 py-5 space-y-3">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">{rc.currentMortgage}</span>
+              <span className="font-medium">{formatCurrency(currentMortgage)}</span>
+            </div>
+            {penaltyFees > 0 && (
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">+ {rc.penaltyFees}</span>
+                <span className="font-medium">{formatCurrency(penaltyFees)}</span>
               </div>
-              <AmortInput
-                label={rc.newAmort}
-                valueMonths={newAmortMonths}
-                onChange={setNewAmortMonths}
-                unit={newAmortUnit}
-                onUnitChange={setNewAmortUnit}
-                labelYears={rc.unitYears}
-                labelMonths={rc.unitMonths}
-              />
-              <div className="space-y-2">
-                <Label>{rc.newTerm}</Label>
-                <Select value={newTerm.toString()} onValueChange={(v) => setNewTerm(Number(v))}>
-                  <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {TERM_OPTIONS.map((y) => (
-                      <SelectItem key={y} value={y.toString()}>{y} {rc.yr}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            )}
+            {calc.clampedCashOut > 0 && (
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">+ {rc.cashOut}</span>
+                <span className="font-medium text-primary">{formatCurrency(calc.clampedCashOut)}</span>
               </div>
-
-              {/* Penalty & Fees */}
-              <div className="space-y-2">
-                <Label>{rc.penaltyFees}</Label>
-                <InputWithAddon type="number" addonLeft="$" value={penaltyFees.toString()} onChange={(e) => setPenaltyFees(Number(e.target.value))} />
-                <p className="text-xs text-muted-foreground">{rc.penaltyFeesNote}</p>
-              </div>
-
-              {/* Equity Take-out */}
-              <div className="space-y-2">
-                <Label>{rc.cashOut}</Label>
-                <InputWithAddon
-                  type="number"
-                  addonLeft="$"
-                  value={cashOut.toString()}
-                  onChange={(e) => {
-                    const v = Math.max(0, Math.min(Number(e.target.value), calc.availableEquity));
-                    setCashOut(v);
-                  }}
-                  disabled={!calc.canRefinance || calc.availableEquity <= 0}
-                />
-                <p className={`text-xs ${calc.availableEquity > 0 && calc.canRefinance ? "text-muted-foreground" : "text-destructive"}`}>
-                  {rc.cashOutNote}: <strong>{formatCurrency(calc.availableEquity)}</strong>
-                  {cashOut > 0 && calc.clampedCashOut < cashOut && (
-                    <span className="text-destructive"> (capped)</span>
-                  )}
-                </p>
-              </div>
-
-              {/* Summary breakdown */}
-              <div className="mt-2 pt-5 border-t border-border/50 space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">{rc.currentMortgage}</span>
-                  <span className="font-medium">{formatCurrency(currentMortgage)}</span>
-                </div>
-                {penaltyFees > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">+ {rc.penaltyFees}</span>
-                    <span className="font-medium">{formatCurrency(penaltyFees)}</span>
-                  </div>
-                )}
-                {calc.clampedCashOut > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">+ {rc.cashOut}</span>
-                    <span className="font-medium text-primary">{formatCurrency(calc.clampedCashOut)}</span>
-                  </div>
-                )}
-                <div className="flex justify-between items-baseline font-semibold border-t border-border/50 pt-3">
-                  <span className="text-sm">{rc.newSection} ({rc.newPaymentLabel})</span>
-                  <span className="text-xl font-display text-foreground">{formatCurrency(calc.newPayment)}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            )}
+            <div className="flex justify-between items-baseline font-semibold border-t border-border/50 pt-3">
+              <span className="text-sm">{rc.newSection} ({rc.newPaymentLabel})</span>
+              <span className="text-2xl font-display text-foreground">{formatCurrency(calc.newPayment)}</span>
+            </div>
+          </div>
+        </Card>
       </div>
     </AppLayout>
   );
