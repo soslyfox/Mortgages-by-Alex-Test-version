@@ -115,8 +115,8 @@ export default function RefinanceCalculator() {
 
   const calc = useMemo(() => {
     const maxMortgage = propertyValue * 0.8;
-    const canRefinance = currentMortgage <= maxMortgage;
-    const availableEquity = Math.max(0, maxMortgage - currentMortgage);
+    const canRefinance = currentMortgage + penaltyFees <= maxMortgage;
+    const availableEquity = Math.max(0, maxMortgage - currentMortgage - penaltyFees);
 
     // Clamp cashOut to available equity
     const clampedCashOut = Math.min(cashOut, availableEquity);
