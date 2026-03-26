@@ -90,7 +90,7 @@ export default function MortgageCalculator() {
 
   return (
     <AppLayout>
-      <div className="bg-primary/5 py-8 md:py-12 border-b border-primary/10">
+      <div className="bg-primary/5 py-4 md:py-6 border-b border-primary/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-primary/20 text-primary rounded-lg">
@@ -102,7 +102,7 @@ export default function MortgageCalculator() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-7 space-y-8">
             <Card className="shadow-lg border-border/50">

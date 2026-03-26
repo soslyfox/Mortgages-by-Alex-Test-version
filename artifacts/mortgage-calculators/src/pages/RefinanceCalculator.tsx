@@ -142,7 +142,7 @@ export default function RefinanceCalculator() {
   return (
     <AppLayout>
       {/* Header */}
-      <div className="bg-primary/5 py-8 md:py-12 border-b border-primary/10">
+      <div className="bg-primary/5 py-4 md:py-6 border-b border-primary/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-primary/20 text-primary rounded-lg">
@@ -154,7 +154,7 @@ export default function RefinanceCalculator() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 w-full space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6 w-full space-y-8">
 
         {/* Eligibility Banner */}
         <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>
