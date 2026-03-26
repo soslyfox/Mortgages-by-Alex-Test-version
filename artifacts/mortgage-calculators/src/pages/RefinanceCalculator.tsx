@@ -206,8 +206,15 @@ export default function RefinanceCalculator() {
         {/* Unified Input Card */}
         <Card className="overflow-hidden">
 
-          {/* ── Top band: 2×3 grid with rates on top ── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-5 px-6 pt-6 pb-6 bg-muted/20 border-b border-border/50">
+          {/* ── Column headers at the very top ── */}
+          <div className="grid grid-cols-2 gap-5 px-6 pt-5 pb-3">
+            <p className="text-sm font-semibold text-muted-foreground">{rc.currentSection}</p>
+            <p className="text-sm font-semibold text-primary">{rc.newSection}</p>
+          </div>
+
+          {/* ── All inputs in one unified grid, no dividers ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-5 px-6 pt-2 pb-6">
+
             {/* Row 1: Rates */}
             <div className="space-y-2">
               <Label>{rc.currentRate}</Label>
@@ -217,7 +224,8 @@ export default function RefinanceCalculator() {
               <Label>{rc.newRate}</Label>
               <InputWithAddon type="number" addonRight="%" step="0.01" value={newRate.toString()} onChange={(e) => setNewRate(Number(e.target.value))} className="font-bold text-primary" />
             </div>
-            {/* Row 2 */}
+
+            {/* Row 2: Property Value & Penalty */}
             <div className="space-y-2">
               <Label>{rc.propertyValue}</Label>
               <InputWithAddon type="number" addonLeft="$" value={propertyValue.toString()} onChange={(e) => setPropertyValue(Number(e.target.value))} />
@@ -227,7 +235,8 @@ export default function RefinanceCalculator() {
               <InputWithAddon type="number" addonLeft="$" value={penaltyFees.toString()} onChange={(e) => setPenaltyFees(Number(e.target.value))} />
               <p className="text-xs text-muted-foreground">{rc.penaltyFeesNote}</p>
             </div>
-            {/* Row 3 */}
+
+            {/* Row 3: Balances */}
             <div className="space-y-2">
               <Label>{rc.currentMortgage}</Label>
               <InputWithAddon type="number" addonLeft="$" value={currentMortgage.toString()} onChange={(e) => setCurrentMortgage(Number(e.target.value))} />
@@ -248,18 +257,8 @@ export default function RefinanceCalculator() {
                 {rc.cashOutNote}: <strong>{formatCurrency(calc.availableEquity)}</strong>
               </p>
             </div>
-          </div>
 
-          {/* ── Column headers ── */}
-          <div className="grid grid-cols-2 gap-5 px-6 pt-5 pb-3 border-b border-dashed border-border/40">
-            <p className="text-sm font-semibold text-muted-foreground">{rc.currentSection}</p>
-            <p className="text-sm font-semibold text-primary">{rc.newSection}</p>
-          </div>
-
-          {/* ── Comparison rows — Amortization/Term ── */}
-          <div className="grid grid-cols-2 gap-x-5 gap-y-5 px-6 pt-5 pb-6">
-
-            {/* Amortization */}
+            {/* Row 4: Amortization */}
             <AmortInput
               label={rc.amortLeft}
               valueMonths={amortLeftMonths}
@@ -279,7 +278,7 @@ export default function RefinanceCalculator() {
               labelMonths={rc.unitMonths}
             />
 
-            {/* Term */}
+            {/* Row 5: Term */}
             <div className="space-y-2">
               <Label>{rc.termLeft}</Label>
               <Select value={termLeft.toString()} onValueChange={(v) => setTermLeft(Number(v))}>
