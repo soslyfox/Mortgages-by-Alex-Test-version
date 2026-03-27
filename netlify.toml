@@ -1,0 +1,7 @@
+[build]
+  command = "pnpm --filter @workspace/mortgage-calculators run build"
+  publish = "artifacts/mortgage-calculators/dist/public"
+
+[build.environment]
+  BASE_PATH = "/"
+  PORT = "3000"
