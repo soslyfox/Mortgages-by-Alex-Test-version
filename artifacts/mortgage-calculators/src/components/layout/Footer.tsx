@@ -74,11 +74,11 @@ export function Footer() {
           <p className="text-xs text-white/60 font-medium">
             Alex Harin &nbsp;|&nbsp; BRX Mortgage &nbsp;|&nbsp; Ontario Mortgage Agent License&nbsp;#M24003304
           </p>
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+          <div className="grid gap-2 md:grid-cols-[auto,minmax(0,1fr)] md:items-start">
             <p className="text-xs text-white/50">
               © {new Date().getFullYear()} Mortgages by Alex. {t.footer.copyright}
             </p>
-            <p className="text-xs text-white/50 text-left md:text-right max-w-lg">
+            <p className="text-xs text-white/50 text-left md:text-right md:justify-self-end max-w-lg">
               {t.footer.disclaimer}
             </p>
           </div>

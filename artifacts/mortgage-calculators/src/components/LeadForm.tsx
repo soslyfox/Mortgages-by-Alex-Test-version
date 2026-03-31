@@ -17,6 +17,7 @@ export function LeadForm() {
   const [form, setForm] = useState<FormState>({ name: "", email: "", phone: "", service: "", message: "" });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errors, setErrors] = useState<Partial<FormState>>({});
+  const googleScriptUrl = import.meta.env.VITE_GOOGLE_SCRIPT_URL?.trim();
 
   const validate = () => {
     const newErrors: Partial<FormState> = {};
@@ -38,13 +39,37 @@ export function LeadForm() {
     e.preventDefault();
     if (!validate()) return;
     setStatus("loading");
+
+    const submittedAt = new Date().toISOString();
+
     try {
-      const res = await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (!res.ok) throw new Error("Server error");
+      if (googleScriptUrl) {
+        // Apps Script web apps are most reliable with a simple form-encoded POST.
+        const body = new URLSearchParams({
+          submittedAt,
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          service: form.service,
+          message: form.message,
+          pageUrl: window.location.href,
+        });
+
+        await fetch(googleScriptUrl, {
+          method: "POST",
+          body,
+          mode: "no-cors",
+        });
+      } else {
+        const res = await fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+
+        if (!res.ok) throw new Error("Server error");
+      }
+
       setStatus("success");
       setForm({ name: "", email: "", phone: "", service: "", message: "" });
     } catch {
