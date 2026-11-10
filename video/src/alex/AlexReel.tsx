@@ -249,7 +249,7 @@ export const AlexReel: React.FC<z.infer<typeof alexReelSchema>> = ({
       })}
 
       {captionStyle === 'stroke' ? (
-        <StrokeCaption pages={pages} />
+        <StrokeCaption pages={pages} top={1400} />
       ) : (
         <GlowCaption chunks={chunks} top={1240} fontSize={88} />
       )}

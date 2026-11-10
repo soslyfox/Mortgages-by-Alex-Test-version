@@ -136,7 +136,7 @@ export const StrokeCaption: React.FC<{pages: WordPage[]; top?: number; fontSize?
         display: 'flex',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        columnGap: fontSize * 0.26,
+        columnGap: fontSize * 0.34,
         fontFamily: condensed,
         fontWeight: 700,
         fontSize,
