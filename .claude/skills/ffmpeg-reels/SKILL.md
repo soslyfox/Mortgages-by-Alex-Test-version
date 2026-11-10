@@ -60,6 +60,15 @@ Then add a composition in `src/Root.tsx` using `src/alex/AlexReel.tsx` as the mo
 SFX + music push the mix above target (ep1 v4 came out at -11 LUFS). Always finish with:
 `ffmpeg -i out/ep.mp4 -c:v copy -af "loudnorm=I=-14:TP=-1.5:LRA=9" -c:a aac -b:a 192k -ar 48000 -movflags +faststart out/ep-final.mp4`
 
+## Safe zones (TODO for the next episode — seen on ep1 in TikTok/Instagram)
+Platform UI covered ep1's text. Keep text/graphics inside these limits on 1080x1920:
+- top 250 px: TikTok search bar sat over the hook banner (it was at y≈170) → start top text at ≥ 260
+- right 150 px from y≈850 to y≈1700: like/comment/share icons → keep captions narrower (≤ 760 px wide, centred)
+  and push wide chips/cards away from the right edge
+- bottom 380 px: username + description → captions end above y≈1540 (ep1 used top=1400, ok)
+- captions must still sit below the mouth (ep1: mouth ≈ y1200–1300 with punch-ins)
+Check with a safe-zone overlay still before rendering.
+
 ## Useful one-liners
 - Compress for upload (<30 MB): `ffmpeg -i in.mp4 -vf scale=1080:-2 -c:v libx264 -crf 26 -preset slow -c:a aac -b:a 128k -movflags +faststart out.mp4`
 - Split losslessly: `ffmpeg -i in.mp4 -c copy -f segment -segment_time 40 -reset_timestamps 1 part_%02d.mp4`
