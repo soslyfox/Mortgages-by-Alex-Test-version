@@ -49,3 +49,6 @@ export const C = {
 };
 
 export const FPS = 30;
+
+// Condensed heavy font for Alex's own subtitle style (white fill + black outline).
+export const condensed = load('Oswald', 'oswald', ['600', '700']);

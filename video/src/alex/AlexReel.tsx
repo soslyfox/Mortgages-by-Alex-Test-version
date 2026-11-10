@@ -9,7 +9,12 @@ import {
 } from 'remotion';
 import {Audio, Video} from '@remotion/media';
 import {z} from 'zod';
-import {GlowCaption, type CaptionChunk} from '../components/GlowCaption';
+import {
+  GlowCaption,
+  StrokeCaption,
+  type CaptionChunk,
+  type WordPage,
+} from '../components/GlowCaption';
 import {clamp, EASE_OUT} from '../anim';
 import {C} from '../theme';
 import ep1 from '../data/alex-ep1.json';
@@ -30,6 +35,7 @@ import {
 
 export const alexReelSchema = z.object({
   footage: z.string(),
+  captionStyle: z.enum(['stroke', 'glow']),
   bgm: z.boolean(),
   bgmVolume: z.number().min(0).max(1),
 });
@@ -80,6 +86,40 @@ export const toChunks = (words: Word[], fps: number): CaptionChunk[] => {
   });
 };
 
+/** 1–2 word pages (layout of the first reference), outlined Alex style. */
+export const toPages = (words: Word[], fps: number): WordPage[] => {
+  const pages: Word[][] = [];
+  let cur: Word[] = [];
+  words.forEach((w, i) => {
+    const prev = words[i - 1];
+    const len = cur.reduce((a, x) => a + x.text.length + 1, 0) + w.text.length;
+    const breakHere =
+      cur.length > 0 &&
+      (cur.length >= 2 || len > 11 || /[.,!?:]$/.test(prev.text) || w.startMs - prev.endMs > 250);
+    if (breakHere) {
+      pages.push(cur);
+      cur = [];
+    }
+    cur.push(w);
+  });
+  if (cur.length) pages.push(cur);
+  const f = (ms: number) => Math.round((ms / 1000) * fps);
+  return pages.map((p, i) => {
+    const next = pages[i + 1];
+    const endMs = next
+      ? Math.min(next[0].startMs, p[p.length - 1].endMs + 600)
+      : p[p.length - 1].endMs + 500;
+    const from = f(p[0].startMs);
+    return {
+      from,
+      dur: Math.max(3, f(endMs) - from),
+      // like the first reference: the 1–2 word page pops in at once, uppercase
+      words: p.map((w) => ({text: w.text.replace(/[,.]+$/, '').toUpperCase(), from})),
+      accent: p.map((w) => ACCENT.has(clean(w.text))),
+    };
+  });
+};
+
 /** Times (s) where framing switches: real cuts + sentence starts, ≥2.5 s apart. */
 const framingSwitches = (words: Word[], cuts: number[]) => {
   const cand = [...cuts];
@@ -92,7 +132,7 @@ const framingSwitches = (words: Word[], cuts: number[]) => {
   return out;
 };
 
-const SLOW_PUSH: [number, number] = [80.4, 88.6];
+const SLOW_PUSH: [number, number] = [80.35, 88.6];
 
 const Footage: React.FC<{src: string; switches: number[]}> = ({src, switches}) => {
   const frame = useCurrentFrame();
@@ -126,6 +166,7 @@ type Ov = {
   to: number;
   el: React.ReactNode;
   sfx?: [string, number, number?][]; // file, volume, offset frames
+  hard?: boolean; // full-screen cutaway: cut in/out hard, no fade
 };
 
 const fr = (s: number, fps: number) => Math.round(s * fps);
@@ -142,7 +183,7 @@ const overlays = (fps: number): Ov[] => {
       el: <BankLogos stampAt={at(13.5, 8.55)} />,
       sfx: [['pop.mp3', 0.45], ['paper-staple.mp3', 0.8, at(13.5, 8.55)]],
     },
-    {name: 'Collateral', from: 15.0, to: 19.2, el: <CollateralBars />, sfx: [['whoosh-fast.mp3', 0.45], ['data-compute.mp3', 0.25, 30]]},
+    {name: 'Collateral', from: 15.0, to: 19.2, hard: true, el: <CollateralBars />, sfx: [['whoosh-fast.mp3', 0.45], ['data-compute.mp3', 0.25, 30]]},
     {name: 'HELOC', from: 19.3, to: 25.9, el: <Chip text="HELOC та інші кредити — зручно ✓" />, sfx: [['pop.mp3', 0.4]]},
     {name: 'BankSafe', from: 26.1, to: 29.0, el: <Chip text="…а банк страхує себе" color="#8a5a12" />, sfx: [['pop.mp3', 0.4]]},
     {name: 'FinePrint', from: 29.2, to: 32.6, el: <FinePrint />, sfx: [['swoosh-quick.mp3', 0.4]]},
@@ -154,7 +195,7 @@ const overlays = (fps: number): Ov[] => {
       sfx: [['pop.mp3', 0.4], ['hit-weak.mp3', 0.5, at(33.6, 32.7)], ['ui-success-soft.mp3', 0.45, at(35.8, 32.7)]],
     },
     {name: 'AnyProduct', from: 44.6, to: 50.9, el: <Chip text="Прострочили будь-що в цьому банку?" color={C.danger} />, sfx: [['pop.mp3', 0.4]]},
-    {name: 'Sold', from: 51.2, to: 54.0, el: <HouseSold />, sfx: [['whoosh-fast.mp3', 0.4], ['bass-hit-short.mp3', 0.9, 12]]},
+    {name: 'Sold', from: 51.2, to: 54.0, hard: true, el: <HouseSold />, sfx: [['whoosh-fast.mp3', 0.4], ['bass-hit-short.mp3', 0.9, 12]]},
     {
       name: 'Card',
       from: 57.6,
@@ -166,7 +207,8 @@ const overlays = (fps: number): Ov[] => {
     {
       name: 'Eggs',
       from: 70.5,
-      to: 80.3,
+      to: 80.35, // ends exactly on the cut so the jump is hidden
+      hard: true,
       el: <EggBaskets splitAt={at(74.6, 70.5)} l1At={at(75.3, 70.5)} l2At={at(77.1, 70.5)} />,
       sfx: [['whoosh-fast.mp3', 0.45], ['air-woosh-quick.mp3', 0.5, at(74.6, 70.5)], ['pop.mp3', 0.45, at(75.3, 70.5)], ['pop.mp3', 0.45, at(77.1, 70.5)]],
     },
@@ -174,10 +216,16 @@ const overlays = (fps: number): Ov[] => {
   ];
 };
 
-export const AlexReel: React.FC<z.infer<typeof alexReelSchema>> = ({footage, bgm, bgmVolume}) => {
+export const AlexReel: React.FC<z.infer<typeof alexReelSchema>> = ({
+  footage,
+  captionStyle,
+  bgm,
+  bgmVolume,
+}) => {
   const {fps, durationInFrames} = useVideoConfig();
   const words = ep1.captions as Word[];
   const chunks = React.useMemo(() => toChunks(words, fps), [words, fps]);
+  const pages = React.useMemo(() => toPages(words, fps), [words, fps]);
   const switches = React.useMemo(() => framingSwitches(words, ep1.cuts), [words]);
 
   return (
@@ -190,7 +238,7 @@ export const AlexReel: React.FC<z.infer<typeof alexReelSchema>> = ({footage, bgm
         const dur = Math.min(fr(o.to, fps), durationInFrames) - from;
         return (
           <Sequence key={o.name} name={o.name} from={from} durationInFrames={dur} premountFor={fps}>
-            <OverlayLife>{o.el}</OverlayLife>
+            <OverlayLife out={o.hard ? 0 : 6}>{o.el}</OverlayLife>
             {(o.sfx ?? []).map(([file, vol, off = 0], i) => (
               <Sequence key={i} from={off} layout="none" name={`sfx:${file}`}>
                 <Audio src={staticFile(`audio/${file}`)} volume={vol} />
@@ -200,7 +248,11 @@ export const AlexReel: React.FC<z.infer<typeof alexReelSchema>> = ({footage, bgm
         );
       })}
 
-      <GlowCaption chunks={chunks} top={1240} fontSize={88} />
+      {captionStyle === 'stroke' ? (
+        <StrokeCaption pages={pages} />
+      ) : (
+        <GlowCaption chunks={chunks} top={1240} fontSize={88} />
+      )}
 
       {bgm ? (
         <Audio

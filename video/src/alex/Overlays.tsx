@@ -10,7 +10,6 @@ import {
 import {C, display, ui} from '../theme';
 import {clamp, EASE_OUT, pop, ramp, shake} from '../anim';
 import {HOUSE, NeonPath, NeonSvg, part} from '../components/Neon';
-import {Logo} from '../components/Site';
 
 /** Fade in/out wrapper for any overlay living inside a <Sequence>. */
 export const OverlayLife: React.FC<{children: React.ReactNode; out?: number}> = ({
@@ -22,7 +21,7 @@ export const OverlayLife: React.FC<{children: React.ReactNode; out?: number}> = 
   return (
     <AbsoluteFill
       style={{
-        opacity: interpolate(frame, [durationInFrames - out, durationInFrames], [1, 0], clamp),
+        opacity: out > 0 ? interpolate(frame, [durationInFrames - out, durationInFrames], [1, 0], clamp) : 1,
       }}
     >
       {children}
@@ -637,20 +636,6 @@ export const EggBaskets: React.FC<{splitAt: number; l1At: number; l2At: number}>
     <AbsoluteFill
       style={{background: `radial-gradient(110% 80% at 50% 35%, ${C.forest}, ${C.forestNight})`}}
     >
-      <div
-        style={{
-          position: 'absolute',
-          top: 210,
-          width: '100%',
-          textAlign: 'center',
-          fontFamily: display,
-          fontWeight: 800,
-          fontSize: 52,
-          color: C.white,
-        }}
-      >
-        Кредитні яйця → різні кошики
-      </div>
       <svg viewBox="0 0 1080 1100" width={1080} height={1100} style={{position: 'absolute', top: 160}}>
         <g opacity={split}>
           <Basket x={bx2} label="Кредитки" sub="Банк №2" labelP={l2} />
@@ -676,32 +661,38 @@ export const EggBaskets: React.FC<{splitAt: number; l1At: number; l2At: number}>
 };
 
 /* ----------------------------------------------------------- CTA */
+// Instagram profile screenshot (744x236) — the Calendly link sits at ~x205–552, y203–230.
+const IG_W = 744;
+const IG_SHOW = 900;
+const K = IG_SHOW / IG_W;
+
 export const CtaCard: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const p = pop(frame, 0, fps, {damping: 15});
   const btn = pop(frame, 10, fps);
+  const hl = pop(frame, 22, fps, {damping: 12});
+  const pulse = 0.5 + 0.5 * Math.sin((frame - 22) / 5);
   return (
     <div
       style={{
         position: 'absolute',
-        left: 60,
-        right: 60,
-        top: 150,
+        left: 40,
+        right: 40,
+        top: 120,
         translate: `0px ${interpolate(p, [0, 1], [-300, 0])}px`,
         opacity: p,
-        background: 'rgba(0,37,26,0.92)',
+        background: 'rgba(0,21,16,0.94)',
         borderRadius: 30,
-        padding: '34px 40px',
+        padding: '28px 20px 30px',
         border: `3px solid ${C.mint}66`,
         boxShadow: '0 30px 60px rgba(0,0,0,0.45)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: 20,
+        gap: 18,
       }}
     >
-      <Logo size={64} />
       <div
         style={{
           fontFamily: ui,
@@ -709,7 +700,7 @@ export const CtaCard: React.FC = () => {
           fontSize: 40,
           color: C.forestNight,
           background: C.mint,
-          padding: '20px 44px',
+          padding: '16px 40px',
           borderRadius: 999,
           scale: btn,
           boxShadow: `0 0 40px ${C.mint}88`,
@@ -717,8 +708,33 @@ export const CtaCard: React.FC = () => {
       >
         Безкоштовна консультація
       </div>
-      <div style={{fontFamily: ui, fontWeight: 600, fontSize: 30, color: C.mintSoft}}>
-        посилання в шапці профілю ↑
+      <div style={{position: 'relative', width: IG_SHOW, height: 236 * K, borderRadius: 16, overflow: 'hidden'}}>
+        <Img src={staticFile('images/instagram-profile.png')} style={{width: IG_SHOW}} />
+        <div
+          style={{
+            position: 'absolute',
+            left: 200 * K,
+            top: 201 * K,
+            width: 356 * K,
+            height: 31 * K,
+            borderRadius: 10,
+            border: `4px solid ${C.mint}`,
+            boxShadow: `0 0 ${10 + 20 * pulse}px ${C.mint}`,
+            opacity: hl,
+            scale: interpolate(hl, [0, 1], [1.3, 1]),
+          }}
+        />
+      </div>
+      <div
+        style={{
+          fontFamily: ui,
+          fontWeight: 700,
+          fontSize: 32,
+          color: C.mintSoft,
+          opacity: hl,
+        }}
+      >
+        запис — за посиланням у шапці профілю ↑
       </div>
     </div>
   );

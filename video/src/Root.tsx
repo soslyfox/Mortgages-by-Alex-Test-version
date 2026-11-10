@@ -20,7 +20,12 @@ export const RemotionRoot: React.FC = () => {
         fps={FPS}
         width={1080}
         height={1920}
-        defaultProps={{footage: 'footage/alex-cut.mp4', bgm: true, bgmVolume: 0.05}}
+        defaultProps={{
+          footage: 'footage/alex-cut.mp4',
+          captionStyle: 'stroke',
+          bgm: true,
+          bgmVolume: 0.05,
+        }}
       />
       <Composition
         id="MortgageReel"
