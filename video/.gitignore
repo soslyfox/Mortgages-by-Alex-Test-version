@@ -1,0 +1,6 @@
+node_modules
+out/*
+!out/.gitkeep
+public/footage/
+__pycache__/
+.venv/
