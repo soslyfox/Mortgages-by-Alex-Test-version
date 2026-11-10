@@ -56,6 +56,10 @@ Echo from a distant phone mic only partly goes away; a clip-on mic fixes it at t
 Fix Whisper mistakes in `fixes.json` (anglicisms, names, low-confidence words).
 Then add a composition in `src/Root.tsx` using `src/alex/AlexReel.tsx` as the model.
 
+## 6. Final loudness after the Remotion render
+SFX + music push the mix above target (ep1 v4 came out at -11 LUFS). Always finish with:
+`ffmpeg -i out/ep.mp4 -c:v copy -af "loudnorm=I=-14:TP=-1.5:LRA=9" -c:a aac -b:a 192k -ar 48000 -movflags +faststart out/ep-final.mp4`
+
 ## Useful one-liners
 - Compress for upload (<30 MB): `ffmpeg -i in.mp4 -vf scale=1080:-2 -c:v libx264 -crf 26 -preset slow -c:a aac -b:a 128k -movflags +faststart out.mp4`
 - Split losslessly: `ffmpeg -i in.mp4 -c copy -f segment -segment_time 40 -reset_timestamps 1 part_%02d.mp4`
