@@ -39,6 +39,18 @@ python3 -I scripts/cut.py src.mp4 edl.json public/footage/<name>-cut.mp4
 ```
 Check loudness: `ffmpeg -nostats -i out.mp4 -af ebur128 -f null - 2>&1 | grep -A1 Integrated` → ≈ -14 LUFS.
 
+## 4b. AI voice enhancement (like Verba "AI Audio Enhancement")
+Uses the video-cleanup plugin's DeepFilterNet chain on the *source* audio, then
+re-cuts with that clean track (the ffmpeg denoise step is skipped):
+```bash
+K=<video-cleanup plugin>/skills/video-cleanup/scripts
+python3 $K/setup_tools.py            # once: downloads DeepFilterNet 0.5.6 (checksum-verified)
+python3 $K/analyze.py src.mp4        # diagnose: voice-above-background, rumble, muffled, LUFS
+python3 $K/audiofix.py src.mp4 --wav-only --presence 4 -o clean.wav   # --strength 25 = softer
+python3 -I scripts/cut.py src.mp4 edl.json public/footage/<name>-cut-ai.mp4 clean.wav
+```
+Echo from a distant phone mic only partly goes away; a clip-on mic fixes it at the source.
+
 ## 5. Captions for Remotion
 `python3 -I scripts/make-captions.py edl.json src/data/<episode>.json fixes.json`
 Fix Whisper mistakes in `fixes.json` (anglicisms, names, low-confidence words).

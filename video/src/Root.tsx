@@ -21,7 +21,7 @@ export const RemotionRoot: React.FC = () => {
         width={1080}
         height={1920}
         defaultProps={{
-          footage: 'footage/alex-cut.mp4',
+          footage: 'footage/alex-cut-ai.mp4',
           captionStyle: 'stroke',
           bgm: true,
           bgmVolume: 0.05,
