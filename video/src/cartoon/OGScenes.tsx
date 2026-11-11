@@ -591,7 +591,7 @@ export const LogoScene: React.FC<{start: number; ctaAt: number}> = ({start, ctaA
   const t = useT();
   const z = interpolate(t, [start, start + 1.6], [2.6, 1], {...clamp, easing: EASE_OUT});
   const o = ease(t, start, 0.4);
-  const sub = ease(t, start + 1.2, 0.6);
+  const sub = ease(t, start + 0.45, 0.5);
   const cta = ease(t, ctaAt, 0.6);
   return (
     <AbsoluteFill style={{background: 'radial-gradient(70% 45% at 50% 42%, #ffffff 0%, #d9f0ff 18%, #7cc0f2 45%, #2f86d6 100%)'}}>
@@ -602,10 +602,14 @@ export const LogoScene: React.FC<{start: number; ctaAt: number}> = ({start, ctaA
         })}
       </svg>
       <div style={{position: 'absolute', top: 660, width: '100%', textAlign: 'center', scale: z, opacity: o}}>
-        <div style={{fontFamily: brush, fontSize: 168, color: '#111', letterSpacing: '0.02em', lineHeight: 1}}>АВАТАР</div>
-        <div style={{fontFamily: serif, fontWeight: 700, fontSize: 56, color: '#1b1b1b', letterSpacing: '0.22em', marginTop: 8, opacity: sub}}>ВОЛОДАР ІПОТЕК</div>
+        <div style={{fontFamily: brush, fontSize: 190, color: '#111', letterSpacing: '0.02em', lineHeight: 1, textShadow: '0 0 30px rgba(255,255,255,0.9)'}}>АВАТАР</div>
+        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 22, marginTop: 14, opacity: sub, translate: `0px ${(1 - sub) * 20}px`}}>
+          <div style={{width: 44, height: 4, background: '#1b1b1b'}} />
+          <div style={{fontFamily: serif, fontWeight: 700, fontSize: 70, color: '#1b1b1b', letterSpacing: '0.1em', textShadow: '0 0 20px rgba(255,255,255,0.9)'}}>ВОЛОДАР ІПОТЕК</div>
+          <div style={{width: 44, height: 4, background: '#1b1b1b'}} />
+        </div>
       </div>
-      <div style={{position: 'absolute', top: 1060, width: '100%', textAlign: 'center', fontFamily: serif, fontWeight: 700, color: '#10233d', opacity: sub}}>
+      <div style={{position: 'absolute', top: 1080, width: '100%', textAlign: 'center', fontFamily: serif, fontWeight: 700, color: '#10233d', opacity: ease(t, start + 1.4, 0.6)}}>
         <div style={{fontSize: 30, letterSpacing: '0.2em'}}>СТВОРЕНО</div>
         <div style={{fontSize: 46, marginTop: 4}}>Mortgages by Alex</div>
       </div>
