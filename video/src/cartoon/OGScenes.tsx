@@ -449,7 +449,7 @@ export const AvatarScene2: React.FC<{start: number; glowAt: number; vanishAt: nu
             : null}
         </svg>
         {/* element tiles pop on each beat, then orbit together */}
-        {!orbitOn ? (
+        {t >= vanishAt + 0.4 ? null : !orbitOn ? (
           <>
             {t < eAt + 0.2 ? <ElementTile kind="work" at={wAt} x={300} y={620} /> : null}
             {t >= eAt && t < glowAt + 0.4 ? <ElementTile kind="home" at={eAt} x={790} y={640} /> : null}
