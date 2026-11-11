@@ -697,8 +697,30 @@ export const NorthSearch: React.FC<{start: number; end: number}> = ({start, end}
           ))}
         </svg>
       </AbsoluteFill>
-      <div style={{position: 'absolute', top: 300, width: '100%', textAlign: 'center', fontFamily: round, fontWeight: 900, fontSize: 104, color: '#e9f6ff', letterSpacing: '0.24em', opacity: ease(t, start + 0.3, 0.8), textShadow: '0 0 30px #4dffb0'}}>
-        YUKON
+      {/* typical Canadian highway welcome sign, standing in the snow */}
+      <div style={{position: 'absolute', left: 620, top: 1060, width: 400}}>
+        <div style={{position: 'absolute', left: 70, top: 190, width: 16, height: 300, background: 'linear-gradient(90deg,#9aa3ad,#d7dde3,#8d96a0)'}} />
+        <div style={{position: 'absolute', left: 314, top: 190, width: 16, height: 300, background: 'linear-gradient(90deg,#9aa3ad,#d7dde3,#8d96a0)'}} />
+        <div
+          style={{
+            position: 'relative',
+            background: '#0b6b3a',
+            border: '7px solid #ffffff',
+            outline: '4px solid #0b6b3a',
+            borderRadius: 14,
+            padding: '14px 10px 18px',
+            textAlign: 'center',
+            fontFamily: round,
+            color: '#fff',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.45)',
+            opacity: ease(t, start + 0.2, 0.5),
+          }}
+        >
+          <div style={{fontWeight: 800, fontSize: 26, lineHeight: 1.15}}>Welcome to · Bienvenue au</div>
+          <div style={{fontWeight: 900, fontSize: 92, letterSpacing: '0.08em', lineHeight: 1.05}}>YUKON</div>
+          {/* snow cap */}
+          <div style={{position: 'absolute', left: -10, right: -10, top: -18, height: 26, borderRadius: 20, background: '#f4f9ff', boxShadow: '0 2px 0 rgba(0,0,0,0.15)'}} />
+        </div>
       </div>
       {/* the two searchers in parkas with flashlights */}
       <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
