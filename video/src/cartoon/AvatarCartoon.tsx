@@ -673,8 +673,10 @@ export const AvatarCartoon: React.FC<z.infer<typeof avatarCartoonSchema>> = ({mu
             volume={(fr) => {
               const tt = fr / fps + MUSIC_OFFSET;
               const d = SPEECH.reduce((m, [a, b]) => Math.max(m, interpolate(tt, [a - 0.3, a, b, b + 0.4], [0, 1, 1, 0], clamp)), 0);
+              // element names land on the music's big hits: duck harder there
+              const dn = SPEECH.slice(0, 4).reduce((m, [a, b]) => Math.max(m, interpolate(tt, [a - 0.2, a - 0.05, b, b + 0.3], [0, 1, 1, 0], clamp)), 0);
               const fade = endMusic ? interpolate(tt, [END_AT - 0.5, END_AT + 0.05], [1, 0], clamp) : interpolate(tt, [DURATION - 2.5, DURATION], [1, 0], clamp);
-              return (voiceover ? 0.75 - 0.5 * d : 0.75) * fade;
+              return (voiceover ? 0.75 - 0.5 * d - 0.15 * dn : 0.75) * fade;
             }}
           />
         </Sequence>
@@ -687,7 +689,7 @@ export const AvatarCartoon: React.FC<z.infer<typeof avatarCartoonSchema>> = ({mu
       {voiceover
         ? VOICE.map((v, i) => (
             <Sequence key={`vo${i}`} from={f(v.at)} layout="none" name={`voice ${i}`}>
-              <Audio src={staticFile(`${voiceover}/${v.file}`)} trimBefore={v.trim ? f(v.trim[0]) : undefined} trimAfter={v.trim ? f(v.trim[1]) : undefined} />
+              <Audio src={staticFile(`${voiceover}/${v.file}`)} volume={v.trim ? 1.6 : 1} trimBefore={v.trim ? f(v.trim[0]) : undefined} trimAfter={v.trim ? f(v.trim[1]) : undefined} />
             </Sequence>
           ))
         : null}
