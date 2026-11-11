@@ -37,12 +37,15 @@ export const Icon: React.FC<{kind: IconKind; size: number; color?: string}> = ({
       </g>
     ) : null}
     {kind === 'down' ? (
-      <g fill="none" stroke={color} strokeWidth={8} strokeLinecap="round" strokeLinejoin="round">
-        <ellipse cx={50} cy={56} rx={34} ry={26} />
-        <path d="M24 40 L18 24 L34 32" />
-        <path d="M40 30 H60" />
-        <path d="M30 80 V90 M70 80 V90" />
-        <circle cx={66} cy={50} r={3} fill={color} />
+      <g fill="none" stroke={color} strokeWidth={7} strokeLinecap="round" strokeLinejoin="round">
+        <ellipse cx={46} cy={56} rx={32} ry={25} />
+        <path d="M76 48 Q90 48 90 57 Q90 66 76 66" />
+        <path d="M82 54 V60" strokeWidth={4} />
+        <path d="M30 36 L34 20 L44 32" />
+        <path d="M38 33 H54" />
+        <path d="M28 79 V90 M62 79 V90" />
+        <path d="M14 52 Q4 50 7 42" />
+        <circle cx={66} cy={48} r={3} fill={color} />
       </g>
     ) : null}
     {kind === 'credit' ? (
@@ -105,6 +108,37 @@ export const Tag: React.FC<{label: string; icon: IconKind; color: string; rotate
 );
 
 /* ------------------------------------------------------- scene props */
+/** Open money case that fills up with stacks of dollar bills (fill 0..1). */
+export const MoneyCase: React.FC<{x: number; y: number; s: number; fill: number}> = ({x, y, s, fill}) => {
+  const stacks = Math.round(fill * 12);
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      {/* open lid */}
+      <path d="M-150 -40 L-130 -150 H130 L150 -40 Z" fill="#2a2a2e" stroke="#111" strokeWidth={6} />
+      <path d="M-120 -60 L-106 -132 H106 L120 -60 Z" fill="#5a5a66" />
+      {/* bills inside, rows of stacks */}
+      {Array.from({length: stacks}, (_, k) => {
+        const col = k % 4, row = Math.floor(k / 4);
+        return (
+          <g key={k} transform={`translate(${-112 + col * 56} ${-68 - row * 20})`}>
+            <rect x={0} y={0} width={54} height={28} rx={3} fill="#7fd68a" stroke="#2c7a3c" strokeWidth={3} />
+            <rect x={22} y={0} width={10} height={28} fill="#f2e3c6" />
+            <text x={11} y={20} textAnchor="middle" fontFamily={round} fontWeight={900} fontSize={16} fill="#2c7a3c">$</text>
+          </g>
+        );
+      })}
+      {/* case body */}
+      <rect x={-150} y={-40} width={300} height={130} rx={14} fill="#1f1f23" stroke="#111" strokeWidth={6} />
+      <rect x={-150} y={-40} width={300} height={22} fill="#34343a" />
+      {[-150, 120].map((cx) => (
+        <rect key={cx} x={cx} y={-40} width={30} height={30} fill="#c9a24a" />
+      ))}
+      <rect x={-24} y={10} width={48} height={22} rx={4} fill="#c9a24a" />
+      <path d="M-40 90 V104 H40 V90" fill="none" stroke="#111" strokeWidth={8} />
+    </g>
+  );
+};
+
 export const Sun: React.FC<{cx: number; cy: number; r: number}> = ({cx, cy, r}) => (
   <div
     style={{

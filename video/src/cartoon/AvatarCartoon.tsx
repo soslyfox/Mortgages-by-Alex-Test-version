@@ -7,7 +7,7 @@ import {clamp, EASE_OUT, rand} from '../anim';
 import {DURATION, ELEMENTS, MUSIC_OFFSET, SPEECH, VOICE, WAR} from '../avatar/timeline';
 import alignment from '../../public/voiceover/avatar/alignment.json';
 import {Figure, handPos, mixPose, POSE_STAND, type Pose} from './Figure';
-import {CaptionPill, CartoonAlex, DocPile, Flag, House, Icon, INK, Paper, Plane, Sun, Tag, Tank, type IconKind} from './Props';
+import {CaptionPill, CartoonAlex, DocPile, Flag, House, Icon, INK, MoneyCase, Paper, Plane, Sun, Tag, Tank, type IconKind} from './Props';
 import {AvatarScene2, BrushGlyph, BrushWord, CliffScene, IceScene, Letterbox, LogoScene, MapScene2, NorthSearch, RedStage, WarScene2} from './OGScenes';
 
 export const avatarCartoonSchema = z.object({
@@ -94,7 +94,6 @@ const ElementScene: React.FC<{i: number}> = ({i}) => {
     pose = {torso: 0, head: s * 8, uaL: -100 + s * 12, faL: -30, uaR: 100 - s * 12, faR: 30, thL: -16, shL: 4, thR: 16, shR: -4};
     const PX = HX + 230, PY = 560;
     const grow = Math.min(1, 0.55 + u * 0.35);
-    const coins = Math.min(9, Math.floor(u * 5));
     fx = (
       <g>
         {/* wind streaks */}
@@ -107,7 +106,7 @@ const ElementScene: React.FC<{i: number}> = ({i}) => {
             );
           })}
         </g>
-        {/* cash spiralling up into the piggy bank, turning into coins on the way */}
+        {/* cash spiralling up into the money case */}
         {Array.from({length: 16}, (_, k) => {
           const ph = (u * 0.75 + k / 16) % 1;
           const cy = (HY - 200) + (PY - (HY - 200)) * ph;
@@ -115,32 +114,17 @@ const ElementScene: React.FC<{i: number}> = ({i}) => {
           const a = k * 2.4 + ph * 8 + u * 2;
           const x = HX + (PX - HX) * ph + Math.cos(a) * r;
           const y = cy + Math.sin(a) * r * 0.42;
-          const coin = ph > 0.62;
-          return coin ? (
-            <circle key={k} cx={x} cy={y} r={16 * (1.2 - ph * 0.5)} fill="#ffd34d" stroke="#b8860b" strokeWidth={4} opacity={ph > 0.95 ? 0 : 1} />
-          ) : (
-            <g key={k} transform={`translate(${x} ${y}) rotate(${a * 40}) scale(${1 - ph * 0.4})`}>
+          return (
+            <g key={k} transform={`translate(${x} ${y}) rotate(${a * 40}) scale(${1 - ph * 0.4})`} opacity={ph > 0.95 ? 0 : 1}>
               <rect x={-34} y={-18} width={68} height={36} rx={4} fill="#7fd68a" stroke="#2c7a3c" strokeWidth={3} />
               <text x={0} y={10} textAnchor="middle" fontFamily={round} fontWeight={900} fontSize={24} fill="#2c7a3c">$</text>
             </g>
           );
         })}
-        {/* the savings: piggy bank grows, coin stack rises */}
-        <g transform={`translate(${PX} ${PY}) scale(${grow * (1 + 0.04 * Math.sin(u * 14))})`} style={{filter: 'drop-shadow(0 0 18px #ffe9a8)'}}>
-          <ellipse cx={0} cy={0} rx={110} ry={80} fill="#f6a8bd" stroke="#8a3a52" strokeWidth={6} />
-          <ellipse cx={-100} cy={4} rx={30} ry={24} fill="#f6a8bd" stroke="#8a3a52" strokeWidth={6} />
-          <circle cx={-110} cy={0} r={4} fill="#8a3a52" />
-          <circle cx={-92} cy={0} r={4} fill="#8a3a52" />
-          <path d="M-60 -64 L-40 -100 L-24 -66" fill="#f6a8bd" stroke="#8a3a52" strokeWidth={6} strokeLinejoin="round" />
-          <circle cx={-56} cy={-22} r={7} fill="#3a1a24" />
-          <rect x={-20} y={-80} width={46} height={10} rx={5} fill="#8a3a52" />
-          {[-60, -20, 30, 70].map((x) => (
-            <rect key={x} x={x - 12} y={64} width={24} height={36} rx={6} fill="#f6a8bd" stroke="#8a3a52" strokeWidth={5} />
-          ))}
+        {/* the savings: a money case filling up with stacks of dollars */}
+        <g style={{filter: 'drop-shadow(0 0 18px #c9ffd6)'}}>
+          <MoneyCase x={PX} y={PY + 40} s={grow * (1 + 0.03 * Math.sin(u * 14))} fill={Math.min(1, 0.15 + u * 0.4)} />
         </g>
-        {Array.from({length: coins}, (_, k) => (
-          <ellipse key={`s${k}`} cx={PX + 10} cy={PY + 220 - k * 18} rx={40} ry={12} fill="#ffd34d" stroke="#b8860b" strokeWidth={4} />
-        ))}
       </g>
     );
   } else if (kind === 'credit') {

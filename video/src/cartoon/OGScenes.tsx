@@ -6,7 +6,7 @@ import {brush, round, serif} from '../theme';
 import {clamp, EASE_OUT, rand} from '../anim';
 import {ELEMENTS, WAR} from '../avatar/timeline';
 import {Figure, mixPose, POSE_STAND, type Pose} from './Figure';
-import {CartoonAlex, Flag, Icon, Plane, Tank, type IconKind} from './Props';
+import {CartoonAlex, Flag, Icon, MoneyCase, Plane, Tank, type IconKind} from './Props';
 import CA from './canada.json';
 
 const useT = () => {
@@ -36,7 +36,16 @@ export const Letterbox: React.FC<{h?: number}> = ({h = 210}) => (
 /** Our element glyphs painted as rough cream brush strokes. */
 const GLYPH: Record<IconKind, string[]> = {
   work: ['M60 120 H340', 'M60 120 V300 H340 V120', 'M150 120 V70 H250 V120', 'M60 200 H340'],
-  down: ['M90 210 Q90 120 200 120 Q310 120 310 210 Q310 300 200 300 Q90 300 90 210', 'M120 150 L95 95 L150 128', 'M170 132 H230', 'M140 295 V340 M260 295 V340'],
+  down: [
+    'M80 215 Q80 118 195 112 Q300 112 312 200 Q318 300 195 306 Q80 302 80 215',
+    'M308 182 Q352 182 352 214 Q352 246 308 246',
+    'M326 204 V224 M340 204 V224',
+    'M140 132 L160 74 L196 118',
+    'M120 296 V346 M165 302 V346 M235 302 V346 M280 296 V346',
+    'M82 205 Q40 196 50 168 Q66 152 74 176',
+    'M170 124 H230',
+    'M258 172 L262 172',
+  ],
   credit: ['M50 110 H350 V310 H50 Z', 'M50 170 H350', 'M50 190 H350', 'M90 260 H190'],
   home: ['M50 200 L200 70 L350 200', 'M90 170 V330 H310 V170', 'M170 330 V250 H230 V330'],
 };
@@ -410,19 +419,9 @@ export const AvatarScene2: React.FC<{start: number; glowAt: number; vanishAt: nu
               const a = k * 2.4 + ph * 8;
               const x = 540 + Math.cos(a) * r;
               const y = 900 - ph * 330 + Math.sin(a) * r * 0.42;
-              return ph > 0.6 ? (
-                <circle key={k} cx={x} cy={y} r={16} fill="#ffd34d" stroke="#b8860b" strokeWidth={4} />
-              ) : (
-                <rect key={k} x={x - 30} y={y - 16} width={60} height={32} rx={4} fill="#7fd68a" stroke="#2c7a3c" strokeWidth={3} transform={`rotate(${a * 40} ${x} ${y})`} />
-              );
+              return <rect key={k} x={x - 30} y={y - 16} width={60} height={32} rx={4} fill="#7fd68a" stroke="#2c7a3c" strokeWidth={3} transform={`rotate(${a * 40} ${x} ${y})`} opacity={ph > 0.95 ? 0 : 1} />;
             })}
-            <g transform={`translate(540 560) scale(${0.6 + as * 0.4})`}>
-              <ellipse cx={0} cy={0} rx={90} ry={66} fill="#f6a8bd" stroke="#8a3a52" strokeWidth={6} />
-              <ellipse cx={-82} cy={4} rx={24} ry={20} fill="#f6a8bd" stroke="#8a3a52" strokeWidth={6} />
-              <path d="M-50 -52 L-34 -84 L-20 -54" fill="#f6a8bd" stroke="#8a3a52" strokeWidth={6} />
-              <circle cx={-46} cy={-18} r={6} fill="#3a1a24" />
-              <rect x={-16} y={-66} width={38} height={9} rx={4} fill="#8a3a52" />
-            </g>
+            <MoneyCase x={540} y={560} s={0.55 + as * 0.35} fill={Math.min(1, (t - aAt) * 0.6)} />
           </g>
           {/* the Avatar (fades into the wind when he vanishes) */}
           <g opacity={1 - vanish}>
