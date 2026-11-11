@@ -474,7 +474,6 @@ export const IceScene: React.FC<{start: number; wakeAt: number}> = ({start, wake
   const close = t >= start + 1.2; // wide shot of the glowing iceberg, then the close-up
   const awake = t >= wakeAt;
   const crack = ease(t, wakeAt, 0.45);
-  const nameIn = ease(t, wakeAt + 0.1, 0.3);
   const pulse = 0.85 + 0.15 * Math.sin(t * 5);
   if (!close) {
     const z = interpolate(t, [start, start + 1.2], [1.0, 1.12], clamp);
@@ -548,9 +547,6 @@ export const IceScene: React.FC<{start: number; wakeAt: number}> = ({start, wake
             ))
           : null}
       </AbsoluteFill>
-      <div style={{position: 'absolute', top: 380, width: '100%', display: 'flex', justifyContent: 'center', opacity: nameIn, scale: 0.8 + nameIn * 0.2}}>
-        <div style={{fontFamily: brush, fontSize: 110, color: '#123a66', textShadow: '0 0 20px #fff, 0 0 40px #fff'}}>АЛЕКС</div>
-      </div>
     </AbsoluteFill>
   );
 };
