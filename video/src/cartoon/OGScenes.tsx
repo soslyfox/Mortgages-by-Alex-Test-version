@@ -1,7 +1,7 @@
 // Scenes restyled to follow the composition and palette of the classic intro
 // (own drawings: no characters, glyphs or logo copied).
 import React from 'react';
-import {AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Easing, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
 import {brush, round, serif} from '../theme';
 import {clamp, EASE_OUT, rand} from '../anim';
 import {ELEMENTS, WAR} from '../avatar/timeline';
@@ -266,6 +266,47 @@ const Pinnacle: React.FC = () => (
   </svg>
 );
 
+/** Houses that rise out of the ground behind the Avatar (earthbending). */
+const RISING = [
+  {x: 90, w: 150, h: 170, d: 0.0}, {x: 250, w: 130, h: 230, d: 0.12}, {x: 360, w: 120, h: 150, d: 0.3},
+  {x: 720, w: 120, h: 160, d: 0.22}, {x: 840, w: 140, h: 240, d: 0.05}, {x: 990, w: 150, h: 180, d: 0.18},
+  {x: 170, w: 110, h: 120, d: 0.4}, {x: 930, w: 110, h: 130, d: 0.45},
+];
+const RisingHouses: React.FC<{at: number}> = ({at}) => {
+  const t = useT();
+  if (t < at - 0.1) return null;
+  return (
+    <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+      {RISING.map((h, k) => {
+        const p = interpolate(t, [at + h.d, at + h.d + 0.55], [0, 1], {...clamp, easing: Easing.out(Easing.back(1.6))});
+        const base = 1360;
+        const H = h.h * 1.5;
+        const y = base - H * p;
+        const roof = h.w * 0.45;
+        const shake = p > 0 && p < 1 ? Math.sin(t * 60 + k) * 4 : 0;
+        const dust = interpolate(t, [at + h.d, at + h.d + 0.3, at + h.d + 1.4], [0, 1, 0], clamp);
+        return (
+          <g key={k}>
+            <g transform={`translate(${h.x - h.w / 2 + shake} ${y})`}>
+              <path d={`M0 ${roof} L${h.w / 2} 0 L${h.w} ${roof} V${H + roof} H0 Z`} fill={k % 2 ? '#4a2c1c' : '#3f2416'} />
+              <rect x={h.w * 0.62} y={roof * 0.15} width={h.w * 0.12} height={roof * 0.6} fill={k % 2 ? '#4a2c1c' : '#3f2416'} />
+              {[0, 1].map((r) =>
+                [0, 1].map((c) => (
+                  <rect key={`${r}${c}`} x={h.w * (0.18 + c * 0.42)} y={roof + 20 + r * (H * 0.3)} width={h.w * 0.22} height={H * 0.16} rx={3} fill="#ffcf6b" opacity={0.85 * p} />
+                )),
+              )}
+              <rect x={h.w * 0.4} y={roof + H * 0.62} width={h.w * 0.2} height={H * 0.38} fill="#2a170f" />
+            </g>
+            {dust > 0
+              ? [0, 1, 2, 3].map((j) => <circle key={j} cx={h.x - h.w / 2 + j * (h.w / 3)} cy={base + 10 - dust * 20} r={(26 + j * 6) * dust} fill="#b08860" opacity={0.75 * dust} />)
+              : null}
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
+
 const ELC: Record<IconKind, string> = {work: '#2f8fd6', down: '#2fbf6f', credit: '#e8642c', home: '#8a6a3c'};
 
 /** Big element tile that pops, glows and then joins the orbit. */
@@ -327,8 +368,9 @@ export const AvatarScene2: React.FC<{start: number; glowAt: number; vanishAt: nu
   return (
     <AbsoluteFill>
       <AbsoluteFill style={{background: 'radial-gradient(60% 38% at 50% 48%, #fff7c4 0%, #ffd84a 38%, #f0a22a 62%, #8a4a1c 100%)'}} />
-      <AbsoluteFill style={{scale: zoom, transformOrigin: '50% 60%'}}>
+      <AbsoluteFill style={{scale: zoom, transformOrigin: '50% 60%', translate: `${t > eAt && t < eAt + 0.8 ? Math.sin(t * 55) * 10 * (1 - (t - eAt) / 0.8) : 0}px 0px`}}>
         <div style={{position: 'absolute', left: 540 - 430, top: 900 - 430, width: 860, height: 860, borderRadius: '50%', background: 'radial-gradient(circle,#fffbe0 0%,#ffe36a 60%,rgba(255,200,60,0) 72%)'}} />
+        <RisingHouses at={eAt - 0.05} />
         <Pinnacle />
         <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
           {/* WATER: tall spire of cash-water */}
