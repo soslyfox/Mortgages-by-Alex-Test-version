@@ -8,6 +8,7 @@ import {DURATION, ELEMENTS, MUSIC_OFFSET, SPEECH, VOICE, WAR} from '../avatar/ti
 import alignment from '../../public/voiceover/avatar/alignment.json';
 import {Figure, handPos, mixPose, POSE_STAND, type Pose} from './Figure';
 import {CaptionPill, CartoonAlex, DocPile, Flag, House, Icon, INK, Paper, Plane, Sun, Tag, Tank, type IconKind} from './Props';
+import {AvatarScene2, BrushGlyph, BrushWord, CliffScene, IceScene, Letterbox, LogoScene, MapScene2, RedStage, WarScene2} from './OGScenes';
 
 export const avatarCartoonSchema = z.object({
   music: z.string(),
@@ -124,7 +125,7 @@ const ElementScene: React.FC<{i: number}> = ({i}) => {
               const b = Math.max(0, u - 0.3);
               const ang = -0.9 + j * 0.32;
               return (
-                <g key={`cc${j}`} transform={`translate(${Math.min(1010, hx + Math.cos(ang) * b * 420)} ${hy + Math.sin(ang) * b * 520 + b * b * 260}) rotate(${b * 400 + j * 40})`}>
+                <g key={`cc${j}`} opacity={Math.max(0, 1 - b * 0.9)} transform={`translate(${hx + Math.cos(ang) * Math.min(b, 1.2) * 330} ${hy + Math.sin(ang) * Math.min(b, 1.2) * 420}) rotate(${b * 400 + j * 40})`}>
                   <rect x={-50} y={-32} width={100} height={64} rx={8} fill="#ff9b3d" stroke="#7a2a0c" strokeWidth={4} />
                   <rect x={-50} y={-16} width={100} height={12} fill="#7a2a0c" />
                 </g>
@@ -162,26 +163,21 @@ const ElementScene: React.FC<{i: number}> = ({i}) => {
   }
   return (
     <AbsoluteFill>
-      <Paper top="#c8312a" bottom="#8a1512" />
+      <RedStage />
+      {/* big cream brush glyph + word, like hanging calligraphy behind the bender */}
+      <div style={{position: 'absolute', left: i >= 2 ? 560 : 70, top: 260, opacity: 0.95}}>
+        <BrushGlyph kind={ICONS[i]} p={ease(t, at, 0.9)} size={i >= 2 ? 440 : 400} />
+      </div>
+      <div style={{position: 'absolute', top: i >= 2 ? 700 : 660, left: i >= 2 ? 540 : 50, width: 480, opacity: tagIn}}>
+        <BrushWord text={el.name} o={1} />
+      </div>
       <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
         <ellipse cx={HX} cy={HY + 245} rx={190} ry={26} fill="#000" opacity={0.25} />
         {i === 1 ? fx : null}
-        <Figure pose={pose} x={HX} y={HY} scale={SC} color={INK} hat={(['spikes', 'cone', 'visor', 'beanie'] as const)[i]} />
+        <Figure pose={pose} x={HX} y={HY} scale={SC} color="#2a0806" hat={(['spikes', 'cone', 'visor', 'beanie'] as const)[i]} />
         {i !== 1 ? fx : null}
       </svg>
-      <div
-        style={{
-          position: 'absolute',
-          top: 300,
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          opacity: tagIn,
-          translate: `0px ${(1 - tagIn) * -60}px`,
-        }}
-      >
-        <Tag label={el.name} icon={ICONS[i]} color={TILE[i]} rotate={i % 2 ? 4 : -4} />
-      </div>
+      <Letterbox />
     </AbsoluteFill>
   );
 };
@@ -581,25 +577,28 @@ export const AvatarCartoon: React.FC<z.infer<typeof avatarCartoonSchema>> = ({mu
         </Gate>
       ))}
       <Gate from={M.map} to={M.war}>
-        <MapScene />
+        <MapScene2 start={M.map} end={M.war} />
       </Gate>
       <Gate from={M.war} to={M.avatar}>
-        <WarScene />
+        <WarScene2 start={M.war} tanksAt={M.tanks} end={M.avatar} />
       </Gate>
       <Gate from={M.avatar} to={M.search}>
-        <AvatarScene />
+        <AvatarScene2 start={M.avatar} glowAt={M.avatarUp} end={M.search} />
       </Gate>
-      <Gate from={M.search} to={M.desk}>
+      <Gate from={M.search} to={M.sphere}>
         <SearchScene />
+      </Gate>
+      <Gate from={M.sphere} to={M.desk}>
+        <IceScene start={M.sphere} wakeAt={M.name} />
       </Gate>
       <Gate from={M.desk} to={M.belief}>
         <SkillsScene />
       </Gate>
       <Gate from={M.belief} to={M.title}>
-        <BeliefScene />
+        <CliffScene start={M.belief} glowAt={M.glow} end={M.title} />
       </Gate>
       <Gate from={M.title} to={DURATION + 1}>
-        <TitleScene />
+        <LogoScene start={M.title} ctaAt={M.cta} />
       </Gate>
       <Captions />
 
