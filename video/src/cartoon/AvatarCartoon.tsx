@@ -48,6 +48,8 @@ const M = {
 };
 
 const ICONS: IconKind[] = ['work', 'down', 'credit', 'home'];
+const ICON_OF: Record<string, IconKind> = {income: 'work', property: 'home', credit: 'credit', down: 'down'};
+const HAT_OF = {income: 'spikes', property: 'beanie', credit: 'visor', down: 'cone'} as const;
 const TILE = ['#2f8fd6', '#2fbf6f', '#e8642c', '#8a6a3c'];
 
 /* ============================================================ elements */
@@ -56,11 +58,13 @@ const ElementScene: React.FC<{i: number}> = ({i}) => {
   const at = M.e[i];
   const u = t - at;
   const el = ELEMENTS[i];
+  const kind = el.key;
+  const right = kind === 'credit' || kind === 'property'; // kickers/punchers stand left, glyph on the right
   const tagIn = ease(t, at, 0.35);
-  const HX = i >= 2 ? 360 : 540, HY = 1180, SC = 1.55;
+  const HX = right ? 360 : 540, HY = 1180, SC = 1.55;
   let pose: Pose = POSE_STAND;
   let fx: React.ReactNode = null;
-  if (i === 0) {
+  if (kind === 'income') {
     // water: sweeping arms, a ribbon of cash-water spiralling up
     const s = Math.sin(u * 3);
     pose = {torso: s * 6, head: 0, uaL: -70 + s * 40, faL: -30, uaR: 70 + s * 40, faR: 30, thL: -24, shL: 6, thR: 24, shR: -6};
@@ -85,26 +89,62 @@ const ElementScene: React.FC<{i: number}> = ({i}) => {
         <path d={`M200 ${HY + 220} ${Array.from({length: 14}, (_, k) => `Q${230 + k * 50} ${HY + 196 + Math.sin(u * 6 + k) * 14} ${255 + k * 50} ${HY + 220}`).join(' ')}`} fill="none" stroke="#5cc8ff" strokeWidth={12} />
       </g>
     );
-  } else if (i === 1) {
-    // air: spinning, green rings with coins
+  } else if (kind === 'down') {
+    // air: the wind gathers loose cash and turns it into savings (piggy bank + growing coin stack)
     const s = Math.sin(u * 8);
-    pose = {torso: 0, head: s * 10, uaL: -95 + s * 10, faL: -10, uaR: 95 - s * 10, faR: 10, thL: -16, shL: 4, thR: 16, shR: -4};
+    pose = {torso: 0, head: s * 8, uaL: -100 + s * 12, faL: -30, uaR: 100 - s * 12, faR: 30, thL: -16, shL: 4, thR: 16, shR: -4};
+    const PX = HX + 230, PY = 560;
+    const grow = Math.min(1, 0.55 + u * 0.35);
+    const coins = Math.min(9, Math.floor(u * 5));
     fx = (
-      <g style={{filter: 'drop-shadow(0 0 10px #3ddc84)'}}>
-        {Array.from({length: 6}, (_, k) => {
-          const r = ((u * 260 + k * 110) % 660) + 60;
-          return (
-            <circle key={k} cx={HX} cy={HY - 160} r={r} fill="none" stroke="#3ddc84" strokeWidth={14} strokeDasharray={`${r * 1.2} ${r * 0.5}`} transform={`rotate(${u * 120 + k * 50} ${HX} ${HY - 160})`} opacity={1 - r / 760} />
+      <g>
+        {/* wind streaks */}
+        <g style={{filter: 'drop-shadow(0 0 8px #bfffe0)'}}>
+          {Array.from({length: 7}, (_, k) => {
+            const r = 160 + k * 55;
+            return (
+              <ellipse key={k} cx={HX} cy={HY - 260} rx={r} ry={r * 0.42} fill="none" stroke={k % 2 ? '#e9fff5' : '#3ddc84'} strokeWidth={k % 2 ? 6 : 10}
+                strokeDasharray={`${r * 0.9} ${r * 1.3}`} strokeLinecap="round" transform={`rotate(${u * (140 + k * 20)} ${HX} ${HY - 260})`} opacity={0.85 - k * 0.08} />
+            );
+          })}
+        </g>
+        {/* cash spiralling up into the piggy bank, turning into coins on the way */}
+        {Array.from({length: 16}, (_, k) => {
+          const ph = (u * 0.75 + k / 16) % 1;
+          const cy = (HY - 200) + (PY - (HY - 200)) * ph;
+          const r = 420 * (1 - ph) + 20;
+          const a = k * 2.4 + ph * 8 + u * 2;
+          const x = HX + (PX - HX) * ph + Math.cos(a) * r;
+          const y = cy + Math.sin(a) * r * 0.42;
+          const coin = ph > 0.62;
+          return coin ? (
+            <circle key={k} cx={x} cy={y} r={16 * (1.2 - ph * 0.5)} fill="#ffd34d" stroke="#b8860b" strokeWidth={4} opacity={ph > 0.95 ? 0 : 1} />
+          ) : (
+            <g key={k} transform={`translate(${x} ${y}) rotate(${a * 40}) scale(${1 - ph * 0.4})`}>
+              <rect x={-34} y={-18} width={68} height={36} rx={4} fill="#7fd68a" stroke="#2c7a3c" strokeWidth={3} />
+              <text x={0} y={10} textAnchor="middle" fontFamily={round} fontWeight={900} fontSize={24} fill="#2c7a3c">$</text>
+            </g>
           );
         })}
-        {Array.from({length: 10}, (_, k) => {
-          const a = k * 0.63 + u * 4;
-          const r = 260 + (k % 3) * 70;
-          return <circle key={`c${k}`} cx={HX + Math.cos(a) * r} cy={HY - 160 + Math.sin(a) * r * 0.5} r={16} fill="#ffd34d" stroke="#b8860b" strokeWidth={4} />;
-        })}
+        {/* the savings: piggy bank grows, coin stack rises */}
+        <g transform={`translate(${PX} ${PY}) scale(${grow * (1 + 0.04 * Math.sin(u * 14))})`} style={{filter: 'drop-shadow(0 0 18px #ffe9a8)'}}>
+          <ellipse cx={0} cy={0} rx={110} ry={80} fill="#f6a8bd" stroke="#8a3a52" strokeWidth={6} />
+          <ellipse cx={-100} cy={4} rx={30} ry={24} fill="#f6a8bd" stroke="#8a3a52" strokeWidth={6} />
+          <circle cx={-110} cy={0} r={4} fill="#8a3a52" />
+          <circle cx={-92} cy={0} r={4} fill="#8a3a52" />
+          <path d="M-60 -64 L-40 -100 L-24 -66" fill="#f6a8bd" stroke="#8a3a52" strokeWidth={6} strokeLinejoin="round" />
+          <circle cx={-56} cy={-22} r={7} fill="#3a1a24" />
+          <rect x={-20} y={-80} width={46} height={10} rx={5} fill="#8a3a52" />
+          {[-60, -20, 30, 70].map((x) => (
+            <rect key={x} x={x - 12} y={64} width={24} height={36} rx={6} fill="#f6a8bd" stroke="#8a3a52" strokeWidth={5} />
+          ))}
+        </g>
+        {Array.from({length: coins}, (_, k) => (
+          <ellipse key={`s${k}`} cx={PX + 10} cy={PY + 220 - k * 18} rx={40} ry={12} fill="#ffd34d" stroke="#b8860b" strokeWidth={4} />
+        ))}
       </g>
     );
-  } else if (i === 2) {
+  } else if (kind === 'credit') {
     // fire: punch, credit cards burst out of the fist
     const k = interpolate(u, [0.1, 0.3], [0, 1], clamp);
     pose = mixPose(
@@ -166,17 +206,17 @@ const ElementScene: React.FC<{i: number}> = ({i}) => {
     <AbsoluteFill>
       <RedStage />
       {/* big cream brush glyph + word, like hanging calligraphy behind the bender */}
-      <div style={{position: 'absolute', left: i >= 2 ? 560 : 70, top: 260, opacity: 0.95}}>
-        <BrushGlyph kind={ICONS[i]} p={ease(t, at, 0.9)} size={i >= 2 ? 440 : 400} />
+      <div style={{position: 'absolute', left: right ? 560 : 70, top: 260, opacity: 0.95}}>
+        <BrushGlyph kind={ICON_OF[kind]} p={ease(t, at, 0.9)} size={right ? 440 : 400} />
       </div>
-      <div style={{position: 'absolute', top: i >= 2 ? 700 : 660, left: i >= 2 ? 540 : 50, width: 480, opacity: tagIn}}>
+      <div style={{position: 'absolute', top: right ? 700 : 660, left: right ? 540 : 50, width: 480, opacity: tagIn}}>
         <BrushWord text={el.name} o={1} />
       </div>
       <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
         <ellipse cx={HX} cy={HY + 245} rx={190} ry={26} fill="#000" opacity={0.25} />
-        {i === 1 ? fx : null}
-        <Figure pose={pose} x={HX} y={HY} scale={SC} color="#2a0806" hat={(['spikes', 'cone', 'visor', 'beanie'] as const)[i]} />
-        {i !== 1 ? fx : null}
+        {kind === 'down' ? fx : null}
+        <Figure pose={pose} x={HX} y={HY} scale={SC} color="#2a0806" hat={HAT_OF[kind]} />
+        {kind !== 'down' ? fx : null}
       </svg>
       <Letterbox />
     </AbsoluteFill>
@@ -542,7 +582,7 @@ const PAGES = buildWords();
 
 const Captions: React.FC = () => {
   const t = useT();
-  const idx = PAGES.findIndex((p, i) => t >= p[0].s && t < Math.min(PAGES[i + 1]?.[0].s ?? 1e9, p[p.length - 1].s + 1.0));
+  const idx = PAGES.findIndex((p, i) => t >= p[0].s && t < Math.min(PAGES[i + 1]?.[0].s ?? 1e9, p[p.length - 1].s + (p.length === 1 ? 1.8 : 1.0)));
   if (idx < 0 || t >= M.title) return null;
   const page = PAGES[idx];
   const active = page.reduce((a, w, i) => (t >= w.s ? i : a), 0);

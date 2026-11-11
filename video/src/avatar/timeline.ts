@@ -11,10 +11,11 @@ export const RING_START = 10.3;
 
 export const ELEMENTS = [
   // on the four opening hits of the music (track hits at 0.09/3.37/5.31/8.17 s + MUSIC_OFFSET)
+  // order of the classic intro: water, earth, fire, air
   {key: 'income', name: 'РОБОТА', at: 0.6, color: '#2f6f9f'},
-  {key: 'down', name: 'ПЕРШИЙ ВНЕСОК', at: 3.87, color: '#d08a2c'},
+  {key: 'property', name: 'НЕРУХОМІСТЬ', at: 3.87, color: '#4f7a3a'},
   {key: 'credit', name: 'КРЕДИТНА ІСТОРІЯ', at: 5.81, color: '#b8392a'},
-  {key: 'property', name: 'НЕРУХОМІСТЬ', at: 8.67, color: '#4f7a3a'},
+  {key: 'down', name: 'ПЕРШИЙ ВНЕСОК', at: 8.67, color: '#d08a2c'},
 ] as const;
 
 export type ElementKey = (typeof ELEMENTS)[number]['key'];
@@ -38,10 +39,10 @@ export const TITLE = {slam: 56.1, cta: 58.1};
 
 /** Voiceover clips. Line 0 is cut into the four element names, one per emblem. */
 export const VOICE: {file: string; at: number; trim?: [number, number]}[] = [
-  {file: 'line-0.mp3', at: 0.6, trim: [0, 1.25]},
-  {file: 'line-0.mp3', at: 3.87, trim: [1.28, 2.62]},
-  {file: 'line-0.mp3', at: 5.81, trim: [2.64, 4.22]},
-  {file: 'line-0.mp3', at: 8.67, trim: [4.24, 5.5]},
+  {file: 'line-0.mp3', at: 0.6, trim: [0, 1.1]},
+  {file: 'line-0.mp3', at: 3.87, trim: [1.14, 2.3]},
+  {file: 'line-0.mp3', at: 5.81, trim: [2.36, 3.8]},
+  {file: 'line-0.mp3', at: 8.67, trim: [3.84, 5.06]},
   {file: 'line-1.mp3', at: 10.3},
   {file: 'line-2.mp3', at: 15.4},
   {file: 'line-3.mp3', at: 22.7},

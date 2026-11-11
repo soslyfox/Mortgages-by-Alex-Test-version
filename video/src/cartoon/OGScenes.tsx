@@ -128,9 +128,9 @@ export const MapScene2: React.FC<{start: number; end: number}> = ({start, end}) 
   const fire = ease(t, end - 1.6, 1.4);
   const corners: {x: number; y: number; k: IconKind}[] = [
     {x: 110, y: 300, k: 'work'},
-    {x: 840, y: 300, k: 'down'},
+    {x: 840, y: 300, k: 'home'},
     {x: 110, y: 1530, k: 'credit'},
-    {x: 840, y: 1530, k: 'home'},
+    {x: 840, y: 1530, k: 'down'},
   ];
   return (
     <AbsoluteFill style={{background: '#1d2a4f'}}>
@@ -340,8 +340,8 @@ const ElementTile: React.FC<{kind: IconKind; at: number; x: number; y: number; s
 
 export const AvatarScene2: React.FC<{start: number; glowAt: number; vanishAt: number; end: number}> = ({start, glowAt, vanishAt, end}) => {
   const t = useT();
-  // element beats: water(work) -> air(down) -> glow -> fire(credit) -> earth(home)
-  const wAt = start + 1.4, aAt = start + 2.8, fAt = glowAt + 1.4, eAt = glowAt + 2.9;
+  // element beats in the classic order: water(work) -> earth(home) -> glow -> fire(credit) -> air(down)
+  const wAt = start + 1.4, eAt = start + 2.8, fAt = glowAt + 1.4, aAt = glowAt + 2.9;
   const stance: Pose = {torso: 0, head: 0, uaL: -30, faL: -40, uaR: 30, faR: 40, thL: -20, shL: 6, thR: 20, shR: -6};
   const water: Pose = {torso: -8, head: -4, uaL: -150, faL: -20, uaR: -120, faR: -30, thL: -24, shL: 6, thR: 24, shR: -6};
   const air: Pose = {torso: 0, head: 0, uaL: -95, faL: -10, uaR: 95, faR: 10, thL: -16, shL: 4, thR: 16, shR: -4};
@@ -351,20 +351,20 @@ export const AvatarScene2: React.FC<{start: number; glowAt: number; vanishAt: nu
   const calm: Pose = {torso: 0, head: 8, uaL: -20, faL: -10, uaR: 20, faR: 10, thL: -10, shL: 0, thR: 10, shR: 0};
   let pose = mixPose(POSE_STAND, stance, ease(t, start, 0.6));
   if (t >= wAt) pose = mixPose(stance, water, ease(t, wAt, 0.35));
-  if (t >= aAt) pose = mixPose(water, air, ease(t, aAt, 0.35));
-  if (t >= glowAt) pose = mixPose(air, raise, ease(t, glowAt, 0.4));
+  if (t >= eAt) pose = mixPose(water, stomp, ease(t, eAt, 0.25));
+  if (t >= glowAt) pose = mixPose(stomp, raise, ease(t, glowAt, 0.4));
   if (t >= fAt) pose = mixPose(raise, punch, ease(t, fAt, 0.25));
-  if (t >= eAt) pose = mixPose(punch, stomp, ease(t, eAt, 0.25));
-  if (t >= eAt + 1.6) pose = mixPose(stomp, calm, ease(t, eAt + 1.6, 0.8));
+  if (t >= aAt) pose = mixPose(punch, air, ease(t, aAt, 0.35));
+  if (t >= aAt + 1.8) pose = mixPose(air, calm, ease(t, aAt + 1.8, 0.8));
   const glow = ease(t, glowAt, 0.5) * (1 - ease(t, vanishAt - 1.2, 1.0));
   const vanish = ease(t, vanishAt, 1.0); // he dissolves into the wind
   const dim = interpolate(t, [vanishAt - 2.5, vanishAt + 1], [0, 0.55], clamp);
   const zoom = interpolate(t, [start, vanishAt], [1.0, 1.12], clamp);
-  const ws = interpolate(t, [wAt, wAt + 0.4, aAt - 0.1, aAt + 0.3], [0, 1, 1, 0], clamp);
-  const as = interpolate(t, [aAt, aAt + 0.3, glowAt - 0.1, glowAt + 0.4], [0, 1, 1, 0], clamp);
+  const ws = interpolate(t, [wAt, wAt + 0.4, eAt - 0.1, eAt + 0.3], [0, 1, 1, 0], clamp);
+  const as = interpolate(t, [aAt, aAt + 0.3, aAt + 1.8, aAt + 2.3], [0, 1, 1, 0], clamp);
   const fb = interpolate(t, [fAt, fAt + 0.5, fAt + 1.3], [0, 1, 0], clamp);
   const dust = interpolate(t, [eAt, eAt + 0.8, eAt + 2.2], [0, 1, 0], clamp);
-  const orbitOn = t >= eAt + 0.6 && t < vanishAt + 0.4;
+  const orbitOn = t >= aAt + 1.2 && t < vanishAt + 0.4;
   return (
     <AbsoluteFill>
       <AbsoluteFill style={{background: 'radial-gradient(60% 38% at 50% 48%, #fff7c4 0%, #ffd84a 38%, #f0a22a 62%, #8a4a1c 100%)'}} />
@@ -388,10 +388,25 @@ export const AvatarScene2: React.FC<{start: number; glowAt: number; vanishAt: nu
               const r = ((t * 300 + k * 90) % 450) + 80;
               return <ellipse key={k} cx={540} cy={900} rx={r} ry={r * 0.45} fill="none" stroke="#3ddc84" strokeWidth={14} strokeDasharray={`${r} ${r * 0.4}`} transform={`rotate(${t * 140 + k * 40} 540 900)`} opacity={1 - r / 560} />;
             })}
-            {Array.from({length: 10}, (_, k) => {
-              const a = k * 0.63 + t * 5;
-              return <circle key={k} cx={540 + Math.cos(a) * 320} cy={900 + Math.sin(a) * 140} r={18} fill="#ffd34d" stroke="#b8860b" strokeWidth={4} />;
+            {Array.from({length: 14}, (_, k) => {
+              const ph = ((t - aAt) * 0.8 + k / 14) % 1;
+              const r = 360 * (1 - ph) + 20;
+              const a = k * 2.4 + ph * 8;
+              const x = 540 + Math.cos(a) * r;
+              const y = 900 - ph * 330 + Math.sin(a) * r * 0.42;
+              return ph > 0.6 ? (
+                <circle key={k} cx={x} cy={y} r={16} fill="#ffd34d" stroke="#b8860b" strokeWidth={4} />
+              ) : (
+                <rect key={k} x={x - 30} y={y - 16} width={60} height={32} rx={4} fill="#7fd68a" stroke="#2c7a3c" strokeWidth={3} transform={`rotate(${a * 40} ${x} ${y})`} />
+              );
             })}
+            <g transform={`translate(540 560) scale(${0.6 + as * 0.4})`}>
+              <ellipse cx={0} cy={0} rx={90} ry={66} fill="#f6a8bd" stroke="#8a3a52" strokeWidth={6} />
+              <ellipse cx={-82} cy={4} rx={24} ry={20} fill="#f6a8bd" stroke="#8a3a52" strokeWidth={6} />
+              <path d="M-50 -52 L-34 -84 L-20 -54" fill="#f6a8bd" stroke="#8a3a52" strokeWidth={6} />
+              <circle cx={-46} cy={-18} r={6} fill="#3a1a24" />
+              <rect x={-16} y={-66} width={38} height={9} rx={4} fill="#8a3a52" />
+            </g>
           </g>
           {/* the Avatar (fades into the wind when he vanishes) */}
           <g opacity={1 - vanish}>
@@ -436,18 +451,18 @@ export const AvatarScene2: React.FC<{start: number; glowAt: number; vanishAt: nu
         {/* element tiles pop on each beat, then orbit together */}
         {!orbitOn ? (
           <>
-            {t < aAt + 0.2 ? <ElementTile kind="work" at={wAt} x={300} y={620} /> : null}
-            {t >= aAt && t < glowAt + 0.4 ? <ElementTile kind="down" at={aAt} x={790} y={620} /> : null}
-            {t >= fAt && t < eAt + 0.2 ? <ElementTile kind="credit" at={fAt} x={820} y={640} /> : null}
-            {t >= eAt ? <ElementTile kind="home" at={eAt} x={270} y={700} /> : null}
+            {t < eAt + 0.2 ? <ElementTile kind="work" at={wAt} x={300} y={620} /> : null}
+            {t >= eAt && t < glowAt + 0.4 ? <ElementTile kind="home" at={eAt} x={790} y={640} /> : null}
+            {t >= fAt && t < aAt + 0.2 ? <ElementTile kind="credit" at={fAt} x={820} y={640} /> : null}
+            {t >= aAt ? <ElementTile kind="down" at={aAt} x={270} y={700} /> : null}
           </>
         ) : (
           (['work', 'down', 'credit', 'home'] as IconKind[]).map((k, i) => {
-            const a = (t - eAt) * 1.4 + (i * Math.PI) / 2;
+            const a = (t - aAt) * 1.4 + (i * Math.PI) / 2;
             const fly = vanish; // scatter when he vanishes
             return (
               <div key={k} style={{position: 'absolute', left: 540 + Math.cos(a) * (280 + fly * 600) - 60, top: 800 + Math.sin(a) * (120 + fly * 500) - 60, opacity: 1 - fly}}>
-                <ElementTile kind={k} at={eAt} x={60} y={60} size={120} />
+                <ElementTile kind={k} at={aAt} x={60} y={60} size={120} />
               </div>
             );
           })
@@ -609,11 +624,7 @@ export const LogoScene: React.FC<{start: number; ctaAt: number}> = ({start, ctaA
           <div style={{width: 44, height: 4, background: '#1b1b1b'}} />
         </div>
       </div>
-      <div style={{position: 'absolute', top: 1080, width: '100%', textAlign: 'center', fontFamily: serif, fontWeight: 700, color: '#10233d', opacity: ease(t, start + 1.4, 0.6)}}>
-        <div style={{fontSize: 30, letterSpacing: '0.2em'}}>СТВОРЕНО</div>
-        <div style={{fontSize: 46, marginTop: 4}}>Mortgages by Alex</div>
-      </div>
-      <div style={{position: 'absolute', top: 1260, width: '100%', textAlign: 'center', opacity: cta, translate: `0px ${(1 - cta) * 30}px`}}>
+      <div style={{position: 'absolute', top: 1120, width: '100%', textAlign: 'center', opacity: cta, translate: `0px ${(1 - cta) * 30}px`}}>
         <div style={{fontFamily: round, fontWeight: 800, fontSize: 36, color: '#0d2440'}}>безкоштовна консультація для новоприбулих</div>
         <div style={{display: 'inline-block', marginTop: 24, fontFamily: round, fontWeight: 900, fontSize: 38, color: '#fff', background: '#e8641c', padding: '12px 36px', borderRadius: 999}}>
           посилання в профілі ↑
