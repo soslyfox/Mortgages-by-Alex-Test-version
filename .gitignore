@@ -47,3 +47,5 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+# Local secrets written by `elevenlabs onboard`
+/.env.local
