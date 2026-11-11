@@ -113,26 +113,50 @@ export const MapScene2: React.FC<{start: number; end: number}> = ({start, end}) 
           {/* frame */}
           <rect x={60} y={250} width={960} height={1420} fill="#2c3f73" stroke="#9c8f6e" strokeWidth={16} />
           <rect x={86} y={276} width={908} height={1368} fill="url(#waves)" stroke="#6d6248" strokeWidth={4} />
-          {/* continents */}
-          <g filter="url(#mapRough)" fill="#e8d8ae" stroke="#7a6342" strokeWidth={5}>
-            <path d={blob(560, 900, 260, 1)} />
-            <path d={blob(330, 720, 120, 2)} />
-            <path d={blob(760, 640, 110, 3)} />
-            <path d={blob(420, 1160, 150, 4)} />
-            <path d={blob(780, 1160, 120, 5)} />
+          {/* Canada (simplified), drawn in a 1000x620 box, scaled into the frame */}
+          <g transform="translate(100 470) scale(0.88)">
+            <g filter="url(#mapRough)" fill="#e8d8ae" stroke="#7a6342" strokeWidth={5}>
+              <path d="M120 520 L95 470 L70 420 L50 380 L60 360 L72 330 L72 140 L140 152 L200 132 L262 150 L330 136 L398 156 L462 170 L480 200 L486 260 L500 320 L530 370 L566 400 L600 380 L622 330 L640 268 L618 222 L652 196 L700 200 L746 236 L790 292 L830 330 L862 380 L890 420 L860 452 L830 470 L780 470 L808 500 L860 498 L880 520 L840 540 L790 530 L760 520 L716 500 L676 540 L640 560 L604 590 L566 562 L540 540 L500 522 L440 520 Z" />
+              <path d="M560 60 L640 40 L720 90 L760 160 L720 190 L660 150 L600 120 Z" />
+              <path d="M260 70 L330 50 L380 80 L350 120 L290 115 Z" />
+              <path d="M180 70 L230 40 L250 90 L210 110 Z" />
+              <path d="M440 10 L520 0 L560 40 L500 70 L450 50 Z" />
+              <path d="M500 200 L540 190 L545 220 L510 225 Z" />
+              <path d="M900 420 L950 410 L960 450 L920 470 Z" />
+              <path d="M58 478 L90 498 L82 522 L52 502 Z" />
+            </g>
+            {/* Great Lakes */}
+            <g fill="#2c3f73">
+              <path d="M520 530 Q545 515 565 532 Q545 546 520 530 Z" />
+              <path d="M572 548 Q592 538 606 552 Q590 562 572 548 Z" />
+            </g>
+            {/* provinces */}
+            <g stroke="#9a8460" strokeWidth={3} strokeDasharray="10 8" fill="none">
+              <path d="M72 300 H470" />
+              <path d="M178 520 L150 400 L150 300" />
+              <path d="M235 520 V300" />
+              <path d="M300 520 V300" />
+              <path d="M410 520 L440 420 L476 360" />
+              <path d="M604 586 L585 470 L566 400" />
+            </g>
+            {/* Calgary */}
+            <g transform="translate(196 488)">
+              <path d="M0 -16 L5 -5 L17 -5 L7 2 L11 14 L0 7 L-11 14 L-7 2 L-17 -5 L-5 -5 Z" fill="#c62a1f" />
+              <text x={14} y={36} fontFamily={round} fontWeight={900} fontSize={30} fill="#3a2a1a">Калгарі</text>
+            </g>
           </g>
-          {/* the banks' fire spreading */}
-          <g opacity={fire} filter="url(#mapRough)">
-            <path d={blob(330, 720, 130 * (0.4 + fire * 0.8), 2)} fill="#e8641c" />
-            <path d={blob(420, 1160, 150 * fire, 4)} fill="#d4511a" />
+          {/* the banks' fire spreading from Toronto */}
+          <g opacity={fire} filter="url(#mapRough)" transform="translate(100 470) scale(0.88)">
+            <path d={blob(585, 560, 120 * (0.25 + fire * 0.8), 2)} fill="#e8641c" opacity={0.92} />
+            <path d={blob(560, 525, 80 * fire, 4)} fill="#d4511a" opacity={0.9} />
           </g>
           {Array.from({length: 6}, (_, k) => {
             const p = ((t - (end - 1.6)) * 0.8 + k * 0.2) % 1;
-            return fire > 0 ? <circle key={k} cx={300 + (k % 3) * 60} cy={700 - p * 160} r={20 + p * 30} fill="#cfc6bb" opacity={(1 - p) * 0.7 * fire} /> : null;
+            return fire > 0 ? <circle key={k} cx={560 + (k % 3) * 50} cy={930 - p * 180} r={18 + p * 30} fill="#cfc6bb" opacity={(1 - p) * 0.7 * fire} /> : null;
           })}
           {/* clouds */}
           {[0, 1, 2].map((k) => (
-            <ellipse key={k} cx={((u * 50 + k * 380) % 1300) - 100} cy={560 + k * 360} rx={130} ry={40} fill="#d9e4f2" opacity={0.85} />
+            <ellipse key={k} cx={((u * 50 + k * 380) % 1300) - 100} cy={[400, 1150, 1500][k]} rx={130} ry={40} fill="#d9e4f2" opacity={0.85} />
           ))}
         </svg>
         {corners.map((c, i) => (
@@ -156,7 +180,7 @@ export const MapScene2: React.FC<{start: number; end: number}> = ({start, end}) 
             <Icon kind={c.k} size={110} color="#2b2116" />
           </div>
         ))}
-        <div style={{position: 'absolute', left: 300, top: 640, fontFamily: round, fontWeight: 900, fontSize: 38, color: '#fff', opacity: fire, rotate: '-8deg', textShadow: '0 3px 6px #000'}}>
+        <div style={{position: 'absolute', left: 560, top: 1000, fontFamily: round, fontWeight: 900, fontSize: 40, color: '#fff', opacity: fire, rotate: '-8deg', textShadow: '0 3px 6px #000'}}>
           БАНКИ
         </div>
       </AbsoluteFill>

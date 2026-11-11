@@ -222,8 +222,9 @@ export const CartoonAlex: React.FC<{
   sweat?: number;
   smile?: number;
 }> = ({w, pose = 'crossed', blink = false, eyesGlow = 0, sweat = 0, smile = 0.5}) => {
-  const SK = '#f2c6a0', SK2 = '#e3ab84', HAIR = '#7a5a3c', TEE = '#1e1c1f';
-  const mouth = `M170 262 Q200 ${262 + 18 * smile} 232 ${262 - 4 * smile}`;
+  const SK = '#f0c4a2', SK2 = '#e2a983', HAIR = '#a8835a', TEE = '#1e1c1f';
+  // closed lips, smile lifts the right corner more (as in the photo)
+  const mouth = `M172 282 Q198 ${283 + 8 * smile} 232 ${279 - 10 * smile}`;
   return (
     <svg viewBox="0 0 400 600" width={w} height={w * 1.5} style={{overflow: 'visible'}}>
       {/* body */}
@@ -234,7 +235,7 @@ export const CartoonAlex: React.FC<{
       )}
       <path d="M170 335 L200 372 L230 335" fill={SK} />
       {/* neck */}
-      <rect x={168} y={290} width={64} height={52} fill={SK2} />
+      <rect x={160} y={292} width={80} height={56} fill={SK2} />
       {/* arms */}
       {pose === 'crossed' ? (
         <g>
@@ -242,6 +243,7 @@ export const CartoonAlex: React.FC<{
           <path d="M320 440 Q322 515 250 525 L110 505 Q80 500 90 472 Q100 452 130 458 L250 474 Q282 476 282 440 Z" fill={SK} stroke={SK2} strokeWidth={4} />
           <rect x={150} y={462} width={34} height={44} rx={8} fill="#111" />
           <rect x={156} y={468} width={22} height={32} rx={5} fill="#3a3a3a" />
+          <rect x={286} y={470} width={14} height={8} rx={3} fill="#d9b25a" />
         </g>
       ) : null}
       {pose === 'desk' ? (
@@ -266,41 +268,49 @@ export const CartoonAlex: React.FC<{
         </g>
       ) : null}
       {/* ears */}
-      <ellipse cx={108} cy={200} rx={18} ry={28} fill={SK2} />
-      <ellipse cx={292} cy={200} rx={18} ry={28} fill={SK2} />
-      {/* head */}
-      <path d="M110 150 Q110 70 200 66 Q290 70 290 150 V220 Q290 300 200 310 Q110 300 110 220 Z" fill={SK} />
-      {/* stubble */}
-      <path d="M128 236 Q140 300 200 306 Q260 300 272 236 Q250 278 200 280 Q150 278 128 236 Z" fill="#c9a07c" opacity={0.45} />
-      {/* hair: short, flat top, faded sides */}
-      <path d="M108 160 Q100 60 200 52 Q300 60 292 160 Q284 120 262 112 Q200 96 140 112 Q116 120 108 160 Z" fill={HAIR} />
-      <path d="M112 150 Q112 130 120 122 V176 Q112 170 112 150 Z M288 150 Q288 130 280 122 V176 Q288 170 288 150 Z" fill={HAIR} opacity={0.5} />
-      {/* brows */}
-      <path d="M140 176 Q162 164 184 172" stroke="#5c4330" strokeWidth={8} strokeLinecap="round" fill="none" />
-      <path d="M216 172 Q238 164 260 176" stroke="#5c4330" strokeWidth={8} strokeLinecap="round" fill="none" />
-      {/* eyes */}
+      <ellipse cx={104} cy={212} rx={20} ry={32} fill={SK2} />
+      <ellipse cx={296} cy={212} rx={20} ry={32} fill={SK2} />
+      <path d="M100 198 Q92 212 102 228 M300 198 Q308 212 298 228" stroke="#c98f6a" strokeWidth={4} fill="none" />
+      {/* head: longer face, broad cheekbones, firm jaw */}
+      <path d="M108 172 Q104 72 200 62 Q296 72 292 172 L294 236 Q290 304 242 320 Q200 332 158 320 Q110 304 106 236 Z" fill={SK} />
+      <path d="M116 240 Q124 312 200 328 Q276 312 284 240 Q268 296 200 304 Q132 296 116 240 Z" fill="#b48a68" opacity={0.38} />
+      <path d="M150 262 Q154 286 172 298 M250 262 Q246 286 228 298" stroke="#e0a982" strokeWidth={5} fill="none" opacity={0.7} />
+      {/* hair: light brown, short, swept up, receding temples (high forehead) */}
+      <path d="M106 178 Q96 92 148 60 Q200 36 252 60 Q304 92 294 178 Q290 150 280 128 Q268 100 248 98 Q232 116 200 114 Q168 116 152 98 Q132 100 120 128 Q110 150 106 178 Z" fill={HAIR} />
+      <path d="M150 74 Q190 58 240 70 M140 86 Q186 70 252 84 M162 98 Q200 84 236 96" stroke="#8a6a46" strokeWidth={4} fill="none" strokeLinecap="round" opacity={0.8} />
+      {/* brows: straight, thick */}
+      <path d="M138 186 Q160 178 184 184" stroke="#8a6a46" strokeWidth={10} strokeLinecap="round" fill="none" />
+      <path d="M216 184 Q240 178 262 186" stroke="#8a6a46" strokeWidth={10} strokeLinecap="round" fill="none" />
+      {/* eyes: hazel, slightly hooded */}
       {blink ? (
         <g stroke="#2a1a14" strokeWidth={6} strokeLinecap="round">
-          <path d="M146 200 Q162 208 178 200" fill="none" />
-          <path d="M222 200 Q238 208 254 200" fill="none" />
+          <path d="M146 208 Q162 214 178 208" fill="none" />
+          <path d="M222 208 Q238 214 254 208" fill="none" />
         </g>
       ) : (
         <g>
-          <ellipse cx={162} cy={200} rx={13} ry={11} fill="#fff" />
-          <ellipse cx={238} cy={200} rx={13} ry={11} fill="#fff" />
-          <circle cx={164} cy={201} r={7} fill="#3b5b78" />
-          <circle cx={240} cy={201} r={7} fill="#3b5b78" />
+          <ellipse cx={162} cy={208} rx={15} ry={9} fill="#fff" />
+          <ellipse cx={238} cy={208} rx={15} ry={9} fill="#fff" />
+          <circle cx={163} cy={209} r={7} fill="#7d8a5a" />
+          <circle cx={239} cy={209} r={7} fill="#7d8a5a" />
+          <circle cx={163} cy={209} r={3} fill="#2a2a22" />
+          <circle cx={239} cy={209} r={3} fill="#2a2a22" />
+          <path d="M145 204 Q162 194 180 203 M220 203 Q238 194 255 204" stroke="#6b4a36" strokeWidth={5} strokeLinecap="round" fill="none" />
         </g>
       )}
       {eyesGlow > 0 ? (
         <g opacity={eyesGlow} style={{filter: 'drop-shadow(0 0 12px #fff) drop-shadow(0 0 26px #9fe3ff)'}}>
-          <ellipse cx={162} cy={200} rx={18} ry={12} fill="#fff" />
-          <ellipse cx={238} cy={200} rx={18} ry={12} fill="#fff" />
+          <ellipse cx={162} cy={208} rx={19} ry={12} fill="#fff" />
+          <ellipse cx={238} cy={208} rx={19} ry={12} fill="#fff" />
         </g>
       ) : null}
-      {/* nose + mouth */}
-      <path d="M200 206 Q192 236 204 240" stroke={SK2} strokeWidth={6} strokeLinecap="round" fill="none" />
-      <path d={mouth} stroke="#8a4a3a" strokeWidth={7} strokeLinecap="round" fill="none" />
+      {/* nose: long, defined */}
+      <path d="M198 206 Q194 248 184 256 Q198 266 216 256" stroke="#d39a74" strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <circle cx={190} cy={258} r={3.5} fill="#b9805e" />
+      <circle cx={210} cy={258} r={3.5} fill="#b9805e" />
+      {/* mouth: closed, slight one-sided smile */}
+      <path d={mouth} stroke="#a65a48" strokeWidth={7} strokeLinecap="round" fill="none" />
+      <path d="M182 292 Q200 300 220 292" stroke="#d8957d" strokeWidth={5} strokeLinecap="round" fill="none" opacity={0.8} />
       {sweat > 0 ? (
         <path d="M292 120 Q306 146 296 156 Q284 160 282 146 Q284 134 292 120 Z" fill="#8fd3ff" opacity={sweat} />
       ) : null}
