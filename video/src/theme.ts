@@ -56,3 +56,6 @@ export const condensed = load('Oswald', 'oswald', ['600', '700']);
 // Avatar-style intro: elegant serif narration + rough display caps.
 export const serif = load('Cormorant Garamond', 'cormorant-garamond', ['500', '600', '700']);
 export const brush = load('Ruslan Display', 'ruslan-display', ['400']);
+
+// Flat-cartoon parody (AvatarCartoon): rounded heavy sans like the reference reel.
+export const round = load('Nunito', 'nunito', ['700', '800', '900']);

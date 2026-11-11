@@ -9,10 +9,21 @@ import {
 import {FPS} from './theme';
 import {ALEX_EP1_FRAMES, AlexReel, alexReelSchema} from './alex/AlexReel';
 import {AVATAR_INTRO_FRAMES, AvatarIntro, avatarIntroSchema} from './avatar/AvatarIntro';
+import {AVATAR_CARTOON_FRAMES, AvatarCartoon, avatarCartoonSchema} from './cartoon/AvatarCartoon';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id="AvatarCartoon"
+        component={AvatarCartoon}
+        schema={avatarCartoonSchema}
+        durationInFrames={AVATAR_CARTOON_FRAMES}
+        fps={FPS}
+        width={1080}
+        height={1920}
+        defaultProps={{music: 'audio/avatar-licensed.mp3', voiceover: 'voiceover/avatar'}}
+      />
       <Composition
         id="AvatarMortgageIntro"
         component={AvatarIntro}
