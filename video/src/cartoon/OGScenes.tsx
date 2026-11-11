@@ -766,3 +766,70 @@ export const NorthSearch: React.FC<{start: number; end: number}> = ({start, end}
     </AbsoluteFill>
   );
 };
+
+/* ------------------------------------------------- element transitions */
+/** Transitions modelled on the classic intro: water whip, earth dust, fire wall + smear, air vortex to white. */
+export const ElementTransitions: React.FC<{cuts: number[]; mapAt: number}> = ({cuts, mapAt}) => {
+  const t = useT();
+  const [tWE, tEF, tFA] = [cuts[1], cuts[2], cuts[3]];
+  const fadeIn = interpolate(t, [0, 0.5], [1, 0], clamp);
+  // water whip
+  const ww = interpolate(t, [tWE - 0.28, tWE + 0.12], [0, 1], clamp);
+  const wwO = interpolate(t, [tWE - 0.28, tWE - 0.2, tWE + 0.05, tWE + 0.3], [0, 1, 1, 0], clamp);
+  const flash = interpolate(t, [tWE - 0.03, tWE, tWE + 0.15], [0, 0.6, 0], clamp);
+  // earth dust
+  const dIn = interpolate(t, [tEF - 0.3, tEF], [0, 1], {...clamp, easing: EASE_OUT});
+  const dOut = interpolate(t, [tEF, tEF + 0.45], [1, 0], clamp);
+  const dust = t < tEF ? dIn : dOut;
+  // fire wall then smear
+  const fw = interpolate(t, [tFA - 0.5, tFA], [0, 1], {...clamp, easing: Easing.inOut(Easing.quad)});
+  const fwO = t < tFA ? fw : interpolate(t, [tFA, tFA + 0.12], [1, 0], clamp);
+  const smear = interpolate(t, [tFA, tFA + 0.08, tFA + 0.35], [0, 1, 0], clamp);
+  // air vortex to white
+  const vx = interpolate(t, [mapAt - 0.35, mapAt], [0, 1], clamp);
+  const white = t < mapAt ? interpolate(t, [mapAt - 0.15, mapAt], [0, 1], clamp) : interpolate(t, [mapAt, mapAt + 0.45], [1, 0], clamp);
+  if (t > mapAt + 0.5) return null;
+  return (
+    <AbsoluteFill style={{pointerEvents: 'none'}}>
+      <AbsoluteFill style={{background: '#000', opacity: fadeIn}} />
+      {wwO > 0 ? (
+        <svg width={1080} height={1920} style={{position: 'absolute', inset: 0, opacity: wwO, filter: 'drop-shadow(0 0 20px #bfefff)'}}>
+          <path d="M-200 1500 Q300 600 1300 300" stroke="#e9fbff" strokeWidth={120} fill="none" strokeLinecap="round" pathLength={1} strokeDasharray="0.55 1" strokeDashoffset={1 - ww * 1.55} />
+          <path d="M-200 1560 Q320 700 1300 380" stroke="#5cc8ff" strokeWidth={50} fill="none" strokeLinecap="round" pathLength={1} strokeDasharray="0.5 1" strokeDashoffset={1 - ww * 1.5} />
+        </svg>
+      ) : null}
+      <AbsoluteFill style={{background: '#fff', opacity: flash}} />
+      {dust > 0 ? (
+        <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+          {Array.from({length: 26}, (_, k) => (
+            <circle key={k} cx={rand(k) * 1080} cy={1920 - (rand(k + 30) * 1300 + 200) * dust} r={(140 + rand(k + 60) * 200) * dust} fill={k % 3 ? '#b88a5c' : '#d9b08a'} opacity={0.95 * dust} />
+          ))}
+        </svg>
+      ) : null}
+      {fwO > 0 ? (
+        <AbsoluteFill
+          style={{
+            opacity: fwO,
+            background: `radial-gradient(${40 + fw * 260}% ${30 + fw * 200}% at 85% 55%, #fff3b0 0%, #ffc23a 22%, #ff7a1f 45%, #d4380f 70%, rgba(150,20,5,0.9) 88%, transparent 100%)`,
+          }}
+        />
+      ) : null}
+      {smear > 0 ? (
+        <svg width={1080} height={1920} style={{position: 'absolute', inset: 0, opacity: smear}}>
+          <rect width={1080} height={1920} fill="#1a0604" opacity={0.6} />
+          {Array.from({length: 18}, (_, k) => (
+            <rect key={k} x={-200 + rand(k) * 400} y={rand(k + 9) * 1920} width={800 + rand(k + 3) * 900} height={8 + rand(k + 5) * 30} fill={k % 2 ? '#7a1a0c' : '#2a0a06'} />
+          ))}
+        </svg>
+      ) : null}
+      {vx > 0 && t < mapAt + 0.05 ? (
+        <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+          {Array.from({length: 10}, (_, k) => (
+            <circle key={k} cx={540} cy={960} r={80 + k * 120 * vx} fill="none" stroke="#fff" strokeWidth={30 * vx} strokeDasharray={`${200 + k * 60} ${120}`} transform={`rotate(${t * 900 + k * 30} 540 960)`} opacity={0.7 * vx} />
+          ))}
+        </svg>
+      ) : null}
+      <AbsoluteFill style={{background: '#f6f1e6', opacity: white}} />
+    </AbsoluteFill>
+  );
+};

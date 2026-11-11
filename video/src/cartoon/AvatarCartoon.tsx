@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Easing, interpolate, Sequence, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Audio} from '@remotion/media';
 import {z} from 'zod';
 import {round} from '../theme';
@@ -8,7 +8,7 @@ import {DURATION, ELEMENTS, MUSIC_OFFSET, SPEECH, VOICE, WAR} from '../avatar/ti
 import alignment from '../../public/voiceover/avatar/alignment.json';
 import {Figure, handPos, mixPose, POSE_STAND, type Pose} from './Figure';
 import {CaptionPill, CartoonAlex, DocPile, Flag, House, Icon, INK, MoneyCase, Paper, Plane, Sun, Tag, Tank, type IconKind} from './Props';
-import {AvatarScene2, BrushGlyph, BrushWord, CliffScene, IceScene, Letterbox, LogoScene, MapScene2, NorthSearch, RedStage, WarScene2} from './OGScenes';
+import {AvatarScene2, BrushGlyph, BrushWord, CliffScene, ElementTransitions, IceScene, Letterbox, LogoScene, MapScene2, NorthSearch, RedStage, WarScene2} from './OGScenes';
 
 export const avatarCartoonSchema = z.object({
   music: z.string(),
@@ -159,29 +159,42 @@ const ElementScene: React.FC<{i: number}> = ({i}) => {
       </g>
     );
   } else {
-    // earth: kick, little houses fly up with rocks
-    const k = interpolate(u, [0.15, 0.32], [0, 1], clamp);
+    // earth: a wide stance, both arms heave up and a rough earthen hut tears out of the ground
+    const k = interpolate(u, [0.1, 0.45], [0, 1], {...clamp, easing: Easing.out(Easing.back(1.4))});
     pose = mixPose(
-      {torso: -4, head: 0, uaL: -40, faL: -50, uaR: 40, faR: 50, thL: -10, shL: 0, thR: 30, shR: -40},
-      {torso: -18, head: -6, uaL: -70, faL: -20, uaR: 30, faR: 70, thL: -14, shL: 4, thR: 100, shR: -10},
+      {torso: 0, head: 0, uaL: -30, faL: -60, uaR: 30, faR: 60, thL: -34, shL: 14, thR: 34, shR: -14},
+      {torso: -6, head: -10, uaL: -150, faL: 20, uaR: 150, faR: -20, thL: -36, shL: 16, thR: 36, shR: -16},
       k,
     );
+    const RX = 330;
+    const ry = interpolate(k, [0, 1], [HY + 320, HY - 660]);
+    const hover = u > 0.5 ? Math.sin(u * 3) * 10 : 0;
     fx = (
       <g>
-        {Array.from({length: 7}, (_, j) => {
-          const b = Math.max(0, u - 0.3 - j * 0.03);
-          const x = HX + 160 + j * 55 + b * (30 + j * 18);
-          const y = HY + 200 - b * (700 - j * 40) + b * b * 500;
-          return j % 2 ? (
-            <path key={j} d="M-40 0 L-20 -36 L20 -40 L44 -6 L20 26 L-26 22 Z" fill="#4a2a1c" transform={`translate(${x} ${y}) rotate(${b * 300})`} />
-          ) : (
-            <g key={j} transform={`translate(${x} ${y}) rotate(${b * 120 - 20}) scale(0.9)`}>
-              <path d="M-50 30 V-10 L0 -50 L50 -10 V30 Z" fill="#c9a37a" stroke="#4a2a1c" strokeWidth={6} />
-              <rect x={-12} y={4} width={24} height={26} fill="#4a2a1c" />
-            </g>
-          );
+        {/* the earth hut */}
+        <g transform={`translate(${RX} ${ry + hover}) scale(1.35)`} style={{filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.45))'}}>
+          <path d="M-190 40 L-200 -90 L-150 -100 L0 -230 L160 -110 L205 -95 L195 40 L150 78 L60 64 L-40 82 L-140 70 Z" fill="#5a3826" stroke="#2e1b10" strokeWidth={8} strokeLinejoin="round" />
+          <path d="M0 -230 L-150 -100 L160 -110 Z" fill="#6b4530" stroke="#2e1b10" strokeWidth={6} />
+          <path d="M-40 82 V-10 Q-40 -40 -6 -40 Q28 -40 28 -10 V64" fill="#2e1b10" />
+          <path d="M80 -40 h52 v44 h-52 z" fill="#2e1b10" />
+          <path d="M-150 -30 L-100 -10 L-120 30 M110 10 L150 40 M-20 -150 L20 -120" stroke="#2e1b10" strokeWidth={5} fill="none" />
+          {/* roots / soil torn from the ground */}
+          <path d="M-140 70 Q-120 120 -90 96 Q-60 140 -30 90 Q10 150 40 80 Q80 130 110 76 Q150 120 160 78" fill="#3e2416" />
+        </g>
+        {/* debris falling from it */}
+        {k > 0.3
+          ? Array.from({length: 22}, (_, j) => {
+              const fall = ((u * 1.2 + rand(j) ) % 1);
+              const x = RX - 170 + rand(j + 7) * 340;
+              const y = ry + 90 + fall * 520;
+              return <path key={j} d="M-12 0 L-4 -12 L10 -8 L12 6 L0 12 Z" fill="#2e1b10" transform={`translate(${x} ${y}) rotate(${j * 40 + u * 200}) scale(${0.7 + rand(j + 3)})`} opacity={1 - fall} />;
+            })
+          : null}
+        {/* dust clouds at the base */}
+        {Array.from({length: 9}, (_, j) => {
+          const d = interpolate(u, [0.1, 0.8], [0, 1], clamp);
+          return <circle key={`d${j}`} cx={HX - 260 + j * 90 + d * (j - 4) * 20} cy={HY + 230 - d * 30 - (j % 3) * 20} r={(60 + (j % 3) * 30) * d} fill="#d9a77a" opacity={0.55 * (1 - Math.max(0, u - 1.2) * 0.6)} />;
         })}
-        <ellipse cx={HX + 140} cy={HY + 230} rx={160 * Math.min(1, u * 2)} ry={30} fill="#5a2a1c" opacity={0.6} />
       </g>
     );
   }
@@ -625,6 +638,7 @@ export const AvatarCartoon: React.FC<z.infer<typeof avatarCartoonSchema>> = ({mu
       <Gate from={M.map} to={M.war}>
         <MapScene2 start={M.map} end={M.war} />
       </Gate>
+      <ElementTransitions cuts={M.e} mapAt={M.map} />
       <Gate from={M.war} to={M.avatar}>
         <WarScene2 start={M.war} tanksAt={M.tanks} end={M.avatar} />
       </Gate>
