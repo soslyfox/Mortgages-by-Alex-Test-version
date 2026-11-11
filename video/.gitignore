@@ -4,3 +4,5 @@ out/*
 public/footage/
 __pycache__/
 .venv/
+# user-supplied licensed music (not redistributed)
+public/audio/avatar-licensed.mp3

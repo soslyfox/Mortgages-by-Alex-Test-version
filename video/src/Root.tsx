@@ -21,7 +21,7 @@ export const RemotionRoot: React.FC = () => {
         fps={FPS}
         width={1080}
         height={1920}
-        defaultProps={{voiceover: 'voiceover/avatar', scoreVolume: 0.9}}
+        defaultProps={{music: '', voiceover: 'voiceover/avatar', scoreVolume: 0.9}}
       />
       <Composition
         id="AlexEp1BankMortgage"

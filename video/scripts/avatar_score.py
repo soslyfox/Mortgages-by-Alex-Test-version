@@ -150,11 +150,11 @@ drone(23.0, 31.8, [73.42, 110.0, 146.8, 220.0], 0.22, 2)    # avatar: fuller
 drone(31.4, DUR, [73.42, 110.0, 164.8], 0.2, 3)
 
 # elements: four gongs
-for i, (t, f) in enumerate(zip([0.6, 2.6, 4.6, 6.6], [110, 98, 82.4, 123.5])):
+for i, (t, f) in enumerate(zip([0.6, 3.87, 5.81, 8.67], [110, 98, 82.4, 123.5])):
     add(gong(f), t, 0.55, pan=[-0.5, 0.5, -0.3, 0.3][i])
 
 # harmony: gentle arpeggios
-for k, t in enumerate(np.arange(9.2, 15.0, 0.36)):
+for k, t in enumerate(np.arange(10.3, 15.0, 0.36)):
     add(pluck(PENTA[[0, 2, 3, 5, 4, 3, 2, 3][k % 8]] * (1 if k < 8 else 1)), t, 0.5, pan=np.sin(k) * 0.4)
 
 # war: taiko pattern, accelerating; plane whoosh is an SFX in Remotion
@@ -183,7 +183,7 @@ add(gong(65.4, 7), 51.4, 1.0)
 # --- melodic layers in the spirit of an epic eastern fantasy intro (own melody) ---
 H = [x * 2 for x in PENTA]   # flute register
 # elements: long flute calls answering each gong
-for t, (deg, frm) in zip([1.1, 3.1, 5.1, 7.1], [(5, 4), (6, 5), (4, 3), (5, None)]):
+for t, (deg, frm) in zip([1.1, 4.37, 6.31, 9.17], [(5, 4), (6, 5), (4, 3), (5, None)]):
     add(flute(H[deg], 1.6, 0.9, slide_from=H[frm] if frm is not None else None), t, 0.8, pan=-0.15)
 # harmony: flute melody over the plucks, strings underneath
 add(strings([D, D * 3 / 2, D * 2], 6.2, 1.0), 9.0, 0.9)

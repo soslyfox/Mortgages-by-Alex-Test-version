@@ -14,9 +14,24 @@ import {z} from 'zod';
 import {brush, serif} from '../theme';
 import {clamp, EASE_IN_OUT, EASE_OUT, rand} from '../anim';
 import {Emblem, INK, InkPath, PAPER, Parchment, useFadeInOut} from './Ink';
-import {AVATAR, BELIEF, DURATION, ELEMENTS, FOUND, NARRATION, SCENES, TITLE, VOICE, WAR} from './timeline';
+import {
+  AVATAR,
+  BELIEF,
+  DURATION,
+  ELEMENTS,
+  FOUND,
+  MUSIC_OFFSET,
+  NARRATION,
+  RING_START,
+  SCENES,
+  SPEECH,
+  TITLE,
+  VOICE,
+  WAR,
+} from './timeline';
 
 export const avatarIntroSchema = z.object({
+  music: z.string(), // licensed track in public/ ('' = none); replaces the synthesized score
   voiceover: z.string(), // folder in public/ with line-*.mp3, '' = text-only narration
   scoreVolume: z.number().min(0).max(1),
 });
@@ -49,9 +64,9 @@ const Background: React.FC = () => {
 /* ------------------------------------------------- elements → harmony → war */
 const ElementsRing: React.FC = () => {
   const t = useT();
-  const rot = Math.max(0, t - 8.4) * 10;
-  const shake = t > 15.4 && t < 18 ? Math.sin(t * 40) * 4 * (t - 15.4) : 0;
-  const center = ease(t, 8.6, 1.0);
+  const rot = Math.max(0, t - RING_START) * 10;
+  const shake = t > 15.4 && t < WAR.scatter ? Math.sin(t * 40) * 4 * (t - 15.4) : 0;
+  const center = ease(t, RING_START + 0.2, 1.0);
   const out = win(t, 0, 19.6, 0.5);
   return (
     <AbsoluteFill style={{opacity: out, translate: `${shake}px 0px`}}>
@@ -92,7 +107,7 @@ const ElementsRing: React.FC = () => {
         const draw = ease(t, el.at, 1.2, Easing.inOut(Easing.quad));
         const toSlot = ease(t, el.at + 1.5, 0.7, EASE_IN_OUT);
         const ang = ((-90 + i * 90 + rot) * Math.PI) / 180;
-        const R = interpolate(t, [8.4, 9.4], [335, 270], {...clamp, easing: EASE_IN_OUT});
+        const R = interpolate(t, [RING_START, RING_START + 1], [335, 270], {...clamp, easing: EASE_IN_OUT});
         const sx = CX + Math.cos(ang) * R;
         const sy = CY + Math.sin(ang) * R;
         const size = interpolate(toSlot, [0, 1], [430, 180]);
@@ -597,7 +612,7 @@ const Camera: React.FC<{children: React.ReactNode}> = ({children}) => {
   return <AbsoluteFill style={{scale: s, translate: `${x}px 0px`}}>{children}</AbsoluteFill>;
 };
 
-export const AvatarIntro: React.FC<z.infer<typeof avatarIntroSchema>> = ({voiceover, scoreVolume}) => {
+export const AvatarIntro: React.FC<z.infer<typeof avatarIntroSchema>> = ({music, voiceover, scoreVolume}) => {
   const {fps} = useVideoConfig();
   const f = (s: number) => Math.round(s * fps);
   return (
@@ -608,7 +623,7 @@ export const AvatarIntro: React.FC<z.infer<typeof avatarIntroSchema>> = ({voiceo
         <Gate from={0} to={20.2}>
           <ElementsRing />
         </Gate>
-        <Gate from={14.6} to={18.6}>
+        <Gate from={14.6} to={WAR.scatter + 0.6}>
           <Plane />
         </Gate>
         <Gate from={18.0} to={23.4}>
@@ -631,7 +646,24 @@ export const AvatarIntro: React.FC<z.infer<typeof avatarIntroSchema>> = ({voiceo
         </Sequence>
       ))}
 
-      {scoreVolume > 0 ? (
+      {music ? (
+        <Sequence from={f(MUSIC_OFFSET)} layout="none" name="music">
+          <Audio
+            src={staticFile(music)}
+            volume={(fr) => {
+              const tt = fr / fps + MUSIC_OFFSET;
+              // duck under the narration, smooth 0.3 s ramps
+              const d = SPEECH.reduce(
+                (m, [a, b]) => Math.max(m, interpolate(tt, [a - 0.3, a, b, b + 0.4], [0, 1, 1, 0], clamp)),
+                0,
+              );
+              const fade = interpolate(tt, [DURATION - 2.5, DURATION], [1, 0], clamp);
+              return (voiceover ? 0.75 - 0.5 * d : 0.75) * fade;
+            }}
+          />
+        </Sequence>
+      ) : null}
+      {!music && scoreVolume > 0 ? (
         <Audio src={staticFile('audio/avatar-score.mp3')} volume={voiceover ? scoreVolume * 0.5 : scoreVolume} />
       ) : null}
       {voiceover
