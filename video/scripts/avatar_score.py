@@ -91,6 +91,54 @@ def swell_noise(t0, t1, gain):
     add(out * 3, t0, gain)
 
 
+
+def flute(f, dur, gain=1.0, vib=5.2, slide_from=None):
+    """Bamboo-flute-like voice: sine + soft 2nd/3rd harmonics, delayed vibrato,
+    breath noise, optional upward slide into the note."""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    fr = np.full(n, f, np.float64)
+    if slide_from:
+        k = np.minimum(1, t / 0.12)
+        fr = slide_from + (f - slide_from) * (1 - (1 - k) ** 3)
+    depth = np.minimum(1, t / 0.6) * 0.012
+    fr = fr * (1 + depth * np.sin(2 * np.pi * vib * t))
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    s = np.sin(ph) + 0.18 * np.sin(2 * ph) + 0.06 * np.sin(3 * ph)
+    breath = rng.standard_normal(n) * 0.06
+    breath = np.convolve(breath, np.ones(40) / 40, mode='same')
+    a = np.minimum(1, t / 0.07) * np.minimum(1, (dur - t) / 0.25)
+    return ((s + breath * 3) * a * 0.22 * gain).astype(np.float32)
+
+
+def erhu(f, dur, gain=1.0, slide_from=None):
+    """Bowed two-string fiddle feel: band-limited saw, wide vibrato, slides."""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    fr = np.full(n, f, np.float64)
+    if slide_from:
+        k = np.minimum(1, t / 0.25)
+        fr = slide_from + (f - slide_from) * (1 - (1 - k) ** 2)
+    fr = fr * (1 + np.minimum(1, t / 0.4) * 0.02 * np.sin(2 * np.pi * 6.0 * t))
+    ph = 2 * np.pi * np.cumsum(fr) / SR
+    s = sum(np.sin(k * ph) / k for k in range(1, 9))
+    a = np.minimum(1, t / 0.15) * np.minimum(1, (dur - t) / 0.3)
+    return (s * a * 0.12 * gain).astype(np.float32)
+
+
+def strings(freqs, dur, gain=1.0):
+    """Soft string pad: detuned saws, slow attack."""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    s = np.zeros(n)
+    for f in freqs:
+        for det in (-0.004, 0.0, 0.005):
+            ph = 2 * np.pi * f * (1 + det) * t
+            s += sum(np.sin(k * ph) / k for k in range(1, 6))
+    s = np.convolve(s, np.ones(6) / 6, mode='same')
+    a = np.minimum(1, t / 1.2) * np.minimum(1, (dur - t) / 1.0)
+    return (s * a * 0.03 * gain / max(1, len(freqs))).astype(np.float32)
+
 # --- pentatonic (D major pentatonic) ---
 D = 146.83
 PENTA = [D, D * 9 / 8, D * 5 / 4, D * 3 / 2, D * 5 / 3, D * 2, D * 9 / 4, D * 5 / 2, D * 3]
@@ -131,6 +179,36 @@ for k, t in enumerate(np.arange(45.6, 51.2, 0.42)):
     add(pluck(PENTA[[3, 5, 7, 8][k % 4]], bright=0.6), t, min(0.75, 0.4 + k * 0.025))
 add(taiko(f0=50), 51.35, 1.0)
 add(gong(65.4, 7), 51.4, 1.0)
+
+# --- melodic layers in the spirit of an epic eastern fantasy intro (own melody) ---
+H = [x * 2 for x in PENTA]   # flute register
+# elements: long flute calls answering each gong
+for t, (deg, frm) in zip([1.1, 3.1, 5.1, 7.1], [(5, 4), (6, 5), (4, 3), (5, None)]):
+    add(flute(H[deg], 1.6, 0.9, slide_from=H[frm] if frm is not None else None), t, 0.8, pan=-0.15)
+# harmony: flute melody over the plucks, strings underneath
+add(strings([D, D * 3 / 2, D * 2], 6.2, 1.0), 9.0, 0.9)
+for t, deg, d in [(9.6, 3, 0.9), (10.5, 5, 0.6), (11.1, 6, 1.2), (12.4, 5, 0.5), (12.9, 3, 0.5), (13.4, 4, 1.4)]:
+    add(flute(H[deg], d + 0.3, 0.9), t, 0.75, pan=-0.1)
+# war: low erhu tension lines + low strings
+add(strings([D / 2, D / 2 * 16 / 15], 8.0, 1.2), 15.0, 1.0)
+for t, f, d, frm in [(15.6, 220.0, 1.6, 196.0), (17.4, 233.1, 1.2, 220.0), (19.0, 220.0, 0.8, None),
+                     (19.9, 207.7, 0.8, None), (20.8, 196.0, 1.8, 220.0)]:
+    add(erhu(f, d, 1.0, slide_from=frm), t, 0.8, pan=0.2)
+# avatar: rising strings, high flute sustain when the eyes glow
+add(strings([D, D * 3 / 2, D * 2, D * 3], 8.6, 1.4), 23.0, 1.0)
+add(flute(H[8], 3.5, 1.0, slide_from=H[7]), 26.6, 0.8)
+add(flute(H[7], 1.6, 0.9), 30.2, 0.7)
+# found Alex: gentle flute melody over the plucked line
+for t, deg, d in [(32.2, 5, 1.0), (33.4, 6, 0.6), (34.1, 7, 1.4), (35.9, 6, 0.6), (36.6, 5, 1.6),
+                  (39.6, 3, 0.8), (40.6, 4, 0.8), (41.6, 5, 1.6), (43.4, 4, 0.6), (44.1, 3, 1.2)]:
+    add(flute(H[deg], d + 0.3, 0.8), t, 0.65, pan=-0.1)
+add(strings([D, D * 5 / 4, D * 3 / 2], 13.5, 0.8), 31.6, 0.8)
+# belief -> title: building strings and a final soaring flute phrase
+add(strings([D, D * 3 / 2, D * 2, D * 5 / 2], 5.8, 1.5), 45.6, 1.0)
+for t, deg, d in [(46.2, 5, 0.8), (47.2, 6, 0.8), (48.2, 7, 1.0), (49.5, 8, 1.8)]:
+    add(flute(H[deg], d + 0.3, 1.0), t, 0.75)
+add(strings([D / 2, D, D * 3 / 2, D * 2, D * 3], 7.0, 1.8), 51.4, 1.0)
+add(flute(H[5], 3.5, 1.0, slide_from=H[4]), 51.6, 0.85)
 
 # master: soft limiter + normalise
 peak = np.max(np.abs(mix)) + 1e-9
