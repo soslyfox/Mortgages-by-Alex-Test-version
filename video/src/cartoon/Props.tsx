@@ -172,18 +172,44 @@ export const Tank: React.FC<{x: number; y: number; s: number; label?: string}> =
   </g>
 );
 
-export const Flag: React.FC<{x: number; y: number; s: number; t: number}> = ({x, y, s, t}) => (
-  <g transform={`translate(${x} ${y}) scale(${s})`}>
-    <rect x={-3} y={-160} width={6} height={160} fill="#2a1612" />
-    <path
-      d={`M3 -160 Q40 ${-170 + Math.sin(t * 6) * 8} 80 -160 Q120 ${-150 + Math.sin(t * 6 + 1) * 8} 150 -160 V-100 Q110 ${-90 + Math.sin(t * 6 + 2) * 8} 80 -100 Q40 ${-110 + Math.sin(t * 6 + 3) * 8} 3 -100 Z`}
-      fill="#c62a1f"
-    />
-    <text x={76} y={-122} textAnchor="middle" fontFamily={round} fontWeight={900} fontSize={22} fill="#fff">
-      ВІДМОВЛЕНО
-    </text>
-  </g>
-);
+export const Flag: React.FC<{x: number; y: number; s: number; t: number; lines?: string[]; flip?: boolean}> = ({
+  x,
+  y,
+  s,
+  t,
+  lines = ['ВІДМОВЛЕНО'],
+  flip = false,
+}) => {
+  const two = lines.length > 1;
+  const W = two ? 250 : 150;
+  const H = two ? 84 : 60;
+  const w = (k: number) => Math.sin(t * 6 + k) * 8;
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <rect x={-3} y={-170} width={6} height={170} fill="#2a1612" />
+      <g transform={flip ? 'scale(-1 1)' : undefined}>
+        <path
+          d={`M3 -170 Q${W * 0.27} ${-180 + w(0)} ${W * 0.53} -170 Q${W * 0.8} ${-160 + w(1)} ${W} -170 V${-170 + H} Q${W * 0.73} ${-160 + H + w(2)} ${W * 0.53} ${-170 + H} Q${W * 0.27} ${-180 + H + w(3)} 3 ${-170 + H} Z`}
+          fill="#c62a1f"
+        />
+      </g>
+      {lines.map((l, k) => (
+        <text
+          key={k}
+          x={(flip ? -1 : 1) * (W / 2 + 2)}
+          y={-170 + (two ? 34 + k * 30 : 38)}
+          textAnchor="middle"
+          fontFamily={round}
+          fontWeight={900}
+          fontSize={two ? 21 : 22}
+          fill="#fff"
+        >
+          {l}
+        </text>
+      ))}
+    </g>
+  );
+};
 
 export const Plane: React.FC<{x: number; y: number; s: number; r: number}> = ({x, y, s, r}) => (
   <g transform={`translate(${x} ${y}) rotate(${r}) scale(${s})`}>

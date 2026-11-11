@@ -207,6 +207,13 @@ const Fortress: React.FC<{x: number; y: number; s: number}> = ({x, y, s}) => (
   </g>
 );
 
+const REASONS: string[][] = [
+  ['КОРОТКА', 'КРЕДИТНА ІСТОРІЯ'],
+  ['ЗАКОРДОННИЙ', 'ПЕРШИЙ ВНЕСОК'],
+  ['МАЛЕНЬКИЙ', 'БЮДЖЕТ'],
+  ['НЕПІДХОДЯЩА', 'НЕРУХОМІСТЬ'],
+];
+
 export const WarScene2: React.FC<{start: number; tanksAt: number; end: number}> = ({start, tanksAt, end}) => {
   const t = useT();
   const flash = interpolate(t, [start, start + 0.08, start + 0.6], [0, 1, 0], clamp);
@@ -243,7 +250,16 @@ export const WarScene2: React.FC<{start: number; tanksAt: number; end: number}> 
                 const y = [1140, 1260, 1430][row] + adv * 40;
                 return (
                   <g key={`${row}-${k}`}>
-                    {k % 2 === 0 ? <Flag x={x - 60 * s} y={y - 100 * s} s={s * 0.9} t={t} /> : null}
+                    {k % 2 === 0 ? (
+                      <Flag
+                        x={x - 60 * s}
+                        y={y - 100 * s}
+                        s={s * 0.9}
+                        t={t}
+                        flip={x > 600}
+                        lines={row === 0 ? undefined : REASONS[(row - 1) * 2 + k / 2]}
+                      />
+                    ) : null}
                     <Tank x={x} y={y} s={s} />
                   </g>
                 );
