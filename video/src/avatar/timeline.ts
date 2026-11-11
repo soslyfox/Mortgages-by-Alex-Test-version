@@ -65,7 +65,7 @@ export const NARRATION: {from: number; to: number; text: string}[] = [
   {
     from: 43.0,
     to: 50.2,
-    text: 'І хоча його скіли фінансування були крутими, йому ще треба було навчитися маркетингу і вайбкодингу.',
+    text: 'І хоча його скіли фінансування були крутими, йому ще треба було багато чому навчитися.',
   },
   {from: 50.4, to: 55.9, text: 'Але я вірю, що Алекс зможе врятувати будь-яку іпотеку в Канаді.'},
 ];
@@ -73,7 +73,7 @@ export const NARRATION: {from: number; to: number; text: string}[] = [
 /** Seconds of each voice clip (for ducking the music under the narration). */
 export const VOICE_LEN: Record<string, number> = {
   'line-1.mp3': 4.8, 'line-2.mp3': 4.48, 'line-3.mp3': 8.08, 'line-4.mp3': 5.84, 'line-7.mp3': 4.56,
-  'line-5.mp3': 6.96, 'line-6.mp3': 5.2,
+  'line-5.mp3': 6.0, 'line-6.mp3': 5.2,
 };
 export const SPEECH: [number, number][] = VOICE.map((v) => [
   v.at,

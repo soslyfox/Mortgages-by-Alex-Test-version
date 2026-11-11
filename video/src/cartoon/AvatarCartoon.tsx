@@ -39,8 +39,7 @@ const M = {
   name: 41.44, // "Алекс"
   desk: 43.0,
   approved: 44.18, // "фінансування"
-  selfie: 48.06, // "маркетингу"
-  code: 48.86, // "вайбкодингу"
+  learn: 46.14, // "йому ще треба було багато чому навчитися"
   belief: 50.3,
   glow: 52.94, // "врятувати"
   title: 55.9,
@@ -459,7 +458,7 @@ const SearchScene: React.FC = () => {
 /* ============================================================== skills */
 const SkillsScene: React.FC = () => {
   const t = useT();
-  if (t < M.selfie) {
+  if (t < M.learn) {
     const ok = ease(t, M.approved, 0.3);
     return (
       <AbsoluteFill>
@@ -487,34 +486,50 @@ const SkillsScene: React.FC = () => {
       </AbsoluteFill>
     );
   }
-  if (t < M.code) {
-    return (
-      <AbsoluteFill>
-        <Paper top="#f7c6d4" bottom="#d98aa6" grain={0.1} />
-        <div style={{position: 'absolute', left: 540 - 300, top: 330, width: 600, height: 600, borderRadius: '50%', border: '40px solid #fff8f0', boxShadow: '0 0 80px 20px rgba(255,255,255,0.7)'}} />
-        <div style={{position: 'absolute', left: 540 - 270, top: 420}}>
-          <CartoonAlex w={540} pose="selfie" smile={0.05} sweat={0.5} />
-        </div>
-        <div style={{position: 'absolute', left: 80, top: 300, fontFamily: round, fontWeight: 900, fontSize: 44, color: '#e0242b'}}>● REC</div>
-        <div style={{position: 'absolute', right: 160, top: 300, fontFamily: round, fontWeight: 900, fontSize: 40, color: '#2a1a14', background: '#fff', padding: '6px 18px', borderRadius: 30}}>♡ 0</div>
-      </AbsoluteFill>
-    );
-  }
+  // head-banging on the desk over a post with miserable reach
+  const u = t - M.learn;
+  const P = 0.85;
+  const ph = u < 0.3 ? 0 : ((u - 0.3) % P) / P; // 0..1 per bang
+  const down = ph < 0.35 ? Math.pow(ph / 0.35, 2) : 1 - (ph - 0.35) / 0.65; // fast down, slow up
+  const hit = ph > 0.3 && ph < 0.55 && u > 0.3;
+  const shake = hit ? Math.sin(t * 90) * 10 : 0;
+  const reach = Math.max(3, 12 - Math.floor(u * 2));
   return (
-    <AbsoluteFill>
-      <Paper top="#1d2233" bottom="#0c0f18" grain={0.1} />
-      <div style={{position: 'absolute', left: 540 - 230, top: 360}}>
-        <CartoonAlex w={460} pose="desk" smile={-0.5} sweat={1} />
+    <AbsoluteFill style={{translate: `${shake}px 0px`}}>
+      <Paper top="#2a2f45" bottom="#141826" grain={0.1} />
+      {/* Alex behind the desk */}
+      <div style={{position: 'absolute', left: 300 - 230, top: 470 + down * 330, rotate: `${down * 10}deg`, transformOrigin: '50% 80%'}}>
+        <CartoonAlex w={460} pose="desk" smile={-0.6} sweat={1} blink={down > 0.6} />
       </div>
-      <div style={{position: 'absolute', left: 90, top: 860, width: 900, height: 520, background: '#2b2f38', borderRadius: 20, padding: 20, boxSizing: 'border-box'}}>
-        <div style={{width: '100%', height: '100%', background: '#0d1117', borderRadius: 8, padding: 26, boxSizing: 'border-box', fontFamily: 'monospace', fontSize: 30, lineHeight: 1.5}}>
-          {['const mortgage = vibe()', 'if (credit) approve()', 'ERROR: undefined is not a house', 'ERROR: rate is NaN%', 'ERROR: CUAET not found'].map((l, k) => (
-            <div key={k} style={{color: l.startsWith('ERROR') ? '#ff5c5c' : '#9fe0a8', opacity: t >= M.code + k * 0.18 ? 1 : 0}}>
-              {l}
-            </div>
-          ))}
+      <div style={{position: 'absolute', left: 0, top: 1180, width: 1080, height: 740, background: '#5a3a26'}} />
+      <div style={{position: 'absolute', left: 0, top: 1180, width: 1080, height: 24, background: '#7a4f33'}} />
+      {/* monitor with a sad social post */}
+      <div style={{position: 'absolute', left: 560, top: 700, width: 460, height: 470, background: '#1b1e25', borderRadius: 18, padding: 14, boxSizing: 'border-box', rotate: '-3deg'}}>
+        <div style={{width: '100%', height: '100%', background: '#fff', borderRadius: 8, padding: 18, boxSizing: 'border-box', fontFamily: round}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
+            <div style={{width: 44, height: 44, borderRadius: '50%', background: '#0b6b3a'}} />
+            <div style={{fontWeight: 900, fontSize: 24, color: '#222'}}>oleksii.harin</div>
+          </div>
+          <div style={{marginTop: 12, height: 150, borderRadius: 8, background: 'linear-gradient(135deg,#ffd6a0,#ff9a6b)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 26, color: '#5a2a10', textAlign: 'center', padding: 10}}>
+            5 порад по іпотеці
+          </div>
+          <div style={{marginTop: 14, fontWeight: 900, fontSize: 26, color: '#222'}}>♡ 0 &nbsp;&nbsp; 💬 0</div>
+          <div style={{marginTop: 8, fontWeight: 800, fontSize: 24, color: '#666'}}>Охоплення:</div>
+          <div style={{fontWeight: 900, fontSize: 60, color: '#e0242b', lineHeight: 1}}>{reach}</div>
+          <svg width={400} height={60} style={{marginTop: 6}}>
+            <polyline points="0,8 80,14 160,26 240,34 320,46 400,56" fill="none" stroke="#e0242b" strokeWidth={6} />
+          </svg>
         </div>
       </div>
+      {/* BONK */}
+      {hit ? (
+        <>
+          <div style={{position: 'absolute', left: 30, top: 960, fontFamily: round, fontWeight: 900, fontSize: 96, color: '#ffd23a', rotate: '-12deg', textShadow: '0 6px 0 #7a2a0c, 0 0 20px #000'}}>БАМ!</div>
+          {[0, 1, 2, 3, 4].map((k) => (
+            <div key={k} style={{position: 'absolute', left: 300 + Math.cos(k * 1.3 + t * 8) * 140, top: 1070 + Math.sin(k * 1.3 + t * 8) * 50, fontSize: 44, color: '#ffe066'}}>★</div>
+          ))}
+        </>
+      ) : null}
     </AbsoluteFill>
   );
 };
@@ -596,14 +611,12 @@ const Gate: React.FC<{from: number; to: number; children: React.ReactNode}> = ({
 };
 
 const SFX: [string, number, number][] = [
-  ...M.e.map((s) => ['whoosh-fast.mp3', s - 0.05, 0.35] as [string, number, number]),
   ['whoosh-big.mp3', WAR.plane + 0.3, 0.5],
   ['impact-cine-big.mp3', M.tanks, 0.35],
   ['light-spell.mp3', M.avatarUp - 0.1, 0.45],
   ['light-spell.mp3', M.sphere, 0.35],
   ['ui-success-soft.mp3', M.approved, 0.5],
-  ['pop.mp3', M.selfie, 0.5],
-  ['glass-hit-cine.mp3', M.code, 0.35],
+  ...Array.from({length: 4}, (_, k) => ['hit-weak.mp3', M.learn + 0.3 + 0.85 * 0.33 + k * 0.85, 0.6] as [string, number, number]),
   ['light-aura.mp3', M.glow, 0.4],
 ];
 
