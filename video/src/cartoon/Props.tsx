@@ -223,10 +223,30 @@ export const CartoonAlex: React.FC<{
   smile?: number;
 }> = ({w, pose = 'crossed', blink = false, eyesGlow = 0, sweat = 0, smile = 0.5}) => {
   const SK = '#f0c4a2', SK2 = '#e2a983', HAIR = '#a8835a', TEE = '#1e1c1f';
+  const tall = pose === 'crossed' || pose === 'selfie'; // full figure with legs
   // closed lips, smile lifts the right corner more (as in the photo)
   const mouth = `M172 282 Q198 ${283 + 8 * smile} 232 ${279 - 10 * smile}`;
   return (
-    <svg viewBox="0 0 400 600" width={w} height={w * 1.5} style={{overflow: 'visible'}}>
+    <svg viewBox={`0 0 400 ${tall ? 900 : 600}`} width={w} height={w * (tall ? 2.25 : 1.5)} style={{overflow: 'visible'}}>
+      {/* legs: jeans + sneakers when standing */}
+      {tall ? (
+        <g>
+          <path d="M86 588 H314 L304 862 H218 L200 650 L182 862 H96 Z" fill="#2b3a55" />
+          <path d="M200 650 V600" stroke="#1d2840" strokeWidth={4} />
+          <rect x={86} y={584} width={228} height={16} fill="#1d1a18" />
+          <ellipse cx={140} cy={874} rx={58} ry={22} fill="#141414" />
+          <ellipse cx={262} cy={874} rx={58} ry={22} fill="#141414" />
+          <rect x={86} y={884} width={110} height={8} rx={4} fill="#eee" />
+          <rect x={206} y={884} width={110} height={8} rx={4} fill="#eee" />
+        </g>
+      ) : null}
+      {pose === 'meditate' ? (
+        <g>
+          <path d="M40 540 Q200 492 360 540 Q384 606 312 616 Q200 596 88 616 Q16 606 40 540 Z" fill="#2b3a55" />
+          <ellipse cx={120} cy={588} rx={44} ry={18} fill="#141414" />
+          <ellipse cx={280} cy={588} rx={44} ry={18} fill="#141414" />
+        </g>
+      ) : null}
       {/* body */}
       {pose !== 'meditate' ? (
         <path d="M70 600 V430 Q70 360 140 345 L170 335 H230 L260 345 Q330 360 330 430 V600 Z" fill={TEE} />

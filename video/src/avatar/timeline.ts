@@ -2,7 +2,7 @@
 // ElevenLabs voiceover (public/voiceover/avatar/line-*.mp3, word timings in
 // alignment.json). Keep in sync with scripts/avatar_score.py.
 
-export const DURATION = 58.5;
+export const DURATION = 63.2;
 
 /** Music file starts this many seconds into the video (aligns its hits). */
 export const MUSIC_OFFSET = 0.5;
@@ -23,18 +23,18 @@ export const SCENES = {
   elements: [0, 10.3],
   harmony: [10.3, 15.0],
   war: [15.0, 23.0],
-  avatar: [23.0, 31.5],
-  found: [31.5, 45.6],
-  belief: [45.6, 51.2],
-  title: [51.2, DURATION],
+  avatar: [23.0, 36.2], // includes 'he vanished' (line 7)
+  found: [36.2, 50.3],
+  belief: [50.3, 55.9],
+  title: [55.9, DURATION],
 } as const;
 
 export const WAR = {plane: 15.3, scatter: 18.45, stamps: [19.0, 19.8, 20.6]};
-export const AVATAR = {silhouette: 23.4, eyes: 26.5};
+export const AVATAR = {silhouette: 23.4, eyes: 26.5, vanishLine: 31.2, vanish: 34.8};
 // name = the word "Алекс" in line 4; bars = "фінансування", "маркетингу", "вайбкодингу" in line 5
-export const FOUND = {portrait: 31.6, name: 37.2, skills: 38.3, skillsEnd: 45.4, bars: [39.45, 43.35, 44.15]};
-export const BELIEF = {from: 45.6, to: 51.2};
-export const TITLE = {slam: 51.4, cta: 53.4};
+export const FOUND = {portrait: 36.3, name: 41.44, skills: 43.0, skillsEnd: 50.1, bars: [44.18, 48.06, 48.86]};
+export const BELIEF = {from: 50.3, to: 55.9};
+export const TITLE = {slam: 56.1, cta: 58.1};
 
 /** Voiceover clips. Line 0 is cut into the four element names, one per emblem. */
 export const VOICE: {file: string; at: number; trim?: [number, number]}[] = [
@@ -45,9 +45,10 @@ export const VOICE: {file: string; at: number; trim?: [number, number]}[] = [
   {file: 'line-1.mp3', at: 10.3},
   {file: 'line-2.mp3', at: 15.4},
   {file: 'line-3.mp3', at: 22.7},
-  {file: 'line-4.mp3', at: 31.7},
-  {file: 'line-5.mp3', at: 38.4},
-  {file: 'line-6.mp3', at: 45.8},
+  {file: 'line-7.mp3', at: 31.2}, // "he vanished"
+  {file: 'line-4.mp3', at: 36.4},
+  {file: 'line-5.mp3', at: 43.1},
+  {file: 'line-6.mp3', at: 50.5},
 ];
 
 export const NARRATION: {from: number; to: number; text: string}[] = [
@@ -58,18 +59,19 @@ export const NARRATION: {from: number; to: number; text: string}[] = [
     to: 31.4,
     text: 'Тільки Аватар, володар фінансування для новоприбулих у Канаді, міг зупинити війну і зробити їм гарну іпотеку.',
   },
-  {from: 31.6, to: 38.2, text: 'Через 5 років мій брат і я знайшли нового Аватара, українця на ім’я Алекс.'},
+  {from: 31.2, to: 35.9, text: 'Але коли світ потребував його найбільше… він зник.'},
+  {from: 36.3, to: 42.4, text: 'Через 5 років ми з братом знайшли нового Аватара, українця на ім’я Алекс.'},
   {
-    from: 38.3,
-    to: 45.5,
+    from: 43.0,
+    to: 50.2,
     text: 'І хоча його скіли фінансування були крутими, йому ще треба було навчитися маркетингу і вайбкодингу.',
   },
-  {from: 45.7, to: 51.2, text: 'Але я вірю, що Алекс зможе врятувати будь-яку іпотеку в Канаді.'},
+  {from: 50.4, to: 55.9, text: 'Але я вірю, що Алекс зможе врятувати будь-яку іпотеку в Канаді.'},
 ];
 
 /** Seconds of each voice clip (for ducking the music under the narration). */
 export const VOICE_LEN: Record<string, number> = {
-  'line-1.mp3': 4.8, 'line-2.mp3': 4.48, 'line-3.mp3': 8.08, 'line-4.mp3': 6.32,
+  'line-1.mp3': 4.8, 'line-2.mp3': 4.48, 'line-3.mp3': 8.08, 'line-4.mp3': 5.84, 'line-7.mp3': 4.56,
   'line-5.mp3': 6.96, 'line-6.mp3': 5.2,
 };
 export const SPEECH: [number, number][] = VOICE.map((v) => [

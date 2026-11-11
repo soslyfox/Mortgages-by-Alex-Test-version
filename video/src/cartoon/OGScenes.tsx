@@ -90,6 +90,37 @@ const blob = (cx: number, cy: number, r: number, seed: number, n = 18) => {
   return `M${pts.map((p) => p.map((v) => v.toFixed(1)).join(' ')).join(' L')} Z`;
 };
 
+/** Element seal on the map, each with its own looping animation. */
+const MapSeal: React.FC<{kind: IconKind; x: number; y: number; at: number}> = ({kind, x, y, at}) => {
+  const t = useT();
+  const u = t - at;
+  const k = interpolate(u, [0, 0.35], [0, 1], {...clamp, easing: EASE_OUT});
+  if (k <= 0) return null;
+  const C = {work: '#2f8fd6', down: '#2fbf6f', credit: '#e8642c', home: '#8a6a3c'}[kind];
+  const bob = kind === 'home' ? -Math.abs(Math.sin(u * 4)) * 14 : 0;
+  return (
+    <div style={{position: 'absolute', left: x, top: y, width: 160, height: 160, scale: k, translate: `0px ${bob}px`}}>
+      <svg width={160} height={160} style={{position: 'absolute', inset: 0, overflow: 'visible', filter: `drop-shadow(0 0 ${12 + 8 * Math.sin(u * 5)}px ${C})`}}>
+        {kind === 'work'
+          ? [0, 1, 2].map((j) => <path key={j} d={`M-10 ${120 + j * 14} ${Array.from({length: 5}, (_, q) => `Q${q * 40 + 10} ${110 + j * 14 + Math.sin(u * 5 + q + j) * 10} ${q * 40 + 30} ${120 + j * 14}`).join(' ')}`} stroke="#7fd0ff" strokeWidth={6} fill="none" />)
+          : null}
+        {kind === 'down'
+          ? [0, 1].map((j) => <circle key={j} cx={80} cy={80} r={86 + j * 16} fill="none" stroke="#3ddc84" strokeWidth={7} strokeDasharray="60 30" transform={`rotate(${u * 160 * (j ? -1 : 1)} 80 80)`} />)
+          : null}
+        {kind === 'credit'
+          ? [0, 1, 2].map((j) => <path key={j} d={`M${40 + j * 40} 40 Q${30 + j * 40} ${10 - Math.sin(u * 12 + j) * 14} ${50 + j * 40} ${-10 - Math.abs(Math.sin(u * 9 + j)) * 20} Q${60 + j * 40} 10 ${60 + j * 40} 40 Z`} fill={j === 1 ? '#ffd23a' : '#ff7a1f'} />)
+          : null}
+        {kind === 'home' && Math.sin(u * 4) > 0.7
+          ? [0, 1, 2].map((j) => <circle key={j} cx={40 + j * 40} cy={156} r={10 + j * 3} fill="#cdb48f" opacity={0.8} />)
+          : null}
+      </svg>
+      <div style={{position: 'absolute', inset: 10, borderRadius: 26, background: '#e9dcc0', border: `8px solid ${C}`, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <Icon kind={kind} size={90} color={C} />
+      </div>
+    </div>
+  );
+};
+
 export const MapScene2: React.FC<{start: number; end: number}> = ({start, end}) => {
   const t = useT();
   const u = t - start;
@@ -98,8 +129,8 @@ export const MapScene2: React.FC<{start: number; end: number}> = ({start, end}) 
   const corners: {x: number; y: number; k: IconKind}[] = [
     {x: 110, y: 300, k: 'work'},
     {x: 840, y: 300, k: 'down'},
-    {x: 110, y: 1480, k: 'credit'},
-    {x: 840, y: 1480, k: 'home'},
+    {x: 110, y: 1530, k: 'credit'},
+    {x: 840, y: 1530, k: 'home'},
   ];
   return (
     <AbsoluteFill style={{background: '#1d2a4f'}}>
@@ -135,10 +166,6 @@ export const MapScene2: React.FC<{start: number; end: number}> = ({start, end}) 
                 <path key={k} d={d} />
               ))}
             </g>
-            <g transform={`translate(${CA.calgary[0]} ${CA.calgary[1]})`}>
-              <path d="M0 -16 L5 -5 L17 -5 L7 2 L11 14 L0 7 L-11 14 L-7 2 L-17 -5 L-5 -5 Z" fill="#c62a1f" />
-              <text x={-60} y={40} fontFamily={round} fontWeight={900} fontSize={30} fill="#3a2a1a">Калгарі</text>
-            </g>
           </g>
           {/* the banks' fire spreading from Toronto */}
           <g opacity={fire} filter="url(#mapRough)" transform={`translate(${MAP_X} ${MAP_Y}) scale(${MAP_S})`}>
@@ -157,25 +184,7 @@ export const MapScene2: React.FC<{start: number; end: number}> = ({start, end}) 
           ))}
         </svg>
         {corners.map((c, i) => (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              left: c.x,
-              top: c.y,
-              width: 130,
-              height: 130,
-              borderRadius: 20,
-              background: '#e9dcc0',
-              border: '8px solid #8d7f5c',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              opacity: ease(t, start + 0.2 + i * 0.25, 0.4),
-            }}
-          >
-            <Icon kind={c.k} size={84} color="#2b2116" />
-          </div>
+          <MapSeal key={i} kind={c.k} x={c.x - 10} y={c.y - 10} at={start + 0.2 + i * 0.3} />
         ))}
         <div style={{position: 'absolute', left: MAP_X + CA.toronto[0] * MAP_S - 60, top: MAP_Y + CA.toronto[1] * MAP_S + 10, fontFamily: round, fontWeight: 900, fontSize: 40, color: '#fff', opacity: fire, rotate: '-8deg', textShadow: '0 3px 6px #000'}}>
           БАНКИ
@@ -257,24 +266,64 @@ const Pinnacle: React.FC = () => (
   </svg>
 );
 
-export const AvatarScene2: React.FC<{start: number; glowAt: number; end: number}> = ({start, glowAt, end}) => {
+const ELC: Record<IconKind, string> = {work: '#2f8fd6', down: '#2fbf6f', credit: '#e8642c', home: '#8a6a3c'};
+
+/** Big element tile that pops, glows and then joins the orbit. */
+const ElementTile: React.FC<{kind: IconKind; at: number; x: number; y: number; size?: number}> = ({kind, at, x, y, size = 150}) => {
   const t = useT();
-  const wAt = start + 1.6, fAt = glowAt + 1.5, eAt = glowAt + 3.1;
+  const k = interpolate(t, [at, at + 0.25], [0, 1], {...clamp, easing: EASE_OUT});
+  if (k <= 0) return null;
+  const pulse = 1 + 0.06 * Math.sin((t - at) * 8);
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: x - size / 2,
+        top: y - size / 2,
+        width: size,
+        height: size,
+        borderRadius: size * 0.22,
+        background: ELC[kind],
+        border: '6px solid #fff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        scale: (0.4 + k * 0.6) * pulse,
+        boxShadow: `0 0 ${30 + 20 * Math.sin((t - at) * 6)}px ${ELC[kind]}, 0 0 60px rgba(255,255,255,0.7)`,
+      }}
+    >
+      <Icon kind={kind} size={size * 0.66} />
+    </div>
+  );
+};
+
+export const AvatarScene2: React.FC<{start: number; glowAt: number; vanishAt: number; end: number}> = ({start, glowAt, vanishAt, end}) => {
+  const t = useT();
+  // element beats: water(work) -> air(down) -> glow -> fire(credit) -> earth(home)
+  const wAt = start + 1.4, aAt = start + 2.8, fAt = glowAt + 1.4, eAt = glowAt + 2.9;
   const stance: Pose = {torso: 0, head: 0, uaL: -30, faL: -40, uaR: 30, faR: 40, thL: -20, shL: 6, thR: 20, shR: -6};
   const water: Pose = {torso: -8, head: -4, uaL: -150, faL: -20, uaR: -120, faR: -30, thL: -24, shL: 6, thR: 24, shR: -6};
+  const air: Pose = {torso: 0, head: 0, uaL: -95, faL: -10, uaR: 95, faR: 10, thL: -16, shL: 4, thR: 16, shR: -4};
   const raise: Pose = {torso: 0, head: -6, uaL: -150, faL: -10, uaR: 150, faR: 10, thL: -18, shL: 4, thR: 18, shR: -4};
   const punch: Pose = {torso: 10, head: 4, uaL: -40, faL: -80, uaR: 95, faR: 0, thL: -30, shL: 14, thR: 26, shR: -4};
   const stomp: Pose = {torso: 0, head: 6, uaL: -60, faL: 60, uaR: 60, faR: -60, thL: -30, shL: 20, thR: 40, shR: -40};
+  const calm: Pose = {torso: 0, head: 8, uaL: -20, faL: -10, uaR: 20, faR: 10, thL: -10, shL: 0, thR: 10, shR: 0};
   let pose = mixPose(POSE_STAND, stance, ease(t, start, 0.6));
-  if (t >= wAt) pose = mixPose(stance, water, ease(t, wAt, 0.4));
-  if (t >= glowAt) pose = mixPose(water, raise, ease(t, glowAt, 0.4));
+  if (t >= wAt) pose = mixPose(stance, water, ease(t, wAt, 0.35));
+  if (t >= aAt) pose = mixPose(water, air, ease(t, aAt, 0.35));
+  if (t >= glowAt) pose = mixPose(air, raise, ease(t, glowAt, 0.4));
   if (t >= fAt) pose = mixPose(raise, punch, ease(t, fAt, 0.25));
   if (t >= eAt) pose = mixPose(punch, stomp, ease(t, eAt, 0.25));
-  const glow = ease(t, glowAt, 0.5);
-  const zoom = interpolate(t, [start, end], [1.0, 1.1], clamp);
-  const ws = interpolate(t, [wAt, wAt + 0.5, glowAt - 0.2, glowAt + 0.2], [0, 1, 1, 0], clamp);
-  const fb = interpolate(t, [fAt, fAt + 0.6, fAt + 1.4], [0, 1, 0], clamp);
-  const dust = ease(t, eAt, 1.2);
+  if (t >= eAt + 1.6) pose = mixPose(stomp, calm, ease(t, eAt + 1.6, 0.8));
+  const glow = ease(t, glowAt, 0.5) * (1 - ease(t, vanishAt - 1.2, 1.0));
+  const vanish = ease(t, vanishAt, 1.0); // he dissolves into the wind
+  const dim = interpolate(t, [vanishAt - 2.5, vanishAt + 1], [0, 0.55], clamp);
+  const zoom = interpolate(t, [start, vanishAt], [1.0, 1.12], clamp);
+  const ws = interpolate(t, [wAt, wAt + 0.4, aAt - 0.1, aAt + 0.3], [0, 1, 1, 0], clamp);
+  const as = interpolate(t, [aAt, aAt + 0.3, glowAt - 0.1, glowAt + 0.4], [0, 1, 1, 0], clamp);
+  const fb = interpolate(t, [fAt, fAt + 0.5, fAt + 1.3], [0, 1, 0], clamp);
+  const dust = interpolate(t, [eAt, eAt + 0.8, eAt + 2.2], [0, 1, 0], clamp);
+  const orbitOn = t >= eAt + 0.6 && t < vanishAt + 0.4;
   return (
     <AbsoluteFill>
       <AbsoluteFill style={{background: 'radial-gradient(60% 38% at 50% 48%, #fff7c4 0%, #ffd84a 38%, #f0a22a 62%, #8a4a1c 100%)'}} />
@@ -282,24 +331,87 @@ export const AvatarScene2: React.FC<{start: number; glowAt: number; end: number}
         <div style={{position: 'absolute', left: 540 - 430, top: 900 - 430, width: 860, height: 860, borderRadius: '50%', background: 'radial-gradient(circle,#fffbe0 0%,#ffe36a 60%,rgba(255,200,60,0) 72%)'}} />
         <Pinnacle />
         <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
-          {/* water spire */}
-          <path d={`M470 1080 Q520 ${1080 - 520 * ws} 540 ${1080 - 640 * ws} Q560 ${1080 - 520 * ws} 610 1080 Z`} fill="#7fd0ff" opacity={0.85 * ws} />
-          {ws > 0.2
-            ? Array.from({length: 6}, (_, k) => (
-                <rect key={k} x={510 + Math.sin(t * 6 + k) * 24} y={1060 - ((t * 400 + k * 90) % (600 * ws))} width={40} height={22} rx={3} fill="#7fd68a" opacity={ws} />
-              ))
+          {/* WATER: tall spire of cash-water */}
+          <g opacity={ws} style={{filter: 'drop-shadow(0 0 14px #7fd0ff)'}}>
+            <path d={`M440 1080 Q500 ${1080 - 560 * ws} 540 ${1080 - 760 * ws} Q580 ${1080 - 560 * ws} 640 1080 Z`} fill="#5cc8ff" opacity={0.85} />
+            {Array.from({length: 9}, (_, k) => (
+              <g key={k} transform={`translate(${520 + Math.sin(t * 6 + k) * 40} ${1060 - ((t * 500 + k * 85) % (760 * Math.max(ws, 0.01)))}) rotate(${Math.sin(t * 4 + k) * 30})`}>
+                <rect x={-26} y={-14} width={52} height={28} rx={3} fill="#7fd68a" stroke="#2c7a3c" strokeWidth={3} />
+              </g>
+            ))}
+          </g>
+          {/* AIR: spinning green rings with coins */}
+          <g opacity={as} style={{filter: 'drop-shadow(0 0 10px #3ddc84)'}}>
+            {Array.from({length: 5}, (_, k) => {
+              const r = ((t * 300 + k * 90) % 450) + 80;
+              return <ellipse key={k} cx={540} cy={900} rx={r} ry={r * 0.45} fill="none" stroke="#3ddc84" strokeWidth={14} strokeDasharray={`${r} ${r * 0.4}`} transform={`rotate(${t * 140 + k * 40} 540 900)`} opacity={1 - r / 560} />;
+            })}
+            {Array.from({length: 10}, (_, k) => {
+              const a = k * 0.63 + t * 5;
+              return <circle key={k} cx={540 + Math.cos(a) * 320} cy={900 + Math.sin(a) * 140} r={18} fill="#ffd34d" stroke="#b8860b" strokeWidth={4} />;
+            })}
+          </g>
+          {/* the Avatar (fades into the wind when he vanishes) */}
+          <g opacity={1 - vanish}>
+            <Figure pose={pose} x={540} y={1060} scale={1.05} color="#1d0e08" eyes={glow} />
+          </g>
+          {vanish > 0
+            ? Array.from({length: 40}, (_, k) => {
+                const a = rand(k) * Math.PI * 2;
+                const d = vanish * (200 + rand(k + 9) * 500);
+                return <circle key={k} cx={540 + Math.cos(a) * d + vanish * 300} cy={840 + Math.sin(a) * d * 0.6 - vanish * 200} r={10 + rand(k + 4) * 14} fill="#1d0e08" opacity={(1 - vanish) * 0.9} />;
+              })
             : null}
-          <Figure pose={pose} x={540} y={1060} scale={1.05} color="#1d0e08" eyes={glow} />
-          {/* fire burst */}
-          {fb > 0 ? [0, 1, 2, 3].map((k) => <circle key={k} cx={700 + k * 40} cy={880 - k * 10} r={(60 + k * 50) * fb} fill={['#fff0a0', '#ffc23a', '#ff7a1f', '#d4380f'][k]} opacity={0.9 - k * 0.15} />) : null}
-          {/* earth dust */}
+          {/* FIRE: big burst with flying credit cards */}
+          {fb > 0 ? (
+            <g style={{filter: 'drop-shadow(0 0 20px #ff7a1f)'}}>
+              {[0, 1, 2, 3, 4].map((k) => (
+                <circle key={k} cx={720 + k * 34} cy={880 - k * 8} r={(70 + k * 55) * fb} fill={['#fff0a0', '#ffd23a', '#ff9a1f', '#ff6a1a', '#d4380f'][k]} opacity={0.95 - k * 0.13} />
+              ))}
+              {Array.from({length: 6}, (_, k) => (
+                <g key={k} transform={`translate(${760 + Math.cos(-0.9 + k * 0.35) * 380 * fb} ${880 + Math.sin(-0.9 + k * 0.35) * 380 * fb}) rotate(${fb * 400 + k * 50})`}>
+                  <rect x={-40} y={-26} width={80} height={52} rx={7} fill="#ff9b3d" stroke="#7a2a0c" strokeWidth={4} />
+                  <rect x={-40} y={-13} width={80} height={10} fill="#7a2a0c" />
+                </g>
+              ))}
+            </g>
+          ) : null}
+          {/* EARTH: rocks and little houses blast out with dust */}
           {dust > 0
-            ? Array.from({length: 10}, (_, k) => (
-                <circle key={k} cx={540 + (k - 4.5) * 90 * dust} cy={1090 - rand(k) * 80 * dust} r={(50 + rand(k + 3) * 60) * dust} fill="#a77a52" opacity={0.75 * (1 - dust * 0.6)} />
-              ))
+            ? Array.from({length: 14}, (_, k) => {
+                const a = Math.PI + (k / 13) * Math.PI;
+                const d = dust * (220 + rand(k) * 260);
+                return k % 3 === 0 ? (
+                  <g key={k} transform={`translate(${540 + Math.cos(a) * d} ${1060 + Math.sin(a) * d * 0.8}) rotate(${dust * 200})`}>
+                    <path d="M-40 26 V-6 L0 -40 L40 -6 V26 Z" fill="#c9a37a" stroke="#4a2a1c" strokeWidth={6} />
+                  </g>
+                ) : (
+                  <circle key={k} cx={540 + Math.cos(a) * d} cy={1070 + Math.sin(a) * d * 0.6} r={(40 + rand(k + 3) * 60) * dust} fill="#a77a52" opacity={0.8} />
+                );
+              })
             : null}
         </svg>
+        {/* element tiles pop on each beat, then orbit together */}
+        {!orbitOn ? (
+          <>
+            {t < aAt + 0.2 ? <ElementTile kind="work" at={wAt} x={300} y={620} /> : null}
+            {t >= aAt && t < glowAt + 0.4 ? <ElementTile kind="down" at={aAt} x={790} y={620} /> : null}
+            {t >= fAt && t < eAt + 0.2 ? <ElementTile kind="credit" at={fAt} x={820} y={640} /> : null}
+            {t >= eAt ? <ElementTile kind="home" at={eAt} x={270} y={700} /> : null}
+          </>
+        ) : (
+          (['work', 'down', 'credit', 'home'] as IconKind[]).map((k, i) => {
+            const a = (t - eAt) * 1.4 + (i * Math.PI) / 2;
+            const fly = vanish; // scatter when he vanishes
+            return (
+              <div key={k} style={{position: 'absolute', left: 540 + Math.cos(a) * (280 + fly * 600) - 60, top: 800 + Math.sin(a) * (120 + fly * 500) - 60, opacity: 1 - fly}}>
+                <ElementTile kind={k} at={eAt} x={60} y={60} size={120} />
+              </div>
+            );
+          })
+        )}
       </AbsoluteFill>
+      <AbsoluteFill style={{background: '#1a0a04', opacity: dim}} />
     </AbsoluteFill>
   );
 };
@@ -341,17 +453,17 @@ export const IceScene: React.FC<{start: number; wakeAt: number}> = ({start, wake
           <div
             style={{
               position: 'absolute',
-              left: 540 - 330,
-              top: 880 - 330,
-              width: 660,
-              height: 660,
+              left: 540 - 450,
+              top: 820 - 450,
+              width: 900,
+              height: 900,
               borderRadius: '50%',
               background: 'radial-gradient(circle at 45% 40%, #ffffff 0%, #c8f1ff 30%, #5cc8f5 65%, #1f7fd0 100%)',
               boxShadow: `0 0 ${120 * pulse}px ${40 * pulse}px rgba(130,215,255,0.7)`,
             }}
           />
-          <div style={{position: 'absolute', left: 540 - 110, top: 760, opacity: 0.55, filter: 'brightness(0) invert(1) blur(1px)'}}>
-            <CartoonAlex w={220} pose="meditate" blink />
+          <div style={{position: 'absolute', left: 540 - 160, top: 620, opacity: 0.55, filter: 'brightness(0) invert(1) blur(1px)'}}>
+            <CartoonAlex w={320} pose="meditate" blink />
           </div>
           {/* sea */}
           <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
@@ -360,7 +472,7 @@ export const IceScene: React.FC<{start: number; wakeAt: number}> = ({start, wake
               <path key={k} d={`M0 ${1090 + k * 70} ${Array.from({length: 9}, (_, j) => `Q${j * 130 + 65} ${1076 + k * 70 + Math.sin(t * 2 + j + k) * 8} ${j * 130 + 130} ${1090 + k * 70}`).join(' ')}`} stroke="#3f7fc0" strokeWidth={5} fill="none" opacity={0.6} />
             ))}
             <path d="M540 1060 L540 1060" />
-            <ellipse cx={540} cy={1066} rx={300} ry={26} fill="#bfe9ff" opacity={0.35 * pulse} />
+            <ellipse cx={540} cy={1066} rx={420} ry={30} fill="#bfe9ff" opacity={0.35 * pulse} />
             {/* ice floe with the two in parkas (seen from behind) */}
             <path d="M-40 1640 L120 1560 L420 1570 L520 1630 L470 1700 L-40 1720 Z" fill="#d9eefb" />
             <g fill="#0e2340">
@@ -382,7 +494,7 @@ export const IceScene: React.FC<{start: number; wakeAt: number}> = ({start, wake
         })}
       </svg>
       <AbsoluteFill style={{scale: z}}>
-        <div style={{position: 'absolute', left: 540 - 380, top: 900 - 420, width: 760, height: 840, borderRadius: '48%', background: 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(190,236,255,0.6) 50%, rgba(120,200,255,0) 72%)', opacity: 1 - crack}} />
+        <div style={{position: 'absolute', left: 540 - 470, top: 880 - 520, width: 940, height: 1040, borderRadius: '48%', background: 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(190,236,255,0.6) 50%, rgba(120,200,255,0) 72%)', opacity: 1 - crack}} />
         <div style={{position: 'absolute', left: 540 - 220, top: 600 + Math.sin(t * 2) * 10, filter: awake ? undefined : 'saturate(0) brightness(1.8) sepia(1) hue-rotate(165deg) saturate(2.4)', opacity: awake ? 1 : 0.9}}>
           <CartoonAlex w={440} pose="meditate" blink={false} smile={0.4} eyesGlow={awake ? 0 : 1} />
         </div>
@@ -394,8 +506,8 @@ export const IceScene: React.FC<{start: number; wakeAt: number}> = ({start, wake
             ))
           : null}
       </AbsoluteFill>
-      <div style={{position: 'absolute', top: 1230, width: '100%', display: 'flex', justifyContent: 'center', opacity: nameIn, scale: 0.8 + nameIn * 0.2}}>
-        <div style={{fontFamily: brush, fontSize: 96, color: '#123a66', textShadow: '0 0 20px #fff, 0 0 40px #fff'}}>АЛЕКС</div>
+      <div style={{position: 'absolute', top: 380, width: '100%', display: 'flex', justifyContent: 'center', opacity: nameIn, scale: 0.8 + nameIn * 0.2}}>
+        <div style={{fontFamily: brush, fontSize: 110, color: '#123a66', textShadow: '0 0 20px #fff, 0 0 40px #fff'}}>АЛЕКС</div>
       </div>
     </AbsoluteFill>
   );
@@ -428,7 +540,7 @@ export const CliffScene: React.FC<{start: number; glowAt: number; end: number}> 
           <path d="M120 1920 L180 1430 L300 1340 L520 1320 L700 1360 L780 1480 L820 1920 Z" fill="#3d3a3f" />
           <path d="M180 1430 L300 1340 L520 1320 L700 1360 L600 1390 L420 1370 Z" fill="#57525a" />
         </svg>
-        <div style={{position: 'absolute', left: 450 - 210, top: 690}}>
+        <div style={{position: 'absolute', left: 450 - 210, top: 410}}>
           <CartoonAlex w={420} pose="crossed" smile={0.7} eyesGlow={glow} />
         </div>
       </AbsoluteFill>
@@ -543,6 +655,9 @@ export const NorthSearch: React.FC<{start: number; end: number}> = ({start, end}
           ))}
         </svg>
       </AbsoluteFill>
+      <div style={{position: 'absolute', top: 300, width: '100%', textAlign: 'center', fontFamily: round, fontWeight: 900, fontSize: 104, color: '#e9f6ff', letterSpacing: '0.24em', opacity: ease(t, start + 0.3, 0.8), textShadow: '0 0 30px #4dffb0'}}>
+        YUKON
+      </div>
       {/* the two searchers in parkas with flashlights */}
       <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
         {[0, 1].map((k) => {

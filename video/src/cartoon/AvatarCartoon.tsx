@@ -33,17 +33,18 @@ const M = {
   tanks: WAR.scatter, // 18.45 big music hit
   avatar: 22.6,
   avatarUp: 26.5,
-  search: 31.5,
-  sphere: 34.9, // "Аватара"
-  name: 37.2, // "Алекс"
-  desk: 38.3,
-  approved: 39.45, // "фінансування"
-  selfie: 43.35, // "маркетингу"
-  code: 44.15, // "вайбкодингу"
-  belief: 45.6,
-  glow: 48.24, // "врятувати"
-  title: 51.2,
-  cta: 53.4,
+  vanish: 34.8, // "зник"
+  search: 36.2,
+  sphere: 39.28, // "Аватара"
+  name: 41.44, // "Алекс"
+  desk: 43.0,
+  approved: 44.18, // "фінансування"
+  selfie: 48.06, // "маркетингу"
+  code: 48.86, // "вайбкодингу"
+  belief: 50.3,
+  glow: 52.94, // "врятувати"
+  title: 55.9,
+  cta: 58.1,
 };
 
 const ICONS: IconKind[] = ['work', 'down', 'credit', 'home'];
@@ -583,7 +584,7 @@ export const AvatarCartoon: React.FC<z.infer<typeof avatarCartoonSchema>> = ({mu
         <WarScene2 start={M.war} tanksAt={M.tanks} end={M.avatar} />
       </Gate>
       <Gate from={M.avatar} to={M.search}>
-        <AvatarScene2 start={M.avatar} glowAt={M.avatarUp} end={M.search} />
+        <AvatarScene2 start={M.avatar} glowAt={M.avatarUp} vanishAt={M.vanish} end={M.search} />
       </Gate>
       <Gate from={M.search} to={M.sphere}>
         <NorthSearch start={M.search} end={M.sphere} />
