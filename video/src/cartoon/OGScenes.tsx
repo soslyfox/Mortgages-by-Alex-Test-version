@@ -317,38 +317,84 @@ const Parka: React.FC<{x: number; s: number; flip?: boolean}> = ({x, s, flip}) =
 
 export const IceScene: React.FC<{start: number; wakeAt: number}> = ({start, wakeAt}) => {
   const t = useT();
+  const close = t >= start + 1.2; // wide shot of the glowing iceberg, then the close-up
   const awake = t >= wakeAt;
-  const crack = ease(t, wakeAt, 0.4);
-  const nameIn = ease(t, wakeAt, 0.3);
-  const zoom = interpolate(t, [start, wakeAt + 1], [1.15, 1.0], {...clamp, easing: EASE_OUT});
+  const crack = ease(t, wakeAt, 0.45);
+  const nameIn = ease(t, wakeAt + 0.1, 0.3);
+  const pulse = 0.85 + 0.15 * Math.sin(t * 5);
+  if (!close) {
+    const z = interpolate(t, [start, start + 1.2], [1.0, 1.12], clamp);
+    return (
+      <AbsoluteFill style={{background: 'linear-gradient(180deg,#06132b 0%, #0c2550 50%, #0a1d3c 100%)'}}>
+        <AbsoluteFill style={{scale: z, transformOrigin: '50% 45%'}}>
+          <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+            {Array.from({length: 60}, (_, k) => (
+              <circle key={k} cx={rand(k) * 1080} cy={rand(k + 50) * 700} r={1.5 + rand(k + 3) * 2} fill="#fff" opacity={0.6} />
+            ))}
+            {/* light rays from the iceberg */}
+            {Array.from({length: 10}, (_, k) => {
+              const a = (k / 10) * Math.PI * 2 + t * 0.2;
+              return <path key={k} d={`M540 880 L${540 + Math.cos(a) * 900} ${880 + Math.sin(a) * 900} L${540 + Math.cos(a + 0.1) * 900} ${880 + Math.sin(a + 0.1) * 900} Z`} fill="#9fe3ff" opacity={0.08 * pulse} />;
+            })}
+          </svg>
+          {/* glowing round iceberg, half in the water */}
+          <div
+            style={{
+              position: 'absolute',
+              left: 540 - 330,
+              top: 880 - 330,
+              width: 660,
+              height: 660,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle at 45% 40%, #ffffff 0%, #c8f1ff 30%, #5cc8f5 65%, #1f7fd0 100%)',
+              boxShadow: `0 0 ${120 * pulse}px ${40 * pulse}px rgba(130,215,255,0.7)`,
+            }}
+          />
+          <div style={{position: 'absolute', left: 540 - 110, top: 760, opacity: 0.55, filter: 'brightness(0) invert(1) blur(1px)'}}>
+            <CartoonAlex w={220} pose="meditate" blink />
+          </div>
+          {/* sea */}
+          <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+            <rect x={0} y={1060} width={1080} height={860} fill="#0b2a52" />
+            {Array.from({length: 7}, (_, k) => (
+              <path key={k} d={`M0 ${1090 + k * 70} ${Array.from({length: 9}, (_, j) => `Q${j * 130 + 65} ${1076 + k * 70 + Math.sin(t * 2 + j + k) * 8} ${j * 130 + 130} ${1090 + k * 70}`).join(' ')}`} stroke="#3f7fc0" strokeWidth={5} fill="none" opacity={0.6} />
+            ))}
+            <path d="M540 1060 L540 1060" />
+            <ellipse cx={540} cy={1066} rx={300} ry={26} fill="#bfe9ff" opacity={0.35 * pulse} />
+            {/* ice floe with the two in parkas (seen from behind) */}
+            <path d="M-40 1640 L120 1560 L420 1570 L520 1630 L470 1700 L-40 1720 Z" fill="#d9eefb" />
+            <g fill="#0e2340">
+              <path d="M150 1600 Q140 1460 210 1420 Q250 1400 290 1420 Q360 1460 350 1600 Z" />
+              <path d="M330 1610 Q322 1490 380 1456 Q412 1440 444 1456 Q500 1490 492 1610 Z" />
+            </g>
+          </svg>
+        </AbsoluteFill>
+      </AbsoluteFill>
+    );
+  }
+  const z = interpolate(t, [start + 1.2, wakeAt + 1], [1.15, 1.0], {...clamp, easing: EASE_OUT});
   return (
-    <AbsoluteFill style={{background: 'linear-gradient(160deg,#bfe9ff 0%, #5cc0f2 45%, #1e7fc8 100%)'}}>
-      {/* streaks */}
+    <AbsoluteFill style={{background: 'linear-gradient(160deg,#d6f3ff 0%, #6fcdf6 40%, #2a8fd8 100%)'}}>
       <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
-        {Array.from({length: 14}, (_, k) => {
-          const y = ((k * 160 + (t - start) * 260) % 2200) - 200;
-          return <path key={k} d={`M-100 ${y} Q540 ${y - 120} 1180 ${y - 40}`} stroke="#fff" strokeWidth={10 + (k % 3) * 8} fill="none" opacity={0.35} strokeLinecap="round" />;
+        {Array.from({length: 16}, (_, k) => {
+          const y = ((k * 150 + (t - start) * 320) % 2200) - 200;
+          return <path key={k} d={`M-100 ${y} Q540 ${y - 140} 1180 ${y - 50}`} stroke="#fff" strokeWidth={14 + (k % 3) * 10} fill="none" opacity={0.4} strokeLinecap="round" />;
         })}
       </svg>
-      <AbsoluteFill style={{scale: zoom}}>
-        {/* glowing ice block */}
-        <svg width={1080} height={1920} style={{position: 'absolute', inset: 0, filter: 'drop-shadow(0 0 60px #e6f8ff)'}}>
-          <path d="M200 1250 L170 760 L330 520 L560 430 L800 540 L900 800 L870 1260 L560 1360 Z" fill="#dff6ff" opacity={0.78 * (1 - crack)} stroke="#fff" strokeWidth={8} />
-          <path d="M330 520 L420 800 L560 430 M800 540 L700 860 L900 800 M420 800 L560 1360 L700 860" stroke="#9fdcff" strokeWidth={5} fill="none" opacity={1 - crack} />
-        </svg>
-        <div style={{position: 'absolute', left: 540 - 200, top: 640 + Math.sin(t * 2) * 10, filter: awake ? undefined : 'saturate(0) brightness(1.7) sepia(1) hue-rotate(160deg) saturate(2.2)', opacity: awake ? 1 : 0.85}}>
-          <CartoonAlex w={400} pose="meditate" blink={!awake} smile={0.4} eyesGlow={awake ? 0 : 0.9} />
+      <AbsoluteFill style={{scale: z}}>
+        <div style={{position: 'absolute', left: 540 - 380, top: 900 - 420, width: 760, height: 840, borderRadius: '48%', background: 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(190,236,255,0.6) 50%, rgba(120,200,255,0) 72%)', opacity: 1 - crack}} />
+        <div style={{position: 'absolute', left: 540 - 220, top: 600 + Math.sin(t * 2) * 10, filter: awake ? undefined : 'saturate(0) brightness(1.8) sepia(1) hue-rotate(165deg) saturate(2.4)', opacity: awake ? 1 : 0.9}}>
+          <CartoonAlex w={440} pose="meditate" blink={false} smile={0.4} eyesGlow={awake ? 0 : 1} />
         </div>
         {crack > 0
-          ? Array.from({length: 12}, (_, k) => (
-              <path key={k} d="M0 0 L40 -20 L30 30 Z" fill="#e9f8ff" style={{position: 'absolute'}} transform={`translate(${540 + Math.cos(k) * 400 * crack} ${900 + Math.sin(k * 1.7) * 500 * crack}) rotate(${k * 40 + crack * 200})`} />
+          ? Array.from({length: 14}, (_, k) => (
+              <svg key={k} width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+                <path d="M0 0 L50 -24 L36 34 Z" fill="#effbff" transform={`translate(${540 + Math.cos(k * 0.9) * 460 * crack} ${900 + Math.sin(k * 1.7) * 560 * crack}) rotate(${k * 40 + crack * 220})`} opacity={1 - crack * 0.6} />
+              </svg>
             ))
           : null}
       </AbsoluteFill>
-      <YukonSign x={60} y={300} s={0.75} />
-      <Parka x={170} s={1.2} />
-      <Parka x={920} s={1.05} flip />
-      <div style={{position: 'absolute', top: 1220, width: '100%', display: 'flex', justifyContent: 'center', opacity: nameIn, scale: 0.8 + nameIn * 0.2}}>
+      <div style={{position: 'absolute', top: 1230, width: '100%', display: 'flex', justifyContent: 'center', opacity: nameIn, scale: 0.8 + nameIn * 0.2}}>
         <div style={{fontFamily: brush, fontSize: 96, color: '#123a66', textShadow: '0 0 20px #fff, 0 0 40px #fff'}}>АЛЕКС</div>
       </div>
     </AbsoluteFill>
@@ -512,7 +558,6 @@ export const NorthSearch: React.FC<{start: number; end: number}> = ({start, end}
           );
         })}
       </svg>
-      <YukonSign x={720} y={1180} s={0.9} />
     </AbsoluteFill>
   );
 };
