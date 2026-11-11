@@ -8,7 +8,7 @@ import sys, wave
 import numpy as np
 
 SR = 48000
-DUR = 53.5
+DUR = 58.5
 N = int(SR * DUR)
 rng = np.random.default_rng(42)
 mix = np.zeros((N, 2), np.float32)
@@ -98,8 +98,8 @@ PENTA = [D, D * 9 / 8, D * 5 / 4, D * 3 / 2, D * 5 / 3, D * 2, D * 9 / 4, D * 5 
 # drones
 drone(0, 15.2, [73.42, 110.0], 0.22, 3)
 drone(15.0, 23.4, [69.3, 73.42, 103.8], 0.24, 1)          # war: darker, dissonant
-drone(23.0, 31.2, [73.42, 110.0, 146.8, 220.0], 0.22, 2)    # avatar: fuller
-drone(31.0, DUR, [73.42, 110.0, 164.8], 0.2, 3)
+drone(23.0, 31.8, [73.42, 110.0, 146.8, 220.0], 0.22, 2)    # avatar: fuller
+drone(31.4, DUR, [73.42, 110.0, 164.8], 0.2, 3)
 
 # elements: four gongs
 for i, (t, f) in enumerate(zip([0.6, 2.6, 4.6, 6.6], [110, 98, 82.4, 123.5])):
@@ -117,20 +117,20 @@ for k, t in enumerate(war_hits):
 # avatar: rising swell + gong when eyes glow
 swell_noise(23.0, 26.5, 0.35)
 add(gong(73.42, 7), 26.5, 0.8)
-for k, t in enumerate(np.arange(27.0, 30.8, 0.48)):
+for k, t in enumerate(np.arange(27.0, 31.2, 0.48)):
     add(pluck(PENTA[[5, 7, 8, 7, 5, 3, 5, 6][k % 8]], bright=0.6), t, 0.45, pan=np.cos(k) * 0.4)
 
 # found Alex: warm melody
 melody = [(31.4, 3), (32.0, 4), (32.6, 5), (33.5, 7), (34.6, 5), (35.4, 4), (36.6, 2), (37.2, 3),
           (38.2, 4), (39.2, 3), (40.4, 2), (41.4, 0), (42.4, 3)]
-for t, deg in melody:
-    add(pluck(PENTA[deg], 3.0, 0.55), t, 0.55, pan=0.1)
+for t, deg in melody:  # stretched over the found + skills section (31.8 .. 45.0)
+    add(pluck(PENTA[deg], 3.0, 0.55), 31.8 + (t - 31.4) * 13.2 / 11.0, 0.55, pan=0.1)
 
 # belief + title
-for k, t in enumerate(np.arange(43.0, 46.4, 0.42)):
-    add(pluck(PENTA[[3, 5, 7, 8][k % 4]], bright=0.6), t, 0.4 + k * 0.03)
-add(taiko(f0=50), 46.55, 1.0)
-add(gong(65.4, 7), 46.6, 1.0)
+for k, t in enumerate(np.arange(45.6, 51.2, 0.42)):
+    add(pluck(PENTA[[3, 5, 7, 8][k % 4]], bright=0.6), t, min(0.75, 0.4 + k * 0.025))
+add(taiko(f0=50), 51.35, 1.0)
+add(gong(65.4, 7), 51.4, 1.0)
 
 # master: soft limiter + normalise
 peak = np.max(np.abs(mix)) + 1e-9

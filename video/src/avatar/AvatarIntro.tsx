@@ -14,10 +14,10 @@ import {z} from 'zod';
 import {brush, serif} from '../theme';
 import {clamp, EASE_IN_OUT, EASE_OUT, rand} from '../anim';
 import {Emblem, INK, InkPath, PAPER, Parchment, useFadeInOut} from './Ink';
-import {AVATAR, DURATION, ELEMENTS, FOUND, NARRATION, SCENES, TITLE, WAR} from './timeline';
+import {AVATAR, BELIEF, DURATION, ELEMENTS, FOUND, NARRATION, SCENES, TITLE, VOICE, WAR} from './timeline';
 
 export const avatarIntroSchema = z.object({
-  voiceover: z.string(), // file in public/, '' = text-only narration
+  voiceover: z.string(), // folder in public/ with line-*.mp3, '' = text-only narration
   scoreVolume: z.number().min(0).max(1),
 });
 
@@ -42,7 +42,7 @@ const CY = 760;
 const Background: React.FC = () => {
   const t = useT();
   const red = interpolate(t, [17.6, 19.2, 22.6, 23.2], [0, 1, 1, 0], clamp);
-  const dark = interpolate(t, [22.8, 23.6, 30.4, 31.2], [0, 0.8, 0.8, 0], clamp);
+  const dark = interpolate(t, [22.8, 23.6, SCENES.avatar[1] - 0.8, SCENES.avatar[1]], [0, 0.8, 0.8, 0], clamp);
   return <Parchment red={red} dark={dark} />;
 };
 
@@ -267,10 +267,10 @@ const AvatarScene: React.FC = () => {
   const o = win(t, SCENES.avatar[0] + 0.2, SCENES.avatar[1] - 0.2, 0.5);
   const rise = ease(t, AVATAR.silhouette, 2.5);
   const eyes = ease(t, AVATAR.eyes, 0.5);
-  const H = 1000;
+  const H = 880;
   const W = (IMG_W / IMG_H) * H;
   const left = CX - W / 2;
-  const top = 300 + (1 - rise) * 80;
+  const top = 280 + (1 - rise) * 80;
   const k = H / IMG_H;
   return (
     <AbsoluteFill style={{opacity: o}}>
@@ -345,11 +345,11 @@ const Found: React.FC = () => {
   const o = win(t, SCENES.found[0] + 0.1, SCENES.belief[1], 0.5);
   const reveal = ease(t, FOUND.portrait, 2.2, Easing.inOut(Easing.quad));
   const nameIn = win(t, FOUND.name, FOUND.skills - 0.2, 0.4);
-  const skillsIn = win(t, FOUND.skills, 42.9, 0.4);
-  const push = interpolate(t, [31, 46.5], [1, 1.08], clamp);
+  const skillsIn = win(t, FOUND.skills, FOUND.skillsEnd, 0.4);
+  const push = interpolate(t, [SCENES.found[0], BELIEF.to], [1, 1.08], clamp);
   const H = 860;
   const W = (IMG_W / IMG_H) * H;
-  const harmony = win(t, 43.0, 46.5, 0.5);
+  const harmony = win(t, BELIEF.from, BELIEF.to, 0.5);
   return (
     <AbsoluteFill style={{opacity: o}}>
       <div
@@ -438,7 +438,7 @@ const Found: React.FC = () => {
 
       {/* harmony restored: emblems around the portrait */}
       {ELEMENTS.map((el, i) => {
-        const a = ((t - 43) * 18 + i * 90 - 45) * (Math.PI / 180);
+        const a = ((t - BELIEF.from) * 18 + i * 90 - 45) * (Math.PI / 180);
         return (
           <div
             key={el.key}
@@ -450,7 +450,7 @@ const Found: React.FC = () => {
               zIndex: Math.sin(a) > 0 ? 2 : 0,
             }}
           >
-            <Emblem kind={el.key} color={el.color} size={120} p={ease(t, 43.1 + i * 0.25, 0.8)} />
+            <Emblem kind={el.key} color={el.color} size={120} p={ease(t, BELIEF.from + 0.1 + i * 0.25, 0.8)} />
           </div>
         );
       })}
@@ -560,9 +560,9 @@ const NarrationLine: React.FC<{text: string; onDark: boolean}> = ({text, onDark}
         fontWeight: 700,
         fontSize: text.length > 90 ? 46 : 52,
         lineHeight: 1.22,
-        color: onDark ? PAPER : INK,
+        color: onDark ? '#fbf1da' : INK,
         textShadow: onDark
-          ? '0 2px 16px rgba(0,0,0,0.9)'
+          ? '0 0 3px rgba(0,0,0,1), 0 2px 12px rgba(0,0,0,0.85)'
           : '0 0 14px rgba(233,214,171,1), 0 0 26px rgba(233,214,171,0.9)',
         opacity: o,
         translate: `0px ${(1 - o) * 12}px`,
@@ -614,13 +614,13 @@ export const AvatarIntro: React.FC<z.infer<typeof avatarIntroSchema>> = ({voiceo
         <Gate from={18.0} to={23.4}>
           <Stamps />
         </Gate>
-        <Gate from={22.6} to={31.6}>
+        <Gate from={22.6} to={SCENES.avatar[1] + 0.6}>
           <AvatarScene />
         </Gate>
-        <Gate from={30.5} to={47.0}>
+        <Gate from={SCENES.found[0] - 0.6} to={BELIEF.to + 0.6}>
           <Found />
         </Gate>
-        <Gate from={46.2} to={DURATION + 1}>
+        <Gate from={SCENES.title[0] - 0.3} to={DURATION + 1}>
           <Title />
         </Gate>
       </Camera>
@@ -631,8 +631,20 @@ export const AvatarIntro: React.FC<z.infer<typeof avatarIntroSchema>> = ({voiceo
         </Sequence>
       ))}
 
-      <Audio src={staticFile('audio/avatar-score.mp3')} volume={voiceover ? scoreVolume * 0.55 : scoreVolume} />
-      {voiceover ? <Audio src={staticFile(voiceover)} /> : null}
+      {scoreVolume > 0 ? (
+        <Audio src={staticFile('audio/avatar-score.mp3')} volume={voiceover ? scoreVolume * 0.5 : scoreVolume} />
+      ) : null}
+      {voiceover
+        ? VOICE.map((v, i) => (
+            <Sequence key={`vo${i}`} from={f(v.at)} layout="none" name={`voice ${i}`}>
+              <Audio
+                src={staticFile(`${voiceover}/${v.file}`)}
+                trimBefore={v.trim ? f(v.trim[0]) : undefined}
+                trimAfter={v.trim ? f(v.trim[1]) : undefined}
+              />
+            </Sequence>
+          ))
+        : null}
       {SFX.map(([file, at, vol], i) => (
         <Sequence key={i} from={f(at)} layout="none" name={`sfx:${file}`}>
           <Audio src={staticFile(`audio/${file}`)} volume={vol} />
