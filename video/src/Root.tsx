@@ -8,10 +8,21 @@ import {
 } from './TalkingHeadReel';
 import {FPS} from './theme';
 import {ALEX_EP1_FRAMES, AlexReel, alexReelSchema} from './alex/AlexReel';
+import {AVATAR_INTRO_FRAMES, AvatarIntro, avatarIntroSchema} from './avatar/AvatarIntro';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id="AvatarMortgageIntro"
+        component={AvatarIntro}
+        schema={avatarIntroSchema}
+        durationInFrames={AVATAR_INTRO_FRAMES}
+        fps={FPS}
+        width={1080}
+        height={1920}
+        defaultProps={{voiceover: '', scoreVolume: 0.9}}
+      />
       <Composition
         id="AlexEp1BankMortgage"
         component={AlexReel}

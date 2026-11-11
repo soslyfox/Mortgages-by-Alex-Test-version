@@ -52,3 +52,7 @@ export const FPS = 30;
 
 // Condensed heavy font for Alex's own subtitle style (white fill + black outline).
 export const condensed = load('Oswald', 'oswald', ['600', '700']);
+
+// Avatar-style intro: elegant serif narration + rough display caps.
+export const serif = load('Cormorant Garamond', 'cormorant-garamond', ['500', '600', '700']);
+export const brush = load('Ruslan Display', 'ruslan-display', ['400']);
