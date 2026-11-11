@@ -69,7 +69,7 @@ export const NARRATION: {from: number; to: number; text: string}[] = [
 
 /** Seconds of each voice clip (for ducking the music under the narration). */
 export const VOICE_LEN: Record<string, number> = {
-  'line-1.mp3': 4.8, 'line-2.mp3': 5.68, 'line-3.mp3': 8.56, 'line-4.mp3': 6.32,
+  'line-1.mp3': 4.8, 'line-2.mp3': 4.48, 'line-3.mp3': 8.56, 'line-4.mp3': 6.32,
   'line-5.mp3': 6.96, 'line-6.mp3': 5.2,
 };
 export const SPEECH: [number, number][] = VOICE.map((v) => [

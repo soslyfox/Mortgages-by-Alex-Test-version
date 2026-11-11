@@ -532,7 +532,7 @@ type W = {w: string; s: number};
 const buildWords = (): W[][] => {
   const lines = alignment as unknown as {i: number; words: [string, number][]}[];
   const pages: W[][] = [];
-  const fix = (w: string) => (w === 'Ка-У-А-Е-Те' ? 'CUAET' : w);
+  const fix = (w: string) => (w === 'Ка-У-А-Е-Те' || w === 'Куает' ? 'CUAET' : w);
   VOICE.forEach((v) => {
     const li = Number(v.file.match(/line-(\d)/)![1]);
     const words = lines[li].words.filter(([, s]) => (v.trim ? s >= v.trim[0] - 0.01 && s < v.trim[1] : true));
