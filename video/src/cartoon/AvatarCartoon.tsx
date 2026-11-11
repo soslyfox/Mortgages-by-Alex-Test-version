@@ -472,45 +472,53 @@ const SkillsScene: React.FC = () => {
   }
   // head-banging on the desk over a post with miserable reach
   const u = t - M.learn;
-  const P = 0.85;
-  const ph = u < 0.3 ? 0 : ((u - 0.3) % P) / P; // 0..1 per bang
-  const down = ph < 0.35 ? Math.pow(ph / 0.35, 2) : 1 - (ph - 0.35) / 0.65; // fast down, slow up
-  const hit = ph > 0.3 && ph < 0.55 && u > 0.3;
+  // one bang: stare at the numbers, then face-plant and stay down
+  const HIT = 0.9;
+  const down = u < HIT - 0.25 ? 0 : u < HIT ? Math.pow((u - (HIT - 0.25)) / 0.25, 2) : 1 - 0.06 * Math.max(0, Math.sin((u - HIT) * 20)) * Math.exp(-(u - HIT) * 6);
+  const hit = u >= HIT && u < HIT + 0.45;
   const shake = hit ? Math.sin(t * 90) * 10 : 0;
-  const reach = Math.max(3, 12 - Math.floor(u * 2));
+  const reach = u < 0.6 ? 12 : 9;
   return (
     <AbsoluteFill style={{translate: `${shake}px 0px`}}>
       <Paper top="#2a2f45" bottom="#141826" grain={0.1} />
       {/* Alex behind the desk */}
-      <div style={{position: 'absolute', left: 300 - 230, top: 470 + down * 330, rotate: `${down * 10}deg`, transformOrigin: '50% 80%'}}>
+      <div style={{position: 'absolute', left: 30, top: 470 + down * 330, rotate: `${down * 12}deg`, transformOrigin: '50% 80%'}}>
         <CartoonAlex w={460} pose="desk" smile={-0.6} sweat={1} blink={down > 0.6} />
       </div>
       <div style={{position: 'absolute', left: 0, top: 1180, width: 1080, height: 740, background: '#5a3a26'}} />
       <div style={{position: 'absolute', left: 0, top: 1180, width: 1080, height: 24, background: '#7a4f33'}} />
-      {/* monitor with a sad social post */}
-      <div style={{position: 'absolute', left: 560, top: 700, width: 460, height: 470, background: '#1b1e25', borderRadius: 18, padding: 14, boxSizing: 'border-box', rotate: '-3deg'}}>
-        <div style={{width: '100%', height: '100%', background: '#fff', borderRadius: 8, padding: 18, boxSizing: 'border-box', fontFamily: round}}>
+      {/* computer: monitor on a stand with the sad post, keyboard in front */}
+      <div style={{position: 'absolute', left: 745, top: 1040, width: 40, height: 140, background: '#3a3f4a'}} />
+      <div style={{position: 'absolute', left: 675, top: 1166, width: 180, height: 18, borderRadius: 9, background: '#3a3f4a'}} />
+      <div style={{position: 'absolute', left: 480, top: 580, width: 570, height: 480, background: '#1b1e25', borderRadius: 22, padding: 18, boxSizing: 'border-box', boxShadow: '0 20px 40px rgba(0,0,0,0.5)'}}>
+        <div style={{width: '100%', height: '100%', background: '#fff', borderRadius: 8, padding: 22, boxSizing: 'border-box', fontFamily: round}}>
           <div style={{display: 'flex', alignItems: 'center', gap: 12}}>
-            <div style={{width: 44, height: 44, borderRadius: '50%', background: '#0b6b3a'}} />
-            <div style={{fontWeight: 900, fontSize: 24, color: '#222'}}>oleksii.harin</div>
+            <div style={{width: 46, height: 46, borderRadius: '50%', background: '#0b6b3a'}} />
+            <div style={{fontWeight: 900, fontSize: 26, color: '#222'}}>oleksii.harin</div>
           </div>
-          <div style={{marginTop: 12, height: 150, borderRadius: 8, background: 'linear-gradient(135deg,#ffd6a0,#ff9a6b)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 26, color: '#5a2a10', textAlign: 'center', padding: 10}}>
+          <div style={{marginTop: 12, height: 140, borderRadius: 8, background: 'linear-gradient(135deg,#ffd6a0,#ff9a6b)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 30, color: '#5a2a10'}}>
             5 порад по іпотеці
           </div>
-          <div style={{marginTop: 14, fontWeight: 900, fontSize: 26, color: '#222'}}>♡ 0 &nbsp;&nbsp; 💬 0</div>
-          <div style={{marginTop: 8, fontWeight: 800, fontSize: 24, color: '#666'}}>Охоплення:</div>
-          <div style={{fontWeight: 900, fontSize: 60, color: '#e0242b', lineHeight: 1}}>{reach}</div>
-          <svg width={400} height={60} style={{marginTop: 6}}>
-            <polyline points="0,8 80,14 160,26 240,34 320,46 400,56" fill="none" stroke="#e0242b" strokeWidth={6} />
-          </svg>
+          <div style={{display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 12}}>
+            <div>
+              <div style={{fontWeight: 900, fontSize: 26, color: '#222'}}>♡ 0 &nbsp; 💬 0</div>
+              <div style={{fontWeight: 800, fontSize: 24, color: '#666', marginTop: 6}}>Охоплення:</div>
+              <div style={{fontWeight: 900, fontSize: 70, color: '#e0242b', lineHeight: 1}}>{reach}</div>
+            </div>
+            <svg width={220} height={90}>
+              <polyline points="0,10 50,20 100,38 150,54 220,84" fill="none" stroke="#e0242b" strokeWidth={7} />
+              <path d="M220 84 L204 70 M220 84 L200 86" stroke="#e0242b" strokeWidth={7} />
+            </svg>
+          </div>
         </div>
       </div>
+      <div style={{position: 'absolute', left: 60, top: 1150, width: 400, height: 34, borderRadius: 8, background: '#cfd3da', boxShadow: '0 4px 0 #8c929c'}} />
       {/* BONK */}
       {hit ? (
         <>
-          <div style={{position: 'absolute', left: 30, top: 960, fontFamily: round, fontWeight: 900, fontSize: 96, color: '#ffd23a', rotate: '-12deg', textShadow: '0 6px 0 #7a2a0c, 0 0 20px #000'}}>БАМ!</div>
+          <div style={{position: 'absolute', left: 20, top: 920, fontFamily: round, fontWeight: 900, fontSize: 96, color: '#ffd23a', rotate: '-12deg', textShadow: '0 6px 0 #7a2a0c, 0 0 20px #000'}}>БАМ!</div>
           {[0, 1, 2, 3, 4].map((k) => (
-            <div key={k} style={{position: 'absolute', left: 300 + Math.cos(k * 1.3 + t * 8) * 140, top: 1070 + Math.sin(k * 1.3 + t * 8) * 50, fontSize: 44, color: '#ffe066'}}>★</div>
+            <div key={k} style={{position: 'absolute', left: 250 + Math.cos(k * 1.3 + t * 8) * 140, top: 1070 + Math.sin(k * 1.3 + t * 8) * 50, fontSize: 44, color: '#ffe066'}}>★</div>
           ))}
         </>
       ) : null}
@@ -600,7 +608,7 @@ const SFX: [string, number, number][] = [
   ['light-spell.mp3', M.avatarUp - 0.1, 0.45],
   ['light-spell.mp3', M.sphere, 0.35],
   ['ui-success-soft.mp3', M.approved, 0.5],
-  ...Array.from({length: 4}, (_, k) => ['hit-weak.mp3', M.learn + 0.3 + 0.85 * 0.33 + k * 0.85, 0.6] as [string, number, number]),
+  ['hit-weak.mp3', M.learn + 0.9, 0.8],
   ['light-aura.mp3', M.glow, 0.4],
 ];
 
