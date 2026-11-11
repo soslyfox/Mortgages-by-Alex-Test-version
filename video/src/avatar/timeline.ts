@@ -2,7 +2,7 @@
 // ElevenLabs voiceover (public/voiceover/avatar/line-*.mp3, word timings in
 // alignment.json). Keep in sync with scripts/avatar_score.py.
 
-export const DURATION = 63.2;
+export const DURATION = 61.6; // ends as the original theme's final chord fades
 
 /** Music file starts this many seconds into the video (aligns its hits). */
 export const MUSIC_OFFSET = 0.5;

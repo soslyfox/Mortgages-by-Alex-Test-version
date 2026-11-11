@@ -12,6 +12,7 @@ import {AvatarScene2, BrushGlyph, BrushWord, CliffScene, ElementTransitions, Ice
 
 export const avatarCartoonSchema = z.object({
   music: z.string(),
+  endMusic: z.string(), // ending sting of the original theme (user-supplied, git-ignored); '' = none
   voiceover: z.string(),
 });
 export const AVATAR_CARTOON_FRAMES = Math.round(DURATION * 30);
@@ -625,7 +626,10 @@ const SFX: [string, number, number][] = [
   ['light-aura.mp3', M.glow, 0.4],
 ];
 
-export const AvatarCartoon: React.FC<z.infer<typeof avatarCartoonSchema>> = ({music, voiceover}) => {
+// the theme's main hit (41.16 s in the source) lands on the title slam
+const END_AT = 56.1 - (41.16 - 39.95);
+
+export const AvatarCartoon: React.FC<z.infer<typeof avatarCartoonSchema>> = ({music, endMusic, voiceover}) => {
   const {fps} = useVideoConfig();
   const f = (s: number) => Math.round(s * fps);
   return (
@@ -669,10 +673,15 @@ export const AvatarCartoon: React.FC<z.infer<typeof avatarCartoonSchema>> = ({mu
             volume={(fr) => {
               const tt = fr / fps + MUSIC_OFFSET;
               const d = SPEECH.reduce((m, [a, b]) => Math.max(m, interpolate(tt, [a - 0.3, a, b, b + 0.4], [0, 1, 1, 0], clamp)), 0);
-              const fade = interpolate(tt, [DURATION - 2.5, DURATION], [1, 0], clamp);
+              const fade = endMusic ? interpolate(tt, [END_AT - 0.5, END_AT + 0.05], [1, 0], clamp) : interpolate(tt, [DURATION - 2.5, DURATION], [1, 0], clamp);
               return (voiceover ? 0.75 - 0.5 * d : 0.75) * fade;
             }}
           />
+        </Sequence>
+      ) : null}
+      {endMusic ? (
+        <Sequence from={f(END_AT)} layout="none" name="theme ending">
+          <Audio src={staticFile(endMusic)} volume={0.95} />
         </Sequence>
       ) : null}
       {voiceover

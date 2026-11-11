@@ -6,3 +6,4 @@ __pycache__/
 .venv/
 # user-supplied licensed music (not redistributed)
 public/audio/avatar-licensed.mp3
+public/audio/avatar-theme-end.mp3

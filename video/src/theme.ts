@@ -59,3 +59,6 @@ export const brush = load('Ruslan Display', 'ruslan-display', ['400']);
 
 // Flat-cartoon parody (AvatarCartoon): rounded heavy sans like the reference reel.
 export const round = load('Nunito', 'nunito', ['700', '800', '900']);
+
+// Logo-style subtitle (classical calligraphic caps).
+export const kurale = load('Kurale', 'kurale', ['400']);

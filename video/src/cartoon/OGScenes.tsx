@@ -2,7 +2,7 @@
 // (own drawings: no characters, glyphs or logo copied).
 import React from 'react';
 import {AbsoluteFill, Easing, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
-import {brush, round, serif} from '../theme';
+import {brush, kurale, round, serif} from '../theme';
 import {clamp, EASE_OUT, rand} from '../anim';
 import {ELEMENTS, WAR} from '../avatar/timeline';
 import {Figure, mixPose, POSE_STAND, type Pose} from './Figure';
@@ -624,19 +624,39 @@ export const LogoScene: React.FC<{start: number; ctaAt: number}> = ({start, ctaA
   const sub = ease(t, start + 0.45, 0.5);
   const cta = ease(t, ctaAt, 0.6);
   return (
-    <AbsoluteFill style={{background: 'radial-gradient(70% 45% at 50% 42%, #ffffff 0%, #d9f0ff 18%, #7cc0f2 45%, #2f86d6 100%)'}}>
-      <svg width={1080} height={1920} style={{position: 'absolute', inset: 0, opacity: 0.5}}>
+    <AbsoluteFill style={{background: 'radial-gradient(75% 48% at 50% 38%, #ffffff 0%, #eaf6ff 20%, #9fd0f5 45%, #4a98de 80%, #3a86d0 100%)'}}>
+      <svg width={1080} height={1920} style={{position: 'absolute', inset: 0, opacity: 0.28, filter: 'blur(6px)'}}>
         {Array.from({length: 16}, (_, k) => {
           const a = (k / 16) * Math.PI * 2 + (t - start) * 0.15;
           return <path key={k} d={`M540 800 L${540 + Math.cos(a) * 1400} ${800 + Math.sin(a) * 1400} L${540 + Math.cos(a + 0.08) * 1400} ${800 + Math.sin(a + 0.08) * 1400} Z`} fill="#fff" />;
         })}
       </svg>
-      <div style={{position: 'absolute', top: 660, width: '100%', textAlign: 'center', scale: z, opacity: o}}>
-        <div style={{fontFamily: brush, fontSize: 190, color: '#111', letterSpacing: '0.02em', lineHeight: 1, textShadow: '0 0 30px rgba(255,255,255,0.9)'}}>АВАТАР</div>
-        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 22, marginTop: 14, opacity: sub, translate: `0px ${(1 - sub) * 20}px`}}>
-          <div style={{width: 44, height: 4, background: '#1b1b1b'}} />
-          <div style={{fontFamily: serif, fontWeight: 700, fontSize: 70, color: '#1b1b1b', letterSpacing: '0.1em', textShadow: '0 0 20px rgba(255,255,255,0.9)'}}>ВОЛОДАР ІПОТЕК</div>
-          <div style={{width: 44, height: 4, background: '#1b1b1b'}} />
+      {/* logo-style title: rough brush caps with a long swash, spaced classical subtitle */}
+      <div style={{position: 'absolute', top: 560, left: 0, width: 1080, textAlign: 'center', scale: z, opacity: o}}>
+        <svg width={1080} height={300} viewBox="0 0 1080 300" style={{overflow: 'visible'}}>
+          <defs>
+            <filter id="brushy" x="-5%" y="-20%" width="110%" height="140%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves={3} seed={7} />
+              <feDisplacementMap in="SourceGraphic" scale={10} />
+            </filter>
+            <filter id="glowW">
+              <feGaussianBlur stdDeviation={10} result="b" />
+              <feMerge>
+                <feMergeNode in="b" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <g filter="url(#brushy)">
+            <text x={530} y={200} textAnchor="middle" fontFamily={brush} fontSize={158} fill="#111" letterSpacing={2}>
+              АВАТАР
+            </text>
+            {/* the long tail swash, like a brush stroke trailing off the last letter */}
+            <path d="M800 204 Q910 222 1000 176 Q968 214 905 232 Q850 244 792 222 Z" fill="#111" />
+          </g>
+        </svg>
+        <div style={{fontFamily: kurale, fontSize: 64, color: '#141414', letterSpacing: '0.2em', marginTop: -6, opacity: sub, translate: `0px ${(1 - sub) * 20}px`, textShadow: '0 0 18px rgba(255,255,255,0.95)'}}>
+          ВОЛОДАР ІПОТЕК
         </div>
       </div>
       <div style={{position: 'absolute', top: 1120, width: '100%', textAlign: 'center', opacity: cta, translate: `0px ${(1 - cta) * 30}px`}}>

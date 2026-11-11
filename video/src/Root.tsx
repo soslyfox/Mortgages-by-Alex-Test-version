@@ -22,7 +22,7 @@ export const RemotionRoot: React.FC = () => {
         fps={FPS}
         width={1080}
         height={1920}
-        defaultProps={{music: 'audio/avatar-licensed.mp3', voiceover: 'voiceover/avatar'}}
+        defaultProps={{music: 'audio/avatar-licensed.mp3', endMusic: 'audio/avatar-theme-end.mp3', voiceover: 'voiceover/avatar'}}
       />
       <Composition
         id="AvatarMortgageIntro"
