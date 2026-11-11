@@ -7,6 +7,7 @@ import {clamp, EASE_OUT, rand} from '../anim';
 import {ELEMENTS, WAR} from '../avatar/timeline';
 import {Figure, mixPose, POSE_STAND, type Pose} from './Figure';
 import {CartoonAlex, Flag, Icon, Plane, Tank, type IconKind} from './Props';
+import CA from './canada.json';
 
 const useT = () => {
   const frame = useCurrentFrame();
@@ -77,6 +78,9 @@ export const BrushWord: React.FC<{text: string; o: number}> = ({text, o}) => (
 );
 
 /* ---------------------------------------------------------------- map */
+const MAP_S = 0.9;
+const MAP_X = (1080 - CA.w * MAP_S) / 2;
+const MAP_Y = 960 - (CA.h * MAP_S) / 2;
 const blob = (cx: number, cy: number, r: number, seed: number, n = 18) => {
   const pts = Array.from({length: n}, (_, k) => {
     const a = (k / n) * Math.PI * 2;
@@ -92,10 +96,10 @@ export const MapScene2: React.FC<{start: number; end: number}> = ({start, end}) 
   const zoom = interpolate(u, [0, end - start], [1.12, 1.0], {...clamp, easing: EASE_OUT});
   const fire = ease(t, end - 1.6, 1.4);
   const corners: {x: number; y: number; k: IconKind}[] = [
-    {x: 120, y: 330, k: 'work'},
-    {x: 790, y: 330, k: 'down'},
-    {x: 120, y: 1190, k: 'credit'},
-    {x: 790, y: 1190, k: 'home'},
+    {x: 110, y: 300, k: 'work'},
+    {x: 840, y: 300, k: 'down'},
+    {x: 110, y: 1480, k: 'credit'},
+    {x: 840, y: 1480, k: 'home'},
   ];
   return (
     <AbsoluteFill style={{background: '#1d2a4f'}}>
@@ -113,50 +117,43 @@ export const MapScene2: React.FC<{start: number; end: number}> = ({start, end}) 
           {/* frame */}
           <rect x={60} y={250} width={960} height={1420} fill="#2c3f73" stroke="#9c8f6e" strokeWidth={16} />
           <rect x={86} y={276} width={908} height={1368} fill="url(#waves)" stroke="#6d6248" strokeWidth={4} />
-          {/* Canada (simplified), drawn in a 1000x620 box, scaled into the frame */}
-          <g transform="translate(100 470) scale(0.88)">
+          {/* Canada, projected from real lon/lat points (src/cartoon/canada.json), centred */}
+          <g transform={`translate(${MAP_X} ${MAP_Y}) scale(${MAP_S})`}>
             <g filter="url(#mapRough)" fill="#e8d8ae" stroke="#7a6342" strokeWidth={5}>
-              <path d="M120 520 L95 470 L70 420 L50 380 L60 360 L72 330 L72 140 L140 152 L200 132 L262 150 L330 136 L398 156 L462 170 L480 200 L486 260 L500 320 L530 370 L566 400 L600 380 L622 330 L640 268 L618 222 L652 196 L700 200 L746 236 L790 292 L830 330 L862 380 L890 420 L860 452 L830 470 L780 470 L808 500 L860 498 L880 520 L840 540 L790 530 L760 520 L716 500 L676 540 L640 560 L604 590 L566 562 L540 540 L500 522 L440 520 Z" />
-              <path d="M560 60 L640 40 L720 90 L760 160 L720 190 L660 150 L600 120 Z" />
-              <path d="M260 70 L330 50 L380 80 L350 120 L290 115 Z" />
-              <path d="M180 70 L230 40 L250 90 L210 110 Z" />
-              <path d="M440 10 L520 0 L560 40 L500 70 L450 50 Z" />
-              <path d="M500 200 L540 190 L545 220 L510 225 Z" />
-              <path d="M900 420 L950 410 L960 450 L920 470 Z" />
-              <path d="M58 478 L90 498 L82 522 L52 502 Z" />
+              <path d={CA.main} />
+              {CA.islands.map((d, k) => (
+                <path key={k} d={d} />
+              ))}
             </g>
-            {/* Great Lakes */}
             <g fill="#2c3f73">
-              <path d="M520 530 Q545 515 565 532 Q545 546 520 530 Z" />
-              <path d="M572 548 Q592 538 606 552 Q590 562 572 548 Z" />
+              {CA.lakes.map((d, k) => (
+                <path key={k} d={d} />
+              ))}
             </g>
-            {/* provinces */}
-            <g stroke="#9a8460" strokeWidth={3} strokeDasharray="10 8" fill="none">
-              <path d="M72 300 H470" />
-              <path d="M178 520 L150 400 L150 300" />
-              <path d="M235 520 V300" />
-              <path d="M300 520 V300" />
-              <path d="M410 520 L440 420 L476 360" />
-              <path d="M604 586 L585 470 L566 400" />
+            <g stroke="#9a8460" strokeWidth={3.5} strokeDasharray="10 8" fill="none">
+              {CA.borders.map((d, k) => (
+                <path key={k} d={d} />
+              ))}
             </g>
-            {/* Calgary */}
-            <g transform="translate(196 488)">
+            <g transform={`translate(${CA.calgary[0]} ${CA.calgary[1]})`}>
               <path d="M0 -16 L5 -5 L17 -5 L7 2 L11 14 L0 7 L-11 14 L-7 2 L-17 -5 L-5 -5 Z" fill="#c62a1f" />
-              <text x={14} y={36} fontFamily={round} fontWeight={900} fontSize={30} fill="#3a2a1a">Калгарі</text>
+              <text x={-60} y={40} fontFamily={round} fontWeight={900} fontSize={30} fill="#3a2a1a">Калгарі</text>
             </g>
           </g>
           {/* the banks' fire spreading from Toronto */}
-          <g opacity={fire} filter="url(#mapRough)" transform="translate(100 470) scale(0.88)">
-            <path d={blob(585, 560, 120 * (0.25 + fire * 0.8), 2)} fill="#e8641c" opacity={0.92} />
-            <path d={blob(560, 525, 80 * fire, 4)} fill="#d4511a" opacity={0.9} />
+          <g opacity={fire} filter="url(#mapRough)" transform={`translate(${MAP_X} ${MAP_Y}) scale(${MAP_S})`}>
+            <path d={blob(CA.toronto[0], CA.toronto[1] - 30, 110 * (0.25 + fire * 0.8), 2)} fill="#e8641c" opacity={0.92} />
+            <path d={blob(CA.toronto[0] - 20, CA.toronto[1] - 50, 70 * fire, 4)} fill="#d4511a" opacity={0.9} />
           </g>
           {Array.from({length: 6}, (_, k) => {
             const p = ((t - (end - 1.6)) * 0.8 + k * 0.2) % 1;
-            return fire > 0 ? <circle key={k} cx={560 + (k % 3) * 50} cy={930 - p * 180} r={18 + p * 30} fill="#cfc6bb" opacity={(1 - p) * 0.7 * fire} /> : null;
+            return fire > 0 ? (
+              <circle key={k} cx={MAP_X + CA.toronto[0] * MAP_S - 50 + (k % 3) * 50} cy={MAP_Y + CA.toronto[1] * MAP_S - 60 - p * 180} r={18 + p * 30} fill="#cfc6bb" opacity={(1 - p) * 0.7 * fire} />
+            ) : null;
           })}
           {/* clouds */}
           {[0, 1, 2].map((k) => (
-            <ellipse key={k} cx={((u * 50 + k * 380) % 1300) - 100} cy={[400, 1150, 1500][k]} rx={130} ry={40} fill="#d9e4f2" opacity={0.85} />
+            <ellipse key={k} cx={((u * 50 + k * 380) % 1300) - 100} cy={[560, 1330, 1620][k]} rx={130} ry={40} fill="#d9e4f2" opacity={0.85} />
           ))}
         </svg>
         {corners.map((c, i) => (
@@ -166,9 +163,9 @@ export const MapScene2: React.FC<{start: number; end: number}> = ({start, end}) 
               position: 'absolute',
               left: c.x,
               top: c.y,
-              width: 170,
-              height: 170,
-              borderRadius: 24,
+              width: 130,
+              height: 130,
+              borderRadius: 20,
               background: '#e9dcc0',
               border: '8px solid #8d7f5c',
               display: 'flex',
@@ -177,10 +174,10 @@ export const MapScene2: React.FC<{start: number; end: number}> = ({start, end}) 
               opacity: ease(t, start + 0.2 + i * 0.25, 0.4),
             }}
           >
-            <Icon kind={c.k} size={110} color="#2b2116" />
+            <Icon kind={c.k} size={84} color="#2b2116" />
           </div>
         ))}
-        <div style={{position: 'absolute', left: 560, top: 1000, fontFamily: round, fontWeight: 900, fontSize: 40, color: '#fff', opacity: fire, rotate: '-8deg', textShadow: '0 3px 6px #000'}}>
+        <div style={{position: 'absolute', left: MAP_X + CA.toronto[0] * MAP_S - 60, top: MAP_Y + CA.toronto[1] * MAP_S + 10, fontFamily: round, fontWeight: 900, fontSize: 40, color: '#fff', opacity: fire, rotate: '-8deg', textShadow: '0 3px 6px #000'}}>
           БАНКИ
         </div>
       </AbsoluteFill>
@@ -348,6 +345,7 @@ export const IceScene: React.FC<{start: number; wakeAt: number}> = ({start, wake
             ))
           : null}
       </AbsoluteFill>
+      <YukonSign x={60} y={300} s={0.75} />
       <Parka x={170} s={1.2} />
       <Parka x={920} s={1.05} flip />
       <div style={{position: 'absolute', top: 1220, width: '100%', display: 'flex', justifyContent: 'center', opacity: nameIn, scale: 0.8 + nameIn * 0.2}}>
@@ -426,3 +424,95 @@ export const LogoScene: React.FC<{start: number; ctaAt: number}> = ({start, ctaA
 };
 
 export {ELEMENTS};
+
+/* --------------------------------------------- search in the Canadian north */
+const Spruce: React.FC<{x: number; y: number; s: number; c: string}> = ({x, y, s, c}) => (
+  <path
+    transform={`translate(${x} ${y}) scale(${s})`}
+    d="M0 -260 L28 -190 L14 -190 L48 -120 L26 -120 L66 -40 L36 -40 L80 30 L8 30 L8 60 L-8 60 L-8 30 L-80 30 L-36 -40 L-66 -40 L-26 -120 L-48 -120 L-14 -190 L-28 -190 Z"
+    fill={c}
+  />
+);
+
+export const YukonSign: React.FC<{x: number; y: number; s?: number}> = ({x, y, s = 1}) => (
+  <div style={{position: 'absolute', left: x, top: y, scale: s, transformOrigin: '0 0'}}>
+    <div style={{width: 18, height: 220, background: '#5a3b24', position: 'absolute', left: 120, top: 70}} />
+    <div
+      style={{
+        position: 'relative',
+        background: '#7a5232',
+        border: '6px solid #4a2f1c',
+        borderRadius: 10,
+        padding: '10px 26px',
+        rotate: '-4deg',
+        fontFamily: brush,
+        fontSize: 64,
+        color: '#f6e8c8',
+        boxShadow: '0 8px 0 rgba(0,0,0,0.3)',
+      }}
+    >
+      ЮКОН
+      <div style={{fontFamily: round, fontWeight: 900, fontSize: 22, letterSpacing: '0.2em', textAlign: 'center'}}>YUKON</div>
+    </div>
+  </div>
+);
+
+export const NorthSearch: React.FC<{start: number; end: number}> = ({start, end}) => {
+  const t = useT();
+  const u = t - start;
+  const pan = interpolate(t, [start, end], [0, -120], clamp);
+  return (
+    <AbsoluteFill style={{background: 'linear-gradient(180deg,#040b1c 0%, #0b1f3d 45%, #1a3a5c 75%, #2a4d6e 100%)'}}>
+      <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+        {Array.from({length: 90}, (_, k) => (
+          <circle key={k} cx={rand(k) * 1080} cy={rand(k + 99) * 1000} r={1.4 + rand(k + 7) * 2.4} fill="#fff" opacity={0.35 + 0.5 * Math.abs(Math.sin(t * 2 + k))} />
+        ))}
+        {/* aurora */}
+        <g style={{filter: 'blur(18px)'}} opacity={0.85}>
+          {[0, 1, 2].map((k) => (
+            <path
+              key={k}
+              d={`M-100 ${420 + k * 90} ${Array.from({length: 8}, (_, j) => `Q${j * 160 + 40} ${380 + k * 90 + Math.sin(u * 0.9 + j + k) * 90} ${j * 160 + 120} ${420 + k * 90}`).join(' ')}`}
+              stroke={['#4dffb0', '#3be3c8', '#9a7bff'][k]}
+              strokeWidth={70 - k * 15}
+              fill="none"
+            />
+          ))}
+        </g>
+      </svg>
+      <AbsoluteFill style={{translate: `${pan}px 0px`}}>
+        <svg width={1300} height={1920} style={{position: 'absolute', inset: 0}}>
+          {/* mountains */}
+          <path d="M-50 1160 L120 930 L230 1040 L380 820 L520 1010 L660 870 L820 1060 L980 900 L1150 1080 L1300 960 V1300 H-50 Z" fill="#203a58" />
+          <path d="M380 820 L425 885 L395 880 L360 860 Z M660 870 L700 925 L665 920 L640 905 Z M980 900 L1020 950 L990 948 L960 932 Z" fill="#dfeaf5" />
+          {/* snow fields */}
+          <path d="M-50 1260 Q300 1180 650 1250 Q980 1310 1300 1230 V1920 H-50 Z" fill="#cfe0ee" />
+          <path d="M-50 1420 Q400 1350 800 1430 Q1100 1480 1300 1420 V1920 H-50 Z" fill="#e8f1f8" />
+          {[80, 170, 900, 1010, 1120, 1210].map((x, k) => (
+            <Spruce key={x} x={x} y={1290 + (k % 2) * 30} s={0.9 + (k % 3) * 0.2} c="#0d1f33" />
+          ))}
+          {/* footprints */}
+          {Array.from({length: 12}, (_, k) => (
+            <ellipse key={k} cx={120 + k * 40 + (u * 40)} cy={1580 + (k % 2) * 18} rx={12} ry={6} fill="#a8c0d6" opacity={0.8} />
+          ))}
+        </svg>
+      </AbsoluteFill>
+      {/* the two searchers in parkas with flashlights */}
+      <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
+        {[0, 1].map((k) => {
+          const x = 260 + k * 170 + u * 45;
+          const walk = Math.sin(u * 6 + k);
+          const p: Pose = {torso: 4, head: 0, uaL: -20, faL: -40, uaR: 80, faR: -10, thL: -16 * walk, shL: 10, thR: 16 * walk, shR: 10};
+          const hx = x + 70, hy = 1440;
+          return (
+            <g key={k}>
+              <path d={`M${hx} ${hy} L${hx + 520} ${hy - 260} L${hx + 520} ${hy + 40} Z`} fill="#fff6d0" opacity={0.26} />
+              <Figure pose={p} x={x} y={1560} scale={0.75} color="#081324" hat="beanie" />
+            </g>
+          );
+        })}
+      </svg>
+      <YukonSign x={720} y={1180} s={0.9} />
+    </AbsoluteFill>
+  );
+};

@@ -8,7 +8,7 @@ import {DURATION, ELEMENTS, MUSIC_OFFSET, SPEECH, VOICE, WAR} from '../avatar/ti
 import alignment from '../../public/voiceover/avatar/alignment.json';
 import {Figure, handPos, mixPose, POSE_STAND, type Pose} from './Figure';
 import {CaptionPill, CartoonAlex, DocPile, Flag, House, Icon, INK, Paper, Plane, Sun, Tag, Tank, type IconKind} from './Props';
-import {AvatarScene2, BrushGlyph, BrushWord, CliffScene, IceScene, Letterbox, LogoScene, MapScene2, RedStage, WarScene2} from './OGScenes';
+import {AvatarScene2, BrushGlyph, BrushWord, CliffScene, IceScene, Letterbox, LogoScene, MapScene2, NorthSearch, RedStage, WarScene2} from './OGScenes';
 
 export const avatarCartoonSchema = z.object({
   music: z.string(),
@@ -586,7 +586,7 @@ export const AvatarCartoon: React.FC<z.infer<typeof avatarCartoonSchema>> = ({mu
         <AvatarScene2 start={M.avatar} glowAt={M.avatarUp} end={M.search} />
       </Gate>
       <Gate from={M.search} to={M.sphere}>
-        <SearchScene />
+        <NorthSearch start={M.search} end={M.sphere} />
       </Gate>
       <Gate from={M.sphere} to={M.desk}>
         <IceScene start={M.sphere} wakeAt={M.name} />
