@@ -424,15 +424,36 @@ export const AvatarScene2: React.FC<{start: number; glowAt: number; vanishAt: nu
             <MoneyCase x={540} y={560} s={0.55 + as * 0.35} fill={Math.min(1, (t - aAt) * 0.6)} />
           </g>
           {/* the Avatar (fades into the wind when he vanishes) */}
-          <g opacity={1 - vanish}>
+          <g opacity={1 - vanish} transform={`translate(540 0) scale(${1 - vanish * 0.95} 1) translate(-540 0)`}>
             <Figure pose={pose} x={540} y={1060} scale={1.05} color="#1d0e08" eyes={glow} />
           </g>
-          {vanish > 0
-            ? Array.from({length: 40}, (_, k) => {
-                const a = rand(k) * Math.PI * 2;
-                const d = vanish * (200 + rand(k + 9) * 500);
-                return <circle key={k} cx={540 + Math.cos(a) * d + vanish * 300} cy={840 + Math.sin(a) * d * 0.6 - vanish * 200} r={10 + rand(k + 4) * 14} fill="#1d0e08" opacity={(1 - vanish) * 0.9} />;
-              })
+          {/* AIR vanish: a whirlwind wraps him and carries him away */}
+          {t > vanishAt - 0.8 && t < vanishAt + 1.6
+            ? (() => {
+                const w = interpolate(t, [vanishAt - 0.8, vanishAt, vanishAt + 0.6, vanishAt + 1.6], [0, 1, 1, 0], clamp);
+                const lift = interpolate(t, [vanishAt, vanishAt + 1.6], [0, 260], clamp);
+                return (
+                  <g opacity={w} style={{filter: 'drop-shadow(0 0 10px #e8fff6)'}}>
+                    {/* tornado funnel: horizontal rings widening upward, spinning via dash offset */}
+                    {Array.from({length: 11}, (_, k) => {
+                      const y = 1070 - k * 48 - lift;
+                      const r = 40 + k * k * 4.2 + vanish * 90;
+                      const sway = Math.sin(t * 6 + k * 0.6) * (10 + k * 3);
+                      return (
+                        <ellipse key={k} cx={540 + sway} cy={y} rx={r} ry={r * 0.2} fill="none" stroke={k % 2 ? '#ffffff' : '#c9f7e6'} strokeWidth={9}
+                          strokeDasharray={`${r * 2.2} ${r * 0.8}`} strokeDashoffset={-t * 900 - k * 60} strokeLinecap="round" opacity={0.85} />
+                      );
+                    })}
+                    {Array.from({length: 16}, (_, k) => {
+                      const a = rand(k) * Math.PI * 2 + t * 3;
+                      const d = vanish * (160 + rand(k + 9) * 420);
+                      const x = 540 + Math.cos(a) * d;
+                      const y = 820 + Math.sin(a) * d * 0.4 - vanish * 260;
+                      return <path key={`w${k}`} d={`M${x} ${y} q30 -16 60 0 t60 0`} stroke="#ffffff" strokeWidth={6} fill="none" strokeLinecap="round" opacity={(1 - vanish) * 0.9} />;
+                    })}
+                  </g>
+                );
+              })()
             : null}
           {/* FIRE: big burst with flying credit cards */}
           {fb > 0 ? (
@@ -533,8 +554,8 @@ export const IceScene: React.FC<{start: number; wakeAt: number}> = ({start, wake
               boxShadow: `0 0 ${120 * pulse}px ${40 * pulse}px rgba(130,215,255,0.7)`,
             }}
           />
-          <div style={{position: 'absolute', left: 540 - 160, top: 620, opacity: 0.55, filter: 'brightness(0) invert(1) blur(1px)'}}>
-            <CartoonAlex w={320} pose="meditate" blink />
+          <div style={{position: 'absolute', left: 540 - 140, top: 560, opacity: 0.6, filter: 'brightness(0) invert(1) blur(1px)'}}>
+            <CartoonAlex w={280} pose="meditate" blink />
           </div>
           {/* sea */}
           <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
@@ -739,7 +760,7 @@ export const NorthSearch: React.FC<{start: number; end: number}> = ({start, end}
           ))}
           {/* footprints */}
           {Array.from({length: 12}, (_, k) => (
-            <ellipse key={k} cx={120 + k * 40 + (u * 40)} cy={1580 + (k % 2) * 18} rx={12} ry={6} fill="#a8c0d6" opacity={0.8} />
+            <ellipse key={k} cx={1000 - k * 40 - u * 40 + 260} cy={1580 + (k % 2) * 18} rx={12} ry={6} fill="#a8c0d6" opacity={0.8} />
           ))}
         </svg>
       </AbsoluteFill>
@@ -771,14 +792,14 @@ export const NorthSearch: React.FC<{start: number; end: number}> = ({start, end}
       {/* the two searchers in parkas with flashlights */}
       <svg width={1080} height={1920} style={{position: 'absolute', inset: 0}}>
         {[0, 1].map((k) => {
-          const x = 260 + k * 170 + u * 45;
+          const x = 760 + k * 170 - u * 45; // walking left
           const walk = Math.sin(u * 6 + k);
-          const p: Pose = {torso: 4, head: 0, uaL: -20, faL: -40, uaR: 80, faR: -10, thL: -16 * walk, shL: 10, thR: 16 * walk, shR: 10};
-          const hx = x + 70, hy = 1440;
+          const p: Pose = {torso: -5, head: -4, uaL: -80, faL: 10, uaR: 20, faR: 40, thL: -16 * walk, shL: 10, thR: 16 * walk, shR: 10};
+          const hx = x - 70, hy = 1440;
           return (
             <g key={k}>
-              <path d={`M${hx} ${hy} L${hx + 520} ${hy - 260} L${hx + 520} ${hy + 40} Z`} fill="#fff6d0" opacity={0.26} />
-              <Figure pose={p} x={x} y={1560} scale={0.75} color="#081324" hat="beanie" />
+              <path d={`M${hx} ${hy} L${hx - 520} ${hy - 260} L${hx - 520} ${hy + 40} Z`} fill="#fff6d0" opacity={0.26} />
+              <Figure pose={p} x={x} y={1560} scale={0.75} color="#081324" hat={k === 0 ? 'hair' : 'beanie'} />
             </g>
           );
         })}

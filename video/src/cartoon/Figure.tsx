@@ -38,7 +38,7 @@ export const Figure: React.FC<{
   y: number;
   scale?: number;
   color?: string;
-  hat?: 'none' | 'spikes' | 'cone' | 'beanie' | 'visor';
+  hat?: 'none' | 'spikes' | 'cone' | 'beanie' | 'visor' | 'hair';
   eyes?: number; // 0..1 glowing eyes
   flip?: boolean;
 }> = ({pose, x, y, scale = 1, color = '#1b0d0d', hat = 'none', eyes = 0, flip = false}) => {
@@ -82,6 +82,13 @@ export const Figure: React.FC<{
           <path d={`M${hd[0] - 46} ${hd[1] - 8} Q${hd[0]} ${hd[1] - 92} ${hd[0] + 46} ${hd[1] - 8} Z`} fill={color} />
           <circle cx={hd[0]} cy={hd[1] - 60} r={14} fill={color} />
         </>
+      ) : null}
+      {hat === 'hair' ? (
+        <g fill={color}>
+          {/* long hair down to the shoulders + a ponytail */}
+          <path d={`M${hd[0] - 50} ${hd[1] - 6} Q${hd[0] - 58} ${hd[1] + 70} ${hd[0] - 34} ${hd[1] + 96} L${hd[0] + 34} ${hd[1] + 96} Q${hd[0] + 58} ${hd[1] + 70} ${hd[0] + 50} ${hd[1] - 6} Z`} />
+          <path d={`M${hd[0] + 36} ${hd[1] - 30} Q${hd[0] + 96} ${hd[1] - 10} ${hd[0] + 84} ${hd[1] + 70} Q${hd[0] + 70} ${hd[1] + 20} ${hd[0] + 30} ${hd[1] - 6} Z`} />
+        </g>
       ) : null}
       {hat === 'visor' ? (
         <rect x={hd[0] - 40} y={hd[1] - 14} width={80} height={18} rx={9} fill="#ff8a1f" opacity={0.95} />

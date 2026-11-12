@@ -39,8 +39,8 @@ const M = {
   sphere: 39.28, // "Аватара"
   name: 41.44, // "Алекс"
   desk: 43.0,
-  approved: 44.18, // "фінансування"
-  learn: 46.14, // "йому ще треба було багато чому навчитися"
+  approved: 44.35, // "фінансування"
+  learn: 46.42, // "йому ще треба було багато чому навчитися"
   belief: 50.3,
   glow: 52.94, // "врятувати"
   title: 55.9,
@@ -511,11 +511,11 @@ const SkillsScene: React.FC = () => {
             <div style={{fontWeight: 900, fontSize: 26, color: '#222'}}>oleksii.harin</div>
           </div>
           <div style={{marginTop: 12, height: 140, borderRadius: 8, background: 'linear-gradient(135deg,#ffd6a0,#ff9a6b)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 30, color: '#5a2a10'}}>
-            5 порад по іпотеці
+            FHSA і кеш
           </div>
           <div style={{display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 12}}>
             <div>
-              <div style={{fontWeight: 900, fontSize: 26, color: '#222'}}>♡ 0 &nbsp; 💬 0</div>
+              <div style={{fontWeight: 900, fontSize: 26, color: '#222'}}><span style={{color: '#e0242b'}}>♥ 1</span> &nbsp; 💬 0</div>
               <div style={{fontWeight: 800, fontSize: 24, color: '#666', marginTop: 6}}>Охоплення:</div>
               <div style={{fontWeight: 900, fontSize: 70, color: '#e0242b', lineHeight: 1}}>{reach}</div>
             </div>
@@ -621,7 +621,7 @@ const SFX: [string, number, number][] = [
   ['impact-cine-big.mp3', M.tanks, 0.35],
   ['light-spell.mp3', M.avatarUp - 0.1, 0.45],
   ['light-spell.mp3', M.sphere, 0.35],
-  ['ui-success-soft.mp3', M.approved, 0.5],
+  ['chime-crystal.mp3', M.approved + 0.05, 0.16],
   ['hit-weak.mp3', M.learn + 0.9, 0.8],
   ['light-aura.mp3', M.glow, 0.4],
 ];

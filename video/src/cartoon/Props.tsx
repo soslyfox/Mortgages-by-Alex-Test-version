@@ -353,7 +353,6 @@ export const CartoonAlex: React.FC<{
       <path d="M100 198 Q92 212 102 228 M300 198 Q308 212 298 228" stroke="#c98f6a" strokeWidth={4} fill="none" />
       {/* head: longer face, broad cheekbones, firm jaw */}
       <path d="M108 172 Q104 72 200 62 Q296 72 292 172 L294 236 Q290 304 242 320 Q200 332 158 320 Q110 304 106 236 Z" fill={SK} />
-      <path d="M116 240 Q124 312 200 328 Q276 312 284 240 Q268 296 200 304 Q132 296 116 240 Z" fill="#b48a68" opacity={0.38} />
       <path d="M150 262 Q154 286 172 298 M250 262 Q246 286 228 298" stroke="#e0a982" strokeWidth={5} fill="none" opacity={0.7} />
       {/* hair: light brown, short, swept up, receding temples (high forehead) */}
       <path d="M106 178 Q96 92 148 60 Q200 36 252 60 Q304 92 294 178 Q290 150 280 128 Q268 100 248 98 Q232 116 200 114 Q168 116 152 98 Q132 100 120 128 Q110 150 106 178 Z" fill={HAIR} />
