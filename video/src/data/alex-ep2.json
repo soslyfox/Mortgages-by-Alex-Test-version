@@ -1,0 +1,1715 @@
+{
+ "durationInSeconds": 92.88,
+ "cuts": [
+  3.7,
+  10.55,
+  21.71,
+  22.55,
+  25.84,
+  30.88,
+  36.11,
+  39.39,
+  42.55,
+  46.47,
+  62.16,
+  70.99,
+  80.75,
+  87.23
+ ],
+ "captions": [
+  {
+   "text": "Сьогодні",
+   "startMs": 0,
+   "endMs": 520,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "хочу",
+   "startMs": 520,
+   "endMs": 760,
+   "timestampMs": null,
+   "confidence": 0.98
+  },
+  {
+   "text": "привітати",
+   "startMs": 760,
+   "endMs": 1160,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "своїх",
+   "startMs": 1160,
+   "endMs": 1460,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "клієнтів",
+   "startMs": 1460,
+   "endMs": 1840,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "з",
+   "startMs": 1840,
+   "endMs": 1940,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "покупки",
+   "startMs": 1940,
+   "endMs": 2400,
+   "timestampMs": null,
+   "confidence": 0.75
+  },
+  {
+   "text": "першого",
+   "startMs": 2400,
+   "endMs": 3000,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "житла,",
+   "startMs": 3000,
+   "endMs": 3500,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "і",
+   "startMs": 3800,
+   "endMs": 3880,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "картинки",
+   "startMs": 3880,
+   "endMs": 4540,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "не",
+   "startMs": 4540,
+   "endMs": 4740,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "буде,",
+   "startMs": 4740,
+   "endMs": 4900,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "тому",
+   "startMs": 5040,
+   "endMs": 5140,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "що",
+   "startMs": 5140,
+   "endMs": 5320,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "вони",
+   "startMs": 5320,
+   "endMs": 5520,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "захотіли",
+   "startMs": 5520,
+   "endMs": 5960,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "залишитись",
+   "startMs": 5960,
+   "endMs": 6480,
+   "timestampMs": null,
+   "confidence": 0.97
+  },
+  {
+   "text": "анонімними.",
+   "startMs": 6480,
+   "endMs": 7180,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "Але",
+   "startMs": 7400,
+   "endMs": 7780,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "це",
+   "startMs": 7780,
+   "endMs": 8020,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "все",
+   "startMs": 8020,
+   "endMs": 8180,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "одно",
+   "startMs": 8180,
+   "endMs": 8340,
+   "timestampMs": null,
+   "confidence": 0.78
+  },
+  {
+   "text": "дуже",
+   "startMs": 8340,
+   "endMs": 8580,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "гарна",
+   "startMs": 8580,
+   "endMs": 8860,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "історія,",
+   "startMs": 8860,
+   "endMs": 9200,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "яку",
+   "startMs": 9300,
+   "endMs": 9500,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "варто",
+   "startMs": 9500,
+   "endMs": 9840,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "послухати.",
+   "startMs": 9840,
+   "endMs": 10360,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "Клієнти",
+   "startMs": 10630,
+   "endMs": 11110,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "звернулись",
+   "startMs": 11110,
+   "endMs": 11530,
+   "timestampMs": null,
+   "confidence": 0.89
+  },
+  {
+   "text": "до",
+   "startMs": 11530,
+   "endMs": 11630,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "мене",
+   "startMs": 11630,
+   "endMs": 11830,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "ще",
+   "startMs": 11830,
+   "endMs": 11950,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "у",
+   "startMs": 11950,
+   "endMs": 12090,
+   "timestampMs": null,
+   "confidence": 0.96
+  },
+  {
+   "text": "25-му",
+   "startMs": 12090,
+   "endMs": 12590,
+   "timestampMs": null,
+   "confidence": 0.81
+  },
+  {
+   "text": "році,",
+   "startMs": 12590,
+   "endMs": 12930,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "і",
+   "startMs": 13170,
+   "endMs": 13250,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "ми",
+   "startMs": 13250,
+   "endMs": 13490,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "підготували",
+   "startMs": 13490,
+   "endMs": 14250,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "весь",
+   "startMs": 14250,
+   "endMs": 14470,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "преапрувал,",
+   "startMs": 14470,
+   "endMs": 15050,
+   "timestampMs": null,
+   "confidence": 0.56
+  },
+  {
+   "text": "всю",
+   "startMs": 15150,
+   "endMs": 15310,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "іпотеку,",
+   "startMs": 15310,
+   "endMs": 15930,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "і",
+   "startMs": 16070,
+   "endMs": 16590,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "мали",
+   "startMs": 16590,
+   "endMs": 17130,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "б",
+   "startMs": 17130,
+   "endMs": 17290,
+   "timestampMs": null,
+   "confidence": 0.52
+  },
+  {
+   "text": "закритися",
+   "startMs": 17290,
+   "endMs": 18050,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "у",
+   "startMs": 18050,
+   "endMs": 18350,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "лютому",
+   "startMs": 18350,
+   "endMs": 18770,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "26-го",
+   "startMs": 18770,
+   "endMs": 19630,
+   "timestampMs": null,
+   "confidence": 0.98
+  },
+  {
+   "text": "року.",
+   "startMs": 19630,
+   "endMs": 19930,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "Купували",
+   "startMs": 19990,
+   "endMs": 20390,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "вони",
+   "startMs": 20390,
+   "endMs": 20590,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "спочатку",
+   "startMs": 20590,
+   "endMs": 21010,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "таунхаус.",
+   "startMs": 21010,
+   "endMs": 21630,
+   "timestampMs": null,
+   "confidence": 0.95
+  },
+  {
+   "text": "Але,",
+   "startMs": 21730,
+   "endMs": 22330,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "на",
+   "startMs": 22550,
+   "endMs": 23190,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "жаль,",
+   "startMs": 23190,
+   "endMs": 23470,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "таунхаус",
+   "startMs": 23530,
+   "endMs": 24010,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "не",
+   "startMs": 24010,
+   "endMs": 24130,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "пройшов",
+   "startMs": 24130,
+   "endMs": 24570,
+   "timestampMs": null,
+   "confidence": 0.95
+  },
+  {
+   "text": "перевірку,",
+   "startMs": 24570,
+   "endMs": 25630,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "і",
+   "startMs": 25990,
+   "endMs": 26590,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "інспекція",
+   "startMs": 26590,
+   "endMs": 27050,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "була",
+   "startMs": 27050,
+   "endMs": 27270,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "не",
+   "startMs": 27270,
+   "endMs": 27450,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "дуже",
+   "startMs": 27450,
+   "endMs": 27670,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "гарна.",
+   "startMs": 27670,
+   "endMs": 28050,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "І",
+   "startMs": 28050,
+   "endMs": 28790,
+   "timestampMs": null,
+   "confidence": 0.36
+  },
+  {
+   "text": "вони",
+   "startMs": 28790,
+   "endMs": 29190,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "вирішили",
+   "startMs": 29190,
+   "endMs": 29810,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "вийти",
+   "startMs": 29810,
+   "endMs": 30230,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "з",
+   "startMs": 30230,
+   "endMs": 30370,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "угоди.",
+   "startMs": 30370,
+   "endMs": 30750,
+   "timestampMs": null,
+   "confidence": 0.95
+  },
+  {
+   "text": "Сама",
+   "startMs": 30950,
+   "endMs": 31510,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "по",
+   "startMs": 31510,
+   "endMs": 31670,
+   "timestampMs": null,
+   "confidence": 0.98
+  },
+  {
+   "text": "собі",
+   "startMs": 31670,
+   "endMs": 31830,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "іпотека",
+   "startMs": 31830,
+   "endMs": 32110,
+   "timestampMs": null,
+   "confidence": 0.92
+  },
+  {
+   "text": "була",
+   "startMs": 32110,
+   "endMs": 32390,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "складна",
+   "startMs": 32390,
+   "endMs": 32850,
+   "timestampMs": null,
+   "confidence": 0.97
+  },
+  {
+   "text": "і",
+   "startMs": 32850,
+   "endMs": 32950,
+   "timestampMs": null,
+   "confidence": 0.88
+  },
+  {
+   "text": "важка.",
+   "startMs": 32950,
+   "endMs": 33270,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "Ми,",
+   "startMs": 33510,
+   "endMs": 33770,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "як",
+   "startMs": 33790,
+   "endMs": 34130,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "то",
+   "startMs": 34130,
+   "endMs": 34250,
+   "timestampMs": null,
+   "confidence": 0.63
+  },
+  {
+   "text": "кажуть,",
+   "startMs": 34250,
+   "endMs": 34530,
+   "timestampMs": null,
+   "confidence": 0.98
+  },
+  {
+   "text": "натягували",
+   "startMs": 34590,
+   "endMs": 35150,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "сову",
+   "startMs": 35150,
+   "endMs": 35510,
+   "timestampMs": null,
+   "confidence": 0.63
+  },
+  {
+   "text": "на",
+   "startMs": 35510,
+   "endMs": 35630,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "глобус.",
+   "startMs": 35630,
+   "endMs": 36070,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "І",
+   "startMs": 36110,
+   "endMs": 36490,
+   "timestampMs": null,
+   "confidence": 0.57
+  },
+  {
+   "text": "намагалися",
+   "startMs": 36490,
+   "endMs": 36970,
+   "timestampMs": null,
+   "confidence": 0.93
+  },
+  {
+   "text": "пройти",
+   "startMs": 36970,
+   "endMs": 37270,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "прямо",
+   "startMs": 37270,
+   "endMs": 37550,
+   "timestampMs": null,
+   "confidence": 0.32
+  },
+  {
+   "text": "по",
+   "startMs": 37550,
+   "endMs": 37750,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "максимуму",
+   "startMs": 37750,
+   "endMs": 38350,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "нашого",
+   "startMs": 38350,
+   "endMs": 38730,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "бюджету.",
+   "startMs": 38730,
+   "endMs": 39290,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "Їм",
+   "startMs": 39550,
+   "endMs": 40230,
+   "timestampMs": null,
+   "confidence": 0.97
+  },
+  {
+   "text": "було",
+   "startMs": 40230,
+   "endMs": 40430,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "не",
+   "startMs": 40430,
+   "endMs": 40550,
+   "timestampMs": null,
+   "confidence": 0.71
+  },
+  {
+   "text": "дуже",
+   "startMs": 40550,
+   "endMs": 40730,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "комфортно,",
+   "startMs": 40730,
+   "endMs": 41290,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "мабуть,",
+   "startMs": 41310,
+   "endMs": 41570,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "в",
+   "startMs": 41630,
+   "endMs": 41670,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "цьому",
+   "startMs": 41670,
+   "endMs": 41890,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "плані.",
+   "startMs": 41890,
+   "endMs": 42330,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "Ще",
+   "startMs": 42550,
+   "endMs": 42870,
+   "timestampMs": null,
+   "confidence": 0.93
+  },
+  {
+   "text": "й",
+   "startMs": 42870,
+   "endMs": 42970,
+   "timestampMs": null,
+   "confidence": 0.52
+  },
+  {
+   "text": "таунхаус",
+   "startMs": 42970,
+   "endMs": 43570,
+   "timestampMs": null,
+   "confidence": 0.97
+  },
+  {
+   "text": "мав",
+   "startMs": 43570,
+   "endMs": 43850,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "певні",
+   "startMs": 43850,
+   "endMs": 44230,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "дефекти,",
+   "startMs": 44230,
+   "endMs": 44750,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "і",
+   "startMs": 44830,
+   "endMs": 44850,
+   "timestampMs": null,
+   "confidence": 0.58
+  },
+  {
+   "text": "вони",
+   "startMs": 44850,
+   "endMs": 44950,
+   "timestampMs": null,
+   "confidence": 0.92
+  },
+  {
+   "text": "вирішили",
+   "startMs": 44950,
+   "endMs": 45310,
+   "timestampMs": null,
+   "confidence": 0.8
+  },
+  {
+   "text": "б",
+   "startMs": 45310,
+   "endMs": 45410,
+   "timestampMs": null,
+   "confidence": 0.33
+  },
+  {
+   "text": "повністю",
+   "startMs": 45410,
+   "endMs": 45630,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "вийти",
+   "startMs": 45630,
+   "endMs": 45910,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "з",
+   "startMs": 45910,
+   "endMs": 46030,
+   "timestampMs": null,
+   "confidence": 0.71
+  },
+  {
+   "text": "угоди.",
+   "startMs": 46030,
+   "endMs": 46350,
+   "timestampMs": null,
+   "confidence": 0.79
+  },
+  {
+   "text": "За",
+   "startMs": 46470,
+   "endMs": 47110,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "цей",
+   "startMs": 47110,
+   "endMs": 47310,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "час",
+   "startMs": 47310,
+   "endMs": 47670,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "вони",
+   "startMs": 47670,
+   "endMs": 48530,
+   "timestampMs": null,
+   "confidence": 0.98
+  },
+  {
+   "text": "змогли",
+   "startMs": 48530,
+   "endMs": 48990,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "знайти",
+   "startMs": 48990,
+   "endMs": 49350,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "ліпшу",
+   "startMs": 49350,
+   "endMs": 49930,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "роботу,",
+   "startMs": 49930,
+   "endMs": 50330,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "набагато",
+   "startMs": 50450,
+   "endMs": 50950,
+   "timestampMs": null,
+   "confidence": 0.85
+  },
+  {
+   "text": "ліпшу",
+   "startMs": 50950,
+   "endMs": 51270,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "роботу",
+   "startMs": 51270,
+   "endMs": 51770,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "по",
+   "startMs": 51770,
+   "endMs": 52470,
+   "timestampMs": null,
+   "confidence": 0.96
+  },
+  {
+   "text": "своїй",
+   "startMs": 52470,
+   "endMs": 52770,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "професії,",
+   "startMs": 52770,
+   "endMs": 53290,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "поліпшити",
+   "startMs": 53430,
+   "endMs": 53910,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "свої",
+   "startMs": 53910,
+   "endMs": 54170,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "доходи,",
+   "startMs": 54170,
+   "endMs": 54710,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "статки,",
+   "startMs": 54830,
+   "endMs": 55230,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "накопичення,",
+   "startMs": 55350,
+   "endMs": 55930,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "і",
+   "startMs": 56050,
+   "endMs": 56470,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "повернутися",
+   "startMs": 56470,
+   "endMs": 57190,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "до",
+   "startMs": 57190,
+   "endMs": 57310,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "тієї",
+   "startMs": 57310,
+   "endMs": 57610,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "самої",
+   "startMs": 57610,
+   "endMs": 58050,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "ідеї",
+   "startMs": 58050,
+   "endMs": 58450,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "в",
+   "startMs": 58450,
+   "endMs": 59090,
+   "timestampMs": null,
+   "confidence": 0.96
+  },
+  {
+   "text": "тому",
+   "startMs": 59090,
+   "endMs": 59250,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "самому",
+   "startMs": 59250,
+   "endMs": 59590,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "році,",
+   "startMs": 59590,
+   "endMs": 59850,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "просто",
+   "startMs": 59910,
+   "endMs": 60170,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "трошки",
+   "startMs": 60170,
+   "endMs": 60590,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "пізніше",
+   "startMs": 60590,
+   "endMs": 61110,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "у",
+   "startMs": 61110,
+   "endMs": 61450,
+   "timestampMs": null,
+   "confidence": 0.56
+  },
+  {
+   "text": "листопаді.",
+   "startMs": 61450,
+   "endMs": 62070,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "В",
+   "startMs": 62160,
+   "endMs": 62800,
+   "timestampMs": null,
+   "confidence": 0.98
+  },
+  {
+   "text": "результаті",
+   "startMs": 62800,
+   "endMs": 63340,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "тепер",
+   "startMs": 63340,
+   "endMs": 63580,
+   "timestampMs": null,
+   "confidence": 0.92
+  },
+  {
+   "text": "вони",
+   "startMs": 63580,
+   "endMs": 63760,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "забирають",
+   "startMs": 63760,
+   "endMs": 64220,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "нерухомість",
+   "startMs": 64220,
+   "endMs": 64660,
+   "timestampMs": null,
+   "confidence": 0.98
+  },
+  {
+   "text": "десь",
+   "startMs": 64660,
+   "endMs": 64860,
+   "timestampMs": null,
+   "confidence": 0.96
+  },
+  {
+   "text": "на",
+   "startMs": 64860,
+   "endMs": 65000,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "110",
+   "startMs": 65000,
+   "endMs": 65260,
+   "timestampMs": null,
+   "confidence": 0.65
+  },
+  {
+   "text": "тисяч",
+   "startMs": 65260,
+   "endMs": 65860,
+   "timestampMs": null,
+   "confidence": 0.89
+  },
+  {
+   "text": "дорожче,",
+   "startMs": 65860,
+   "endMs": 66380,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "ніж",
+   "startMs": 66420,
+   "endMs": 66780,
+   "timestampMs": null,
+   "confidence": 0.98
+  },
+  {
+   "text": "попереднє,",
+   "startMs": 66780,
+   "endMs": 67500,
+   "timestampMs": null,
+   "confidence": 0.87
+  },
+  {
+   "text": "і",
+   "startMs": 67600,
+   "endMs": 67920,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "при",
+   "startMs": 67920,
+   "endMs": 68060,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "цьому",
+   "startMs": 68060,
+   "endMs": 68400,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "не",
+   "startMs": 68400,
+   "endMs": 68520,
+   "timestampMs": null,
+   "confidence": 0.72
+  },
+  {
+   "text": "робляться",
+   "startMs": 68520,
+   "endMs": 68920,
+   "timestampMs": null,
+   "confidence": 0.97
+  },
+  {
+   "text": "впритул,",
+   "startMs": 68920,
+   "endMs": 69520,
+   "timestampMs": null,
+   "confidence": 0.9
+  },
+  {
+   "text": "і",
+   "startMs": 69640,
+   "endMs": 69700,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "їм",
+   "startMs": 69700,
+   "endMs": 69940,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "буде",
+   "startMs": 69940,
+   "endMs": 70160,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "комфортно.",
+   "startMs": 70160,
+   "endMs": 70780,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "Ну",
+   "startMs": 70990,
+   "endMs": 71190,
+   "timestampMs": null,
+   "confidence": 0.82
+  },
+  {
+   "text": "і",
+   "startMs": 71190,
+   "endMs": 71330,
+   "timestampMs": null,
+   "confidence": 0.73
+  },
+  {
+   "text": "ще",
+   "startMs": 71330,
+   "endMs": 71630,
+   "timestampMs": null,
+   "confidence": 0.96
+  },
+  {
+   "text": "вони",
+   "startMs": 71630,
+   "endMs": 71850,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "переживали",
+   "startMs": 71850,
+   "endMs": 72410,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "за",
+   "startMs": 72410,
+   "endMs": 72530,
+   "timestampMs": null,
+   "confidence": 0.95
+  },
+  {
+   "text": "те,",
+   "startMs": 72530,
+   "endMs": 72650,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "що",
+   "startMs": 72730,
+   "endMs": 72790,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "вони",
+   "startMs": 72790,
+   "endMs": 73010,
+   "timestampMs": null,
+   "confidence": 0.9
+  },
+  {
+   "text": "в",
+   "startMs": 73010,
+   "endMs": 73250,
+   "timestampMs": null,
+   "confidence": 0.84
+  },
+  {
+   "text": "перший",
+   "startMs": 73250,
+   "endMs": 73590,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "раз",
+   "startMs": 73590,
+   "endMs": 73810,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "використали",
+   "startMs": 73810,
+   "endMs": 74410,
+   "timestampMs": null,
+   "confidence": 0.97
+  },
+  {
+   "text": "свій",
+   "startMs": 74410,
+   "endMs": 74690,
+   "timestampMs": null,
+   "confidence": 0.91
+  },
+  {
+   "text": "FHSA-рахунок,",
+   "startMs": 74690,
+   "endMs": 75870,
+   "timestampMs": null,
+   "confidence": 0.96
+  },
+  {
+   "text": "і",
+   "startMs": 75990,
+   "endMs": 76550,
+   "timestampMs": null,
+   "confidence": 0.98
+  },
+  {
+   "text": "будинок",
+   "startMs": 76550,
+   "endMs": 77470,
+   "timestampMs": null,
+   "confidence": 0.96
+  },
+  {
+   "text": "то",
+   "startMs": 77470,
+   "endMs": 77570,
+   "timestampMs": null,
+   "confidence": 0.46
+  },
+  {
+   "text": "потім",
+   "startMs": 77570,
+   "endMs": 77830,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "не",
+   "startMs": 77830,
+   "endMs": 77950,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "купили.",
+   "startMs": 77950,
+   "endMs": 78290,
+   "timestampMs": null,
+   "confidence": 0.92
+  },
+  {
+   "text": "Але",
+   "startMs": 78470,
+   "endMs": 78670,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "ми",
+   "startMs": 78670,
+   "endMs": 78810,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "це",
+   "startMs": 78810,
+   "endMs": 78950,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "виправили",
+   "startMs": 78950,
+   "endMs": 79410,
+   "timestampMs": null,
+   "confidence": 0.88
+  },
+  {
+   "text": "покупкою",
+   "startMs": 79410,
+   "endMs": 80010,
+   "timestampMs": null,
+   "confidence": 0.55
+  },
+  {
+   "text": "нового",
+   "startMs": 80010,
+   "endMs": 80270,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "житла.",
+   "startMs": 80270,
+   "endMs": 80570,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "Тому",
+   "startMs": 80760,
+   "endMs": 81140,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "інколи",
+   "startMs": 81140,
+   "endMs": 81860,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "немає",
+   "startMs": 81860,
+   "endMs": 82340,
+   "timestampMs": null,
+   "confidence": 0.99
+  },
+  {
+   "text": "нічого",
+   "startMs": 82340,
+   "endMs": 82900,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "поганого",
+   "startMs": 82900,
+   "endMs": 83300,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "в",
+   "startMs": 83300,
+   "endMs": 83440,
+   "timestampMs": null,
+   "confidence": 0.91
+  },
+  {
+   "text": "тому,",
+   "startMs": 83440,
+   "endMs": 83580,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "щоб",
+   "startMs": 83660,
+   "endMs": 83800,
+   "timestampMs": null,
+   "confidence": 0.91
+  },
+  {
+   "text": "ви",
+   "startMs": 83800,
+   "endMs": 83880,
+   "timestampMs": null,
+   "confidence": 0.76
+  },
+  {
+   "text": "зробите",
+   "startMs": 83880,
+   "endMs": 84280,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "один",
+   "startMs": 84280,
+   "endMs": 84600,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "крок",
+   "startMs": 84600,
+   "endMs": 84940,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "назад,",
+   "startMs": 84940,
+   "endMs": 85200,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "обдумайте",
+   "startMs": 85440,
+   "endMs": 85940,
+   "timestampMs": null,
+   "confidence": 0.91
+  },
+  {
+   "text": "своє",
+   "startMs": 85940,
+   "endMs": 86240,
+   "timestampMs": null,
+   "confidence": 0.95
+  },
+  {
+   "text": "рішення",
+   "startMs": 86240,
+   "endMs": 86560,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "ще",
+   "startMs": 86560,
+   "endMs": 86840,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "раз,",
+   "startMs": 86840,
+   "endMs": 87120,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "поліпшити",
+   "startMs": 87230,
+   "endMs": 87730,
+   "timestampMs": null,
+   "confidence": 0.88
+  },
+  {
+   "text": "своє",
+   "startMs": 87730,
+   "endMs": 87950,
+   "timestampMs": null,
+   "confidence": 0.98
+  },
+  {
+   "text": "становище",
+   "startMs": 87950,
+   "endMs": 88490,
+   "timestampMs": null,
+   "confidence": 0.95
+  },
+  {
+   "text": "і",
+   "startMs": 88490,
+   "endMs": 88730,
+   "timestampMs": null,
+   "confidence": 0.56
+  },
+  {
+   "text": "потім",
+   "startMs": 88730,
+   "endMs": 89030,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "купити",
+   "startMs": 89030,
+   "endMs": 89370,
+   "timestampMs": null,
+   "confidence": 0.96
+  },
+  {
+   "text": "своє",
+   "startMs": 89370,
+   "endMs": 89610,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "житло.",
+   "startMs": 89610,
+   "endMs": 89910,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "Я",
+   "startMs": 90170,
+   "endMs": 90450,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "бажаю",
+   "startMs": 90450,
+   "endMs": 90730,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "вам",
+   "startMs": 90730,
+   "endMs": 90870,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "успіхів,",
+   "startMs": 90870,
+   "endMs": 91290,
+   "timestampMs": null,
+   "confidence": 1.0
+  },
+  {
+   "text": "а",
+   "startMs": 91290,
+   "endMs": 91390,
+   "timestampMs": null,
+   "confidence": 0.52
+  },
+  {
+   "text": "також",
+   "startMs": 91390,
+   "endMs": 91610,
+   "timestampMs": null,
+   "confidence": 0.92
+  },
+  {
+   "text": "звертайтеся",
+   "startMs": 91610,
+   "endMs": 92030,
+   "timestampMs": null,
+   "confidence": 0.72
+  },
+  {
+   "text": "по",
+   "startMs": 92030,
+   "endMs": 92150,
+   "timestampMs": null,
+   "confidence": 0.57
+  },
+  {
+   "text": "іпотеку.",
+   "startMs": 92150,
+   "endMs": 92570,
+   "timestampMs": null,
+   "confidence": 0.97
+  }
+ ]
+}

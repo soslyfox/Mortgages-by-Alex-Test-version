@@ -8,6 +8,7 @@ import {
 } from './TalkingHeadReel';
 import {FPS} from './theme';
 import {ALEX_EP1_FRAMES, AlexReel, alexReelSchema} from './alex/AlexReel';
+import {ALEX_EP2_FRAMES, AlexEp2, alexEp2Schema} from './alex/AlexEp2';
 import {AVATAR_INTRO_FRAMES, AvatarIntro, avatarIntroSchema} from './avatar/AvatarIntro';
 import {AVATAR_CARTOON_FRAMES, AvatarCartoon, avatarCartoonSchema} from './cartoon/AvatarCartoon';
 
@@ -33,6 +34,16 @@ export const RemotionRoot: React.FC = () => {
         width={1080}
         height={1920}
         defaultProps={{music: '', voiceover: 'voiceover/avatar', scoreVolume: 0.9}}
+      />
+      <Composition
+        id="AlexEp2TownhouseDuplex"
+        component={AlexEp2}
+        schema={alexEp2Schema}
+        durationInFrames={ALEX_EP2_FRAMES}
+        fps={FPS}
+        width={1080}
+        height={1920}
+        defaultProps={{footage: 'footage/alex-ep2-cut.mp4', bgm: true, bgmVolume: 0.05}}
       />
       <Composition
         id="AlexEp1BankMortgage"

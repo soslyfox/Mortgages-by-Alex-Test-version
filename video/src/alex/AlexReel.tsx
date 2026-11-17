@@ -40,7 +40,7 @@ export const alexReelSchema = z.object({
   bgmVolume: z.number().min(0).max(1),
 });
 
-type Word = {text: string; startMs: number; endMs: number};
+export type Word = {text: string; startMs: number; endMs: number};
 
 const ACCENT = new Set(
   [
@@ -87,7 +87,7 @@ export const toChunks = (words: Word[], fps: number): CaptionChunk[] => {
 };
 
 /** 1–2 word pages (layout of the first reference), outlined Alex style. */
-export const toPages = (words: Word[], fps: number): WordPage[] => {
+export const toPages = (words: Word[], fps: number, accent: Set<string> = ACCENT): WordPage[] => {
   const pages: Word[][] = [];
   let cur: Word[] = [];
   words.forEach((w, i) => {
@@ -115,7 +115,7 @@ export const toPages = (words: Word[], fps: number): WordPage[] => {
       dur: Math.max(3, f(endMs) - from),
       // like the first reference: the 1–2 word page pops in at once, uppercase
       words: p.map((w) => ({text: w.text.replace(/[,.]+$/, '').toUpperCase(), from})),
-      accent: p.map((w) => ACCENT.has(clean(w.text))),
+      accent: p.map((w) => accent.has(clean(w.text))),
     };
   });
 };
@@ -151,7 +151,7 @@ const Footage: React.FC<{src: string; switches: number[]}> = ({src, switches}) =
 };
 
 /** Darkens top & bottom a bit so overlays and captions read on any frame. */
-const Grade: React.FC = () => (
+export const Grade: React.FC = () => (
   <AbsoluteFill
     style={{
       background:
