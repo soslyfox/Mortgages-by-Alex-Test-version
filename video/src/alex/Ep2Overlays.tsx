@@ -7,10 +7,10 @@ import {NeonPath, NeonSvg, part} from '../components/Neon';
 /*
  * Ep2 overlays ("townhouse $380k -> duplex $490k").
  * Safe zones (1080x1920): top >= 260, bottom 380 free, right 150 px free in y 850..1700.
- * Captions sit at y 1400. Face is roughly y 400..1150, so info cards live on the chest
- * (CARD_TOP..1370, x 40..930) and short titles in the top band (y 270..420).
+ * Captions sit at y 1400. Face (and mouth) is roughly y 400..1150, so cards and titles
+ * stay in the top band (y 270..~520), never on the mouth; big moments are full-screen cutaways.
  */
-const CARD_TOP = 1110;
+const CARD_TOP = 280;
 const CARD_W = 880;
 
 const card: React.CSSProperties = {
@@ -33,7 +33,7 @@ const Card: React.FC<{children: React.ReactNode; style?: React.CSSProperties}> =
   const {fps} = useVideoConfig();
   const p = pop(frame, 0, fps, {damping: 15});
   return (
-    <div style={{...card, opacity: p, translate: `0px ${interpolate(p, [0, 1], [120, 0])}px`, ...style}}>
+    <div style={{...card, opacity: p, translate: `0px ${interpolate(p, [0, 1], [-120, 0])}px`, ...style}}>
       {children}
     </div>
   );
@@ -68,133 +68,6 @@ export const TopChip: React.FC<{text: React.ReactNode; color?: string; top?: num
         {text}
       </div>
     </div>
-  );
-};
-
-/* ---------------------------------------------------------------- hook */
-export const Ep2Hook: React.FC = () => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const a = pop(frame, 0, fps, {damping: 12});
-  const strike = ramp(frame, 22, 10);
-  const b = pop(frame, 34, fps, {damping: 10, stiffness: 200});
-  const line: React.CSSProperties = {
-    fontFamily: display,
-    fontWeight: 900,
-    fontSize: 54,
-    lineHeight: 1.25,
-    textShadow: '0 4px 24px rgba(0,0,0,0.75)',
-    whiteSpace: 'nowrap',
-  };
-  return (
-    <div style={{position: 'absolute', top: 275, left: 0, width: 930, textAlign: 'center'}}>
-      <div style={{...line, color: C.white, opacity: a, scale: interpolate(a, [0, 1], [0.7, 1])}}>
-        <span style={{position: 'relative'}}>
-          ТАУНХАУС $380K
-          <span
-            style={{
-              position: 'absolute',
-              left: -8,
-              top: '52%',
-              height: 10,
-              width: `${strike * 104}%`,
-              borderRadius: 6,
-              background: C.danger,
-              boxShadow: `0 0 18px ${C.danger}`,
-            }}
-          />
-        </span>
-      </div>
-      <div style={{...line, color: C.mint, opacity: b, scale: interpolate(b, [0, 1], [1.6, 1])}}>
-        → ДУПЛЕКС $490K
-      </div>
-    </div>
-  );
-};
-
-/* ---------------------------------------------------- anonymous clients */
-const Person: React.FC<{x: number; s?: number; hair?: boolean}> = ({x, s = 1, hair}) => (
-  <g transform={`translate(${x} 0) scale(${s})`} fill="#cfe9dc">
-    <circle cx={0} cy={60} r={44} />
-    {hair ? <path d="M-50 60 Q-56 -4 0 8 Q56 -4 50 60 L54 120 L-54 120 Z" /> : null}
-    <path d="M-80 220 Q-80 120 0 120 Q80 120 80 220 Z" />
-  </g>
-);
-
-export const Anonymous: React.FC<{barAt: number}> = ({barAt}) => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const bar = pop(frame, barAt, fps, {damping: 9, stiffness: 240});
-  return (
-    <Card style={{display: 'flex', alignItems: 'center', gap: 30, padding: '18px 30px'}}>
-      <svg viewBox="-140 -10 300 230" width={260} height={200} style={{flex: 'none'}}>
-        <Person x={-50} hair />
-        <Person x={60} />
-        <g style={{scale: bar}} transform="translate(5 66)">
-          <rect x={-150} y={-22} width={300} height={44} fill="#000" />
-        </g>
-      </svg>
-      <div>
-        <div style={{fontSize: 34, fontWeight: 600, color: C.mintSoft}}>Наші клієнти</div>
-        <div
-          style={{
-            marginTop: 8,
-            display: 'inline-block',
-            fontFamily: display,
-            fontWeight: 900,
-            fontSize: 50,
-            background: '#000',
-            color: C.white,
-            padding: '6px 18px',
-            rotate: '-3deg',
-            opacity: bar,
-          }}
-        >
-          АНОНІМНО
-        </div>
-        <div style={{marginTop: 10, fontSize: 28, color: C.muted, opacity: bar}}>фото не буде, сорі</div>
-      </div>
-    </Card>
-  );
-};
-
-/* ------------------------------------------------------------ timeline */
-export const Timeline: React.FC<{aAt: number; bAt: number}> = ({aAt, bAt}) => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const a = pop(frame, aAt, fps);
-  const b = pop(frame, bAt, fps);
-  const lineP = interpolate(frame, [aAt, bAt], [0, 1], {...clamp, easing: EASE_OUT});
-  const Node: React.FC<{p: number; year: string; label: string; color: string}> = ({p, year, label, color}) => (
-    <div style={{width: 340, textAlign: 'center', opacity: p, scale: interpolate(p, [0, 1], [0.6, 1])}}>
-      <div style={{fontFamily: display, fontWeight: 900, fontSize: 44, color}}>{year}</div>
-      <div style={{fontSize: 32, fontWeight: 700, marginTop: 6}}>{label}</div>
-    </div>
-  );
-  return (
-    <Card>
-      <div style={{display: 'flex', justifyContent: 'space-between'}}>
-        <Node p={a} year="2025" label="преапрувал ✓" color={C.mint} />
-        <Node p={b} year="ЛЮТИЙ 2026" label="план: закриття" color={C.warm} />
-      </div>
-      <div style={{position: 'relative', height: 26, marginTop: 18}}>
-        <div style={{position: 'absolute', left: 150, right: 150, top: 10, height: 6, background: '#ffffff22', borderRadius: 3}} />
-        <div
-          style={{
-            position: 'absolute',
-            left: 150,
-            width: `calc((100% - 300px) * ${lineP})`,
-            top: 10,
-            height: 6,
-            background: C.mint,
-            borderRadius: 3,
-            boxShadow: `0 0 14px ${C.mint}`,
-          }}
-        />
-        <div style={{position: 'absolute', left: 140, top: 2, width: 22, height: 22, borderRadius: 11, background: C.mint, opacity: a}} />
-        <div style={{position: 'absolute', right: 140, top: 2, width: 22, height: 22, borderRadius: 11, background: C.warm, opacity: b}} />
-      </div>
-    </Card>
   );
 };
 
@@ -260,52 +133,6 @@ export const TownhouseCutaway: React.FC<{price: number}> = ({price}) => {
         {money(price)}
       </div>
     </AbsoluteFill>
-  );
-};
-
-/* -------------------------------------------------- inspection report */
-export const Inspection: React.FC<{rows: number[]; stampAt: number}> = ({rows, stampAt}) => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const items: [string, boolean][] = [
-    ['Дах', false],
-    ['Фундамент', false],
-    ['Двері відчиняються', true],
-  ];
-  const st = pop(frame, stampAt, fps, {damping: 8, stiffness: 260});
-  return (
-    <Card style={{translate: `${shake(frame, stampAt, 12, 14)}px 0px`, background: 'rgba(250,248,240,0.96)', color: C.text, border: 'none'}}>
-      <div style={{fontSize: 30, fontWeight: 800, color: C.muted, letterSpacing: 3}}>ЗВІТ ІНСПЕКЦІЇ</div>
-      {items.map(([t, ok], i) => {
-        const p = pop(frame, rows[i], fps);
-        return (
-          <div key={t} style={{display: 'flex', justifyContent: 'space-between', fontSize: 40, fontWeight: 700, marginTop: 8, opacity: p}}>
-            <span>{t}</span>
-            <span style={{color: ok ? C.green : C.danger, fontWeight: 900, scale: interpolate(p, [0, 1], [2, 1])}}>{ok ? '✓' : '✕'}</span>
-          </div>
-        );
-      })}
-      <div
-        style={{
-          position: 'absolute',
-          right: 120,
-          top: 50,
-          fontFamily: display,
-          fontWeight: 900,
-          fontSize: 54,
-          color: C.danger,
-          border: `7px solid ${C.danger}`,
-          borderRadius: 14,
-          padding: '4px 20px',
-          rotate: '-12deg',
-          opacity: interpolate(frame, [stampAt, stampAt + 2], [0, 0.92], clamp),
-          scale: interpolate(st, [0, 1], [2.6, 1]),
-          background: 'rgba(255,255,255,0.6)',
-        }}
-      >
-        НЕ ПРОЙДЕНО
-      </div>
-    </Card>
   );
 };
 
@@ -432,100 +259,6 @@ export const OwlGlobe: React.FC = () => {
         НА ГЛОБУС
       </div>
     </AbsoluteFill>
-  );
-};
-
-/* ----------------------------------------------------------- budget meter */
-export const BudgetMeter: React.FC<{maxAt: number}> = ({maxAt}) => {
-  const frame = useCurrentFrame();
-  const fill = interpolate(frame, [4, maxAt], [0.35, 1], {...clamp, easing: EASE_OUT});
-  const over = frame >= maxAt;
-  const blink = over ? 0.6 + 0.4 * Math.sin(frame / 2.2) : 1;
-  const col = fill > 0.85 ? C.danger : fill > 0.6 ? C.warm : C.mint;
-  return (
-    <Card style={{translate: `${over ? shake(frame, maxAt, 10, 10) : 0}px 0px`}}>
-      <div style={{display: 'flex', justifyContent: 'space-between', fontSize: 34, fontWeight: 800}}>
-        <span>Бюджет клієнтів</span>
-        <span style={{color: col, opacity: blink}}>{over ? 'MAX!' : `${Math.round(fill * 100)}%`}</span>
-      </div>
-      <div style={{marginTop: 16, height: 54, borderRadius: 27, background: '#ffffff1a', overflow: 'hidden'}}>
-        <div
-          style={{
-            width: `${fill * 100}%`,
-            height: '100%',
-            borderRadius: 27,
-            background: `linear-gradient(90deg, ${C.mint}, ${C.warm} 60%, ${C.danger})`,
-            backgroundSize: `${100 / Math.max(fill, 0.01)}% 100%`,
-            boxShadow: over ? `0 0 30px ${C.danger}` : 'none',
-          }}
-        />
-      </div>
-      <div style={{marginTop: 10, fontSize: 26, color: C.muted}}>впритул до максимуму схвалення</div>
-    </Card>
-  );
-};
-
-/* -------------------------------------------------------------- growth */
-export const Growth: React.FC<{at: number[]}> = ({at}) => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const rows = ['Робота', 'Доходи', 'Накопичення'];
-  return (
-    <Card>
-      <div style={{fontSize: 30, fontWeight: 800, color: C.mintSoft, letterSpacing: 2}}>ЗА ЦЕЙ ЧАС</div>
-      {rows.map((r, i) => {
-        const p = pop(frame, at[i], fps, {damping: 14});
-        const w = interpolate(frame, [at[i], at[i] + 20], [0.15, 0.55 + i * 0.15], {...clamp, easing: EASE_OUT});
-        return (
-          <div key={r} style={{display: 'flex', alignItems: 'center', gap: 20, marginTop: 10, opacity: p}}>
-            <div style={{width: 250, fontSize: 36, fontWeight: 700}}>{r}</div>
-            <div style={{flex: 1, height: 30, borderRadius: 15, background: '#ffffff14'}}>
-              <div style={{width: `${w * 100}%`, height: '100%', borderRadius: 15, background: C.mint, boxShadow: `0 0 16px ${C.mint}88`}} />
-            </div>
-            <div style={{fontSize: 44, fontWeight: 900, color: C.mint}}>↑</div>
-          </div>
-        );
-      })}
-    </Card>
-  );
-};
-
-/* ------------------------------------------------------------ calendar */
-export const Calendar: React.FC<{flipAt: number}> = ({flipAt}) => {
-  const frame = useCurrentFrame();
-  const flip = interpolate(frame, [flipAt, flipAt + 10], [0, 1], {...clamp, easing: EASE_OUT});
-  const done = frame >= flipAt + 5;
-  return (
-    <Card style={{display: 'flex', alignItems: 'center', gap: 34}}>
-      <div style={{width: 300, flex: 'none', perspective: 800}}>
-        <div style={{background: C.danger, borderRadius: '16px 16px 0 0', height: 46, fontSize: 28, fontWeight: 800, textAlign: 'center', lineHeight: '46px'}}>
-          2026
-        </div>
-        <div
-          style={{
-            background: '#fff',
-            color: C.text,
-            borderRadius: '0 0 16px 16px',
-            height: 150,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontFamily: display,
-            fontWeight: 900,
-            fontSize: done ? 33 : 50,
-            transformOrigin: '50% 0%',
-            rotate: '1 0 0 ' + (flip < 0.5 ? flip * 180 : (1 - flip) * 180) + 'deg',
-          }}
-        >
-          {done ? 'ЛИСТОПАД' : 'ЛЮТИЙ'}
-        </div>
-      </div>
-      <div style={{fontSize: 36, fontWeight: 700, lineHeight: 1.3}}>
-        той самий рік,
-        <br />
-        <span style={{color: done ? C.mint : C.muted}}>просто трошки пізніше</span>
-      </div>
-    </Card>
   );
 };
 
@@ -661,5 +394,90 @@ export const StepBack: React.FC<{forwardAt: number}> = ({forwardAt}) => {
       <div style={{...pill('#2c3c36', C.white), opacity: a, translate: `${interpolate(a, [0, 1], [80, 0])}px 0px`}}>← 1 крок назад</div>
       <div style={{...pill(C.mint, C.forestNight), opacity: b, scale: b, boxShadow: `0 0 40px ${C.mint}88`}}>2 вперед →</div>
     </div>
+  );
+};
+
+/* ------------------- cutaway: mystery first home (silhouette only, clients stay anonymous) */
+// a duplex silhouette, 400x400 viewBox
+const DUPLEX =
+  'M30 340 L30 200 L20 200 L115 110 L200 190 L285 110 L380 200 L370 200 L370 340 Z M300 120 L300 80 L330 80 L330 150 Z';
+
+export const MysteryHome: React.FC<{stampAt: number}> = ({stampAt}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const enter = pop(frame, 0, fps, {damping: 10, stiffness: 180});
+  const st = pop(frame, stampAt, fps, {damping: 8, stiffness: 260});
+  const rays = frame * 0.6;
+  const bob = Math.sin(frame / 7) * 10;
+  return (
+    <AbsoluteFill style={{background: '#2a7fd4', overflow: 'hidden', alignItems: 'center'}}>
+      <AbsoluteFill
+        style={{
+          background: `repeating-conic-gradient(from ${rays}deg at 50% 42%, #5fb4ff 0deg 9deg, #2a7fd4 9deg 18deg)`,
+          opacity: 0.9,
+        }}
+      />
+      <AbsoluteFill style={{background: 'radial-gradient(circle at 50% 42%, rgba(255,255,255,0.55), rgba(255,255,255,0) 40%)'}} />
+      <div
+        style={{
+          position: 'absolute',
+          top: 290,
+          fontFamily: display,
+          fontWeight: 900,
+          fontSize: 64,
+          color: C.white,
+          WebkitTextStroke: '10px #12305a',
+          paintOrder: 'stroke fill',
+          textAlign: 'center',
+          lineHeight: 1.15,
+          rotate: '-4deg',
+          opacity: enter,
+          scale: interpolate(enter, [0, 1], [0.5, 1]),
+        }}
+      >
+        ЧИЄ ЦЕ ЖИТЛО?
+      </div>
+      <svg
+        viewBox="0 0 400 400"
+        width={760}
+        height={760}
+        style={{position: 'absolute', top: 470, left: 120, overflow: 'visible', translate: `0px ${bob}px`, scale: interpolate(enter, [0, 1], [0.3, 1])}}
+      >
+        <path d={DUPLEX} fill="#0b0f1a" fillRule="evenodd" />
+        {[[-10, 120, 0], [330, 40, 1], [340, 300, 2]].map(([x, y, k]) => (
+          <text
+            key={k}
+            x={x}
+            y={y + Math.sin(frame / 6 + k) * 8}
+            fontFamily={display}
+            fontWeight={900}
+            fontSize={70}
+            fill="#ffe14a"
+            stroke="#12305a"
+            strokeWidth={6}
+            paintOrder="stroke"
+          >
+            ?
+          </text>
+        ))}
+      </svg>
+      <div
+        style={{
+          position: 'absolute',
+          top: 1120,
+          fontFamily: display,
+          fontWeight: 900,
+          fontSize: 60,
+          color: C.white,
+          background: '#000',
+          padding: '8px 30px',
+          rotate: '-5deg',
+          opacity: interpolate(frame, [stampAt, stampAt + 2], [0, 1], clamp),
+          scale: interpolate(st, [0, 1], [2.4, 1]),
+        }}
+      >
+        АНОНІМНО
+      </div>
+    </AbsoluteFill>
   );
 };
